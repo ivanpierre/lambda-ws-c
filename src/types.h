@@ -9,7 +9,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-typedef TYPES enum {
+typedef enum {
 	TYPE,
 	LIST,
 	ARRAY,
@@ -18,18 +18,18 @@ typedef TYPES enum {
 	STRING,
 	INT,
 	TYPES_SIZE
-};
+} TYPES;
 
-typedef node struct {
+typedef struct {
 	void    *segment;
-};
+} node;
 
-typedef type struct {
+typedef struct {
 	void    *segment;
-	boolean (*equals)((void *)node1, (void *) node2);
-	boolean (*greater)((void *) node1, (void *) node2);
-	void    *(*clone)((void *) node);
-	void    (*print)((void *) node);
-}
+	int     (*equals)(void *node1, void *node2);
+	int     (*cmp)(void * node1, void *node2);
+	void    *(*clone)(void *node);
+	void    (*print)(void *node);
+} type;
 
 #endif

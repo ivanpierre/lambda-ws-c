@@ -9,12 +9,10 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include "types.h"
-
-typedef symbol struct {
+typedef struct {
 	void    *segment;
 	void    *name;
 	void    *value;
-}
+} symbol;
 
 #endif

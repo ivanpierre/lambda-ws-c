@@ -6,15 +6,13 @@
 	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#ifndef SYMBOL_H
-#define SYMBOL_H
-
-#include "types.h"
+#ifndef LIST_H
+#define LIST_H
 
 typedef list struct {
 	void    *segment;
 	void    *car;
 	void    *cdr;
-};
+} list;
 
 #endif
