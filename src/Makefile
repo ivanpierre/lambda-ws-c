@@ -1,7 +1,7 @@
 # very simplified Makefile working with minimal makefile version
 
-lcw : main.o chunks.o gc.o list.o segment.o symbol.o types.o
-	cc -o lcw main.o chunks.o gc.o list.o segment.o symbol.o types.o
+lcw : main.o chunks.o gc.o list.o reader.o segment.o symbol.o types.o
+	cc -o lcw main.o chunks.o gc.o list.o reader.o segment.o symbol.o types.o
 
 main.o : main.c
 	cc -c main.c
@@ -15,6 +15,9 @@ gc.o : gc.c gc.h
 list.o : list.c list.h
 	cc -c list.c
 
+reader.o : reader.c reader.h
+	cc -c reader.c
+
 segment.o : segment.c segment.h
 	cc -c segment.c
 
@@ -26,6 +29,7 @@ types.o : types.c types.h
 
 # .o : .c .h
 # 	cc -c .c
+
 
 clean:
 	rm -f *.o lcw

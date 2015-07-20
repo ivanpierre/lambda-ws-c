@@ -15,4 +15,8 @@ typedef list struct {
 	void    *cdr;
 } list;
 
+void *cons(void *car, void *cdr);
+void *car(void *list);
+void *cdr(void *list)
+
 #endif
