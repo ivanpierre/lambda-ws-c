@@ -169,7 +169,7 @@ witch will be translated internally as AST
 and
 
 	(LIST
-		(SPECIAL LET)
+		(SYMBOL LET)
 		(LIST 
 			(MAP 1
 				(SYMBOL X) 
@@ -190,7 +190,7 @@ I think I should rename LIST as CONS cells, or store them as arrays... ;)
 as arrays it would give :
 
 	(LIST 3
-		(SPECIAL LET)
+		(SYMBOL LET)
 		(MAP 1
 			(SYMBOL X) 
 			(INTEGER 21))
@@ -199,7 +199,7 @@ as arrays it would give :
 			(SYMBOL X)
 			(INTEGER 21)))
 
-But all that is omplementation details :D
+But all that is implementation details :D
 
 ## An now what ?
 For any question or issue you can write to me on twitter @ivanpierre. It's currently a WIP.
