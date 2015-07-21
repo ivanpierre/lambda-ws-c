@@ -144,7 +144,11 @@ et
 		(bind x (lit 21))
 		(add x (lit 21)))
 
-so giving in language :
+Well, as reader should recognize numbers, there's no need of (lit INTEGER) AST will be created accordingly.
+And binding could be created as an associative map giving first argument of let the binding that will be added to 
+local environment.
+
+So giving in language :
 	
 	(add 21 21)
 	
@@ -155,7 +159,7 @@ and
 witch will be translated internally as AST
 
 	(LIST
-		(FUNCTION ADD)
+		(SYMBOL ADD)
 		(LIST
 			(INTEGER 21)
 			(LIST
@@ -167,7 +171,9 @@ and
 	(LIST
 		(SPECIAL LET)
 		(LIST 
-			(MAP (SYMBOL X) (INTEGER 21))
+			(MAP 1
+				(SYMBOL X) 
+				(INTEGER 21))
 			(LIST
 				(LIST
 					(SYMBOL ADD)
@@ -179,11 +185,21 @@ and
 				NULL)))
 			
 			
-I think I should rename LIST as CONS cells ;)
+I think I should rename LIST as CONS cells, or store them as arrays... ;)
 
-well as reader should recognize numbers, there's no need of (lit INTEGER) AST will be created accordingly.
-And binding could be created as an associative map giving first argument of let the binding that will be added to 
-local environment.
+as arrays it would give :
+
+	(LIST 3
+		(SPECIAL LET)
+		(MAP 1
+			(SYMBOL X) 
+			(INTEGER 21))
+		(LIST 3
+			(SYMBOL ADD)
+			(SYMBOL X)
+			(INTEGER 21)))
+
+But all that is omplementation details :D
 
 ## An now what ?
 For any question or issue you can write to me on twitter @ivanpierre. It's currently a WIP.
