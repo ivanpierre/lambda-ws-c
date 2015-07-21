@@ -13,9 +13,11 @@ typedef enum {
 	TYPE,
 	LIST,
 	ARRAY,
+	MAP,
 	SYMBOL,
 	FUNCTION,
 	SPECIAL,
+	LAMBDA,
 	STRING,
 	INT,
 	TYPES_SIZE
@@ -26,7 +28,6 @@ typedef struct {
 } node;
 
 typedef struct {
-
 	void    *segment;
 	int     (*equals)(void *node1, void *node2);
 	int     (*cmp)(void * node1, void *node2);
