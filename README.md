@@ -201,6 +201,9 @@ as arrays it would give :
 
 But all that is implementation details :D
 
+As an issue. defining binding as a map doesn't guarantee order of bindings, as values can be any nodes. So it's 
+probably better to define them as array or as list, so evaluation will be ordinated.
+
 ## An now what ?
 For any question or issue you can write to me on twitter @ivanpierre. It's currently a WIP.
 
