@@ -12,19 +12,20 @@
 
 typedef struct {
 	void *chunk_list;
-	void *last_chunk;
 } GC;
 
 GC  *gc = NULL;
 
-GC  *init_gc(){
+/*
+	initialize garbage collector
+*/
+void *init_gc(){
 	gc = malloc(sizeof(GC));
 	if(!gc) {
-		printf("Allocation error : garbage collector");
+		printf("init_gc :Allocation error : garbage collector\n");
 		return gc;
 	}
-	gc->chunk_list = NULL;
-	gc->last_chunk = empty_chunk();
+	gc->chunk_list = empty_chunk();
 	if(!gc->last_chunk) {
 		free(gc);
 		gc = NULL;
@@ -33,6 +34,16 @@ GC  *init_gc(){
 	return gc;
 }
 
-void *create_node(void *node) {
+/*
+	Add a link to the node, creating the segment if needed
+*/
+void *link_gc(void *node) {
+
+}
+
+/*
+	Suppress link to the node, un allocating it if no more link
+*/
+void *unlink_gc(void *node) {
 
 }

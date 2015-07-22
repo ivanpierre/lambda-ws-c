@@ -9,4 +9,9 @@
 #ifndef GC_H
 #define GC_H
 
+void *init_gc();
+void *add_gc(void *node);
+void *link_gc(void *node);
+void *unlink_gc(void *node);
+
 #endif

@@ -56,4 +56,17 @@ boolean nullp(void *node)
 	return !node;
 }
 
-
+void *init_node(void *node, TYPES type) {
+	node *n = node;
+	if(!n) {
+		fprintf(err, "init_node : absent node\n");
+		return NULL;
+	}
+	n->type = type;
+	init_node_segment(n);
+	if(!link_gc(n)) {
+		fprintf(err, "init_node : error creating\n");
+		return NULL;
+	}
+	return n;
+}

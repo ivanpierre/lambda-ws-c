@@ -18,10 +18,10 @@ deftype struct chunk_s {
 	struct chunk_s  *next;
 } chunk;
 
-void *empty_chunk(){
+void *create_empty_chunk(){
 	chunk *c = malloc(sizeof(chunk));
 	if(!c){
-		printf(err, "Allocation error : Chunk");
+		printf(err, "create_empty_chunk : Allocation error : Chunk\n");
 		return NULL;
 	}
 	c->next_free = 0;
@@ -31,4 +31,24 @@ void *empty_chunk(){
 		c->segments[i] = NULL;
 	}
 	return c;
+}
+
+void *add_to_chunk(void *chunk, *void *segment) {
+
+}
+
+void *del_from_chunk(void *chunk, *void *segment) {
+
+}
+
+void *inc_chunk_disallocation(void *chunk) {
+	if(!chunk) {
+		fprintf(err, "inc_chunc_disallocation : no chunk");
+		return NULL;
+	}
+	((chunk *)chunk)->disallocated++;
+}
+
+void *get_next_chunk(void *chunk) {
+
 }
