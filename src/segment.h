@@ -9,10 +9,5 @@
 
 #include "types.h"
 
-typedef segment struct {
-	void    *node;
-	TYPES   type;
-	long    occurences;
-} segment;
 
 #endif

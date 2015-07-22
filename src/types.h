@@ -10,6 +10,8 @@
 #define TYPES_H
 
 typedef enum {
+	NULL_TYPE,
+	ERROR,
 	TYPE,
 	LIST,
 	ARRAY,
@@ -23,20 +25,10 @@ typedef enum {
 	TYPES_SIZE
 } TYPES;
 
-typedef struct {
-	void    *segment;
-} node;
-
-typedef struct {
-	void    *segment;
-	int     (*equals)(void *node1, void *node2);
-	int     (*cmp)(void * node1, void *node2);
-	void    *(*clone)(void *node);
-	void    (*print)(void *node);
-} type;
-
-void *ERROR;
+#define boolean int
 
 TYPES get_type(void *node);
+boolean typep(void *node);
+boolean nullp(void *node);
 
 #endif
