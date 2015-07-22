@@ -5,6 +5,7 @@
 */
 
 #include <stdio.h>
+#include "global.h"
 #include "segment.h"
 #include "chunks.h"
 
@@ -30,7 +31,7 @@ typedef struct {
 */
 void *new_segment(void *node) {
 	if(!*node) {
-		fprintf(err, "new_segment : creating a segment with no node\n");
+		error("new_segment : creating a segment with no node\n");
 	}
 	segment *seg = malloc(sizeof(segment));
 	if(!seg) {
@@ -49,7 +50,7 @@ void *new_segment(void *node) {
 void *unlink_segment(void *segment) {
 	segment *seg = segment;
 	if(!seg->node) {
-		fprintf(err, "unlink_segment : Segment error : not linked to a node\n");
+		error("unlink_segment : Segment error : not linked to a node\n");
 		return NULL;
 	}
 	seg->occurences--;
@@ -67,7 +68,7 @@ void *unlink_segment(void *segment) {
 void *link_segment(void *segment) {
 	segment *seg = segment;
 	if(!seg->node) {
-		fprintf(err, "link_segment : Segment error : not linked to a node\n");
+		error("link_segment : Segment error : not linked to a node\n");
 	}
 	seg->occurences++;
 	return seg;

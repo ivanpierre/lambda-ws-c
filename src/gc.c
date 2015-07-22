@@ -8,6 +8,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "global.h"
+#include "gc.h"
 #include "chunks.h"
 
 typedef struct {
@@ -22,7 +24,7 @@ GC  *gc = NULL;
 void *init_gc(){
 	gc = malloc(sizeof(GC));
 	if(!gc) {
-		printf("init_gc :Allocation error : garbage collector\n");
+		error("init_gc :Allocation error : garbage collector\n");
 		return gc;
 	}
 	gc->chunk_list = empty_chunk();

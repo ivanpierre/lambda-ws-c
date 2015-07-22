@@ -7,9 +7,9 @@
 */
 
 #ifndef CHUNKS_H
-#define CHUNKS_H
+#define CHUNKS_H 0
 
-void *empty_chunk();
+char * create_empty_chunk();
 void inc_chunk_disallocation(void *chunk);
 
 #endif
