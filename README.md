@@ -48,8 +48,7 @@ Every types of AST element have it's own structure. This structure is an impleme
 project evolves. These types are treated, based on the language definition AND on objects needed to the language 
 management.
 
-All instances of these types are nodes witch will be managed by the garbage collector. The only data that will not be
- nodes will be the garbage collector itself...
+All instances of these types are nodes witch will be managed by the allocator.
 
 #### TYPE
 Definition of an AST type. These will give :
@@ -57,12 +56,14 @@ Definition of an AST type. These will give :
 - Equality test
 - Ordering function if the type is ordered
 - Evaluation function if evaluation is different from itself
+- Deallocation function if more nodes can be linked to the current node.
 - Representation function to be able to output it's representation as a readable string
 
 #### LIST
 This is linked list data type. We need it to implement function calls and definitions.
 
-This contains a first element witch is a node and a next element witch should be a LIST or NULL (for list ending).
+This contains a first element witch is a node and a next element witch should be a LIST or NULL (for list ending). 
+This should ensure that all lists are lists and not conses to enable another management of lists (i.e. arrays)
 
 #### ARRAY
 Not needed now, but 'ça ne mange pas de pain' ;)
@@ -91,29 +92,23 @@ Hosts the name of symbols,
 Manage integers. Implementation detail.
 
 ### Garbage collector
-These elements will manage garbage collection.
+This part has been completely reworked. The previous version of GC was completely overwhelming and didn't resolve the
+segmentation of allocated data problem. So get rid of a separated garbage collector. This one should have an 
+addressing indirection to the data segments, witch should be managed in a contiguous memory allocation with free 
+continuous segments lists and so on... so keep that as implementation details.
 
-#### Segments
-Every node is linked to a segment witch contains a reference count ofnodes references enabling to free node when no 
-more reference is present.
-
-These segment are stored in memory chunks.
-
-#### Chunks
-Chunks are fixed arrays of segments. Chunks count the number of allocated segments. One particular segment is the 
-last one where every node creation will have a new segment added.
-
-#### GC
-Main garbage collector. It will contains function for nodes allocation, deallocation, link and unlink. It will also 
-contain a linked link of memory chunks, with first as the last chunk. At some time if two chunks (except the last) have
-a number of segmentequal to a chunk size, the both are compackter un a chunk added to the list and old ones are 
-deallocated.
+#### Nodes
+Now nodes contains the number of links it manages. There is an option to manage an allocated node list witch is 
+updated when allocation or deallocation occurs. This process is for debugging purposes only, so the program can be 
+compiled with or without it with no more convenient problems than change a constant definition. The debugging 
+implementation only add a previous and next link to every nodes and call to appropriate management for allocation 
+and desallocation.
 
 #### linking and unlinking
-Every node that is used in some process should be linked in garbage collector to avoid it to be deallocated, and 
-unlinked when no more in use. Link and unlink should be done in a same function to avoid memory leaks of bad memory 
-management. The only way not to unlink it is when trhe node is linked to a persistent value, generally to an 
-environment interning.
+Every node that is used in some process should be linked to avoid it to be deallocated, and unlinked when no more in 
+use. Link and unlink should be done in a same function to avoid memory leaks of bad memory management. The only way 
+not to unlink it is when the node is linked to a persistent value, generally to an environment interning or if used 
+by another node (i.e. lists).
 
 ### Reader
 The reader will read in the current reader file handler to transform character strings into AST structure. This will 
@@ -131,6 +126,9 @@ Entry in a function will stack global environment and add local arguments.
 Entry in a let block will stack last stacked environment and add bindings.
 
 Output from these blocks will unstack environment.
+
+This is for immutable orientation. A mutable implementation should only stack local variables and walk down until root 
+to access proper values storage.
 
 ## Language definition for now
 Should manage
