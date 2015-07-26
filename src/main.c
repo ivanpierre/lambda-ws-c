@@ -7,11 +7,22 @@
 #include <stdio.h>
 #include "types.h"
 
+/*
+	global initialization
+*/
+static bool init_all() {
+	return  init_node_list() ||
+			init_types();
+}
+
+/*
+	main entry point
+*/
 int main(int argc, const char* argv[]) {
-	init all();
+	if(!init_all()) {
+		error("Can't init language\n");
+		return -1;
+	}
 	return 0;
 }
 
-static boolean init_all() {
-	init_types();
-}

@@ -51,17 +51,22 @@ typedef struct {
 
 // public functions for types
 TYPES       get_type(node *node);
-boolean     typep(node *node, TYPES type);
-char        *get_type_name;
+bool        typep(node *node, TYPES type);
+char        *get_type_name(TYPES type);
 int         init_types();
 
 // public function for nopdes
-boolean     nullp(node *node);
+bool     nullp(node *node);
 node        *link_node(node *node);
 node        *unlink_node(node *node);
-boolean     equals(node *node1, node *node2);
-boolean     comparablep(node *node1, node *node2);
+bool        equals_node(node *node1, node *node2);
+bool        free_node(node *node);
+int         cmp_node(node *node1, node *node2);
+bool        comparablep(node *node1, node *node2);
 node        *init_node(node *node, TYPES type);
 node        *create_node(TYPES type);
+
+// DEBUG_ALLOC functions
+bool        init_node_list();
 
 #endif

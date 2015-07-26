@@ -10,7 +10,7 @@
 #define error(message) \
 	fprintf(stderr, message)
 
-#define boolean int
+#define bool int
 #define FALSE 0
 #define TRUE (!FALSE)
 
