@@ -28,7 +28,7 @@ enum {
 
 #define TYPES int
 
-// #define DEBUG_ALLOC
+#define DEBUG_ALLOC
 
 #ifndef DEBUG_ALLOC
 #define NODE \
@@ -38,8 +38,8 @@ enum {
 #define NODE \
 	TYPES   type; \
 	long    occurences; \
-	node    *previous_node; \
-	node    *next_node
+	void    *previous_node; \
+	void    *next_node
 #endif
 
 /*
@@ -52,11 +52,19 @@ typedef struct {
 // public functions for types
 TYPES       get_type(node *node);
 bool        typep(node *node, TYPES type);
+node        *get_type_details(TYPES type);
 char        *get_type_name(TYPES type);
-int         init_types();
+bool        init_types();
+node        *create_type(	char    *name,
+							long    size,
+							bool    (*equals)(node *node1, node *node2),
+							int     (*cmp)(node *node1, node *node2),
+							node    *(*eval)(node *node),
+							void    (*free)(node *node),
+							void    (*print)(node *node));
 
-// public function for nopdes
-bool     nullp(node *node);
+// public function for nodes
+bool        nullp(node *node);
 node        *link_node(node *node);
 node        *unlink_node(node *node);
 bool        equals_node(node *node1, node *node2);
@@ -68,5 +76,6 @@ node        *create_node(TYPES type);
 
 // DEBUG_ALLOC functions
 bool        init_node_list();
+bool        print_node_list();
 
 #endif

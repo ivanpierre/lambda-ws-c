@@ -23,6 +23,7 @@ int main(int argc, const char* argv[]) {
 		error("Can't init language\n");
 		return -1;
 	}
+	print_node_list();
 	return 0;
 }
 
