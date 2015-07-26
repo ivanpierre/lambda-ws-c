@@ -5,7 +5,13 @@
 */
 
 #include <stdio.h>
+#include "types.h"
+
 int main(int argc, const char* argv[]) {
-	printf("Hello, World");
+	init all();
 	return 0;
+}
+
+static boolean init_all() {
+	init_types();
 }

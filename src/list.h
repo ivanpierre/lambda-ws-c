@@ -8,15 +8,10 @@
 
 #ifndef LIST_H
 #define LIST_H
+#include "types.h"
 
-typedef list struct {
-	void    *segment;
-	void    *car;
-	void    *cdr;
-} list;
-
-void *cons(void *car, void *cdr);
-void *car(void *list);
-void *cdr(void *list)
+node *cons(node *car, node *cdr);
+node *car(node *list);
+node *cdr(node *list);
 
 #endif

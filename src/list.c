@@ -7,4 +7,11 @@
 */
 
 #include <stdio.h>
+#include "list.h"
+
+typedef struct {
+	NODE;
+	node    *car;
+	node    *cdr;
+} list;
 

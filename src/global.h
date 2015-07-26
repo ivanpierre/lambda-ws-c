@@ -7,7 +7,11 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#define error(message) |
+#define error(message) \
 	fprintf(stderr, message)
+
+#define boolean int
+#define FALSE 0
+#define TRUE (!FALSE)
 
 #endif
