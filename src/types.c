@@ -61,7 +61,31 @@ TYPES get_type(node *node)
 }
 
 static type *get_type_details(TYPES type) {
+	if(type >= TYPES_SIZE || type < 0) {
+		error("get_type_details : invalid type\n");
+		return NULL;
+	}
 	return types[type];
+}
+
+/*
+	get the type name from the type value
+*/
+char *get_type_name(TYPES type) {
+	type    *type_det = get_type_details(type);
+
+	if(nullp((node *)type_det)) {
+		error("get_type_name : invalid type\n");
+		return "Bad type";
+	}
+	return type_det->name;
+}
+
+/*
+	get the type name from the node
+*/
+char *get_node_type_name(node *node) {
+	return get_type_name(node->type);
 }
 
 /*
@@ -83,7 +107,8 @@ node *create_node(TYPES type_of_node) {
 /*
 	Create a type node
 */
-static type *create_type_type(	long    size,
+static type *create_type_type(	char    *name;
+								long    size,
 								boolean (*equals)(node *node1, node *node2),
 								int     (*cmp)(node *node1, node *node2),
 								node    *(*eval)(node *node),
@@ -99,6 +124,7 @@ static type *create_type_type(	long    size,
 	}
 
 	new_type = (type *)new;
+	new_type->name = name;
 	new_type->size = size;
 	new_type->equals = equals;
 	new_type->cmp = cmp;
@@ -179,7 +205,7 @@ node *init_node(node *node, TYPES type) {
 */
 boolean init_types()
 {
-	types[TYPE] = create_type_type(sizeof(type), NULL, NULL, NULL, NULL, NULL);
+	types[TYPE] = create_type_type("type", sizeof(type), NULL, NULL, NULL, NULL, NULL);
 	return TRUE;
 }
 

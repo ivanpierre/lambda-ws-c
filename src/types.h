@@ -52,6 +52,7 @@ typedef struct {
 // public functions for types
 TYPES       get_type(node *node);
 boolean     typep(node *node, TYPES type);
+char        *get_type_name;
 int         init_types();
 
 // public function for nopdes
