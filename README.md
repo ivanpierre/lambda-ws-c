@@ -104,11 +104,20 @@ compiled with or without it with no more convenient problems than change a const
 implementation only add a previous and next link to every nodes and call to appropriate management for allocation 
 and desallocation.
 
+Identity of pointers is when two nodes have the same address. Equality is managed by the types through the `equals` 
+function pointer.
+
 #### linking and unlinking
 Every node that is used in some process should be linked to avoid it to be deallocated, and unlinked when no more in 
 use. Link and unlink should be done in a same function to avoid memory leaks of bad memory management. The only way 
 not to unlink it is when the node is linked to a persistent value, generally to an environment interning or if used 
-by another node (i.e. lists).
+by another node (i.e. lists, array, map, ...) Types manage the release of memory through the `free` function pointer.
+
+The allocation is done by the constructor of each types, arguments for it depends on the type.
+
+There is only three values that are never linked or unlinked : NIL, TRUE and FALSE. They are equal to themselves.
+NIL and FALSE are false boolean values, FALSE is here for disambiguating NIL values than can be pertinent return 
+values. 
 
 ### Reader
 The reader will read in the current reader file handler to transform character strings into AST structure. This will 
@@ -116,7 +125,8 @@ recognize symbols, numbers. Complementary syntax will be managed by a functional
  character with specific reader function. For example '(' character with list reader or '[' with array reader.
  
 ### Writer
-The writer will sent to the current output. Character representation will be managed by the node type itself.
+The writer return string version of the nodes. It is managed by the node type itself. Through the `print` function 
+pointer.
 
 ### Environment
 Global environment is a mapped collection of symbols with values. 
@@ -164,16 +174,18 @@ witch will be translated internally as AST
 			(INTEGER 21)
 			(LIST
 				(INTEGER 21)
-				NULL)))
+				NIL)))
 				
 and
 
 	(LIST
 		(SYMBOL let)
 		(LIST 
-			(MAP 1
-				(SYMBOL x) 
-				(INTEGER 21))
+			(LIST 
+				(SYMBOL x)
+				(LIST
+					(INTEGER 21)
+					NIL))
 			(LIST
 				(LIST
 					(SYMBOL add)
@@ -181,8 +193,8 @@ and
 						(SYMBOL x)
 						(LIST
 							(INTEGER 21)
-							NULL)))
-				NULL)))
+							NIL)))
+				NIL)))
 			
 			
 I think I should rename LIST as CONS cells, or store them as arrays... ;)
@@ -191,7 +203,7 @@ as arrays it would give :
 
 	(LIST 3
 		(SYMBOL let)
-		(MAP 1
+		(LIST 2
 			(SYMBOL x) 
 			(INTEGER 21))
 		(LIST 3
@@ -206,6 +218,14 @@ probably better to define them as array or as list, so evaluation will be ordina
 
 ## And now what ?
 For any question or issue you can write to me on twitter @ivanpierre. It's currently a WIP.
+
+But as I have to manage all the data types to begin to put just a function call with a symbol in environment, I 
+finish to have a complete functional language. Well this was the goal, as programming a functional language with a 
+functional language is ways to easy ;)
+
+Well, it will be when all the data types will be implemented.
+
+But the BIG difficulty, is managing the memory, when we don't have an embedded garbage collector... :D
 
 ## Licence
 For now Eclipse Public License - v 1.0

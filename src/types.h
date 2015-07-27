@@ -83,6 +83,7 @@ node        *print_node(node *node);
 node        *comparablep(node *node1, node *node2);
 node        *init_node(node *node, TYPES type);
 node        *create_node(TYPES type);
+node        *unlinkable(node *n);
 node        *falsep(node *node);
 node        *truep(node *node);
 node        *true_node();

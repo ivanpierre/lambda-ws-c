@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "types.h"
+#include "string.h"
 
 #if defined(DEBUG_ALLOC)
 	node *first_node    = NULL;
@@ -21,7 +22,7 @@
 typedef struct
 {
 	NODE;
-	char    *name;
+	node    *name;
 	long    size;
 	node    *(*equals)(node *node1, node *node2);
 	node    (*cmp)(node *node1, node *node2);
@@ -36,31 +37,48 @@ typedef struct
 node *types[TYPES_SIZE];
 
 /*
+	test if linking is applyable
+*/
+node *unlinkable(node *n)
+{
+	return nulp(node) || falsep(node) || truep(node);
+}
+
+/*
 	create a link to node
+	Return Linked node or NIL
 */
 node *link_node(node *node)
 {
-	if(!node)
-		return NULL;
-	if(!falsep(node) && !truep(node))
+	if(!unlinkable(node))
 		node->occurences++;
 	return node;
 }
 
 /*
 	Unlink node
+	return NIL or subsisting node
 */
 node *unlink_node(node *node)
 {
-	if(!node)
-		return NULL;
-	if(!falsep(node) && !truep(node))
+	if(!unlinkable(node))
 	{
-		node->occurences--;
+		if(node-occurence)
+			node->occurences--;
 		if(!node->occurences)
-			return free_node(node);
+			free_node(node);
 	)
-	return NULL;
+	return NIL;
+}
+
+/*
+    Test type boundaries
+*/
+static TYPES test_type(TYPES type)
+{
+	if(type < 0 || type >TYPES_SIZE)
+		return NIL_TYPE;
+	return type;
 }
 
 /*
@@ -74,18 +92,8 @@ TYPES get_type(node *node)
 }
 
 /*
-    Test type boundaries
-*/
-TYPES test_type(TYPES type)
-{
-	if(type < 0 || type >TYPES_SIZE)
-		return NIL_TYPE;
-	return type;
-}
-
-
-/*
 	Set type definition
+	Return linked definition or NIL
 */
 node *set_type(TYPES type, node *type_def)
 {
@@ -99,12 +107,13 @@ node *set_type(TYPES type, node *type_def)
 		error("set_type : null type\n");
 		return NIL;
 	}
-	types[type] = type_def;
-	return type_def;
+	types[type] = linked_node(type_def);
+	return linked_node(type_def);
 }
 
 /*
 	get Type definition
+	Return linked definition or NIL
 */
 node *get_type_details(TYPES type)
 {
@@ -113,45 +122,67 @@ node *get_type_details(TYPES type)
 		error("get_type_details : invalid type\n");
 		return NIL;
 	}
-	return types[type];
+	return link_node(types[type]);
 }
 
 /*
 	get the type name from the type value
+	return linked name or NIL
 */
-char *get_type_name(TYPES type_enum)
+node *get_type_name(TYPES type_enum)
 {
 	node *type_det = get_type_details(type_enum);
-
+	node *name;
 	if(nullp(type_det))
 	{
 		error("get_type_name : invalid type\n");
-		return "Bad type";
+		return NIL;
 	}
-	return ((type*)type_det)->name;
+	name = link_node(((type*)type_det)->name);
+	type_det = unlink_node(type_det);
+	return name;
 }
 
 /*
 	get the type name from the node
+	transfer linked name
 */
-char *get_node_type_name(node *node)
+node *get_node_type_name(node *node)
 {
-	return get_type_name(node->type);
+	TYPES type = NIL_TYPE;
+	if(node)
+		type = node->type;
+
+	return get_type_name(type);
 }
 
 /*
 	Create a node
+	Constructor, return linked
 */
 node *create_node(TYPES type_of_node)
 {
-	type *node_type = (type *)get_type_details(type_of_node);
-	long size = node_type->size;
-	node *new = malloc(size);
+	type *node_type = (type *)get_type_details(type_of_node); // linked
+	long size;
+	if(!node_type)
+		return NIL;
 
-	new = init_node(new, type_of_node);
+	size = node_type->size;
+	node_type = unlink_node(node_type); // unlink
+
+	node *new = malloc(size);
+	node *tmp = new;
+
 	if(nullp(new))
 	{
-		error("create_node : Error : allocation of node");
+		error("create_node : Error : allocation of node\n");
+		return NIL;
+	}
+	new = init_node(new, type_of_node); // init_node does link
+	if(nullp(new))
+	{
+		free(tmp); //
+		error("create_node : Error : initialisation of node\n");
 	}
 
 	return new;
@@ -159,23 +190,33 @@ node *create_node(TYPES type_of_node)
 
 /*
 	Create a type node
+	Constructor, return linked or NIL
 */
-node *create_type(	char    *name,
-			long    size,
-			bool    (*equals)(node *node1, node *node2),
-			int     (*cmp)(node *node1, node *node2),
-			node    *(*eval)(node *node),
-			void    (*free)(node *node),
-			char    *(*print)(node *node))
+node *create_type(	node  *name,
+					long    size,
+					node    *(*equals)(node *node1, node *node2),
+					node    *(*cmp)(node *node1, node *node2),
+					node    *(*eval)(node *node),
+					node    *(*free)(node *node),
+					node    *(*print)(node *node))
 {
 	type *new_type;
 	node *new = malloc(sizeof(type));
+	node *tmp = new;
 
-	new = init_node(new, TYPE);
 	if(nullp(new))
 	{
 		error("create_node : Error : allocation of node");
-		return NULL;
+		return NIL;
+	}
+
+	new = init_node(new, TYPE); // init_node returns linked node
+
+	if(nullp(new))
+	{
+		error("create_node : Error : initialisation of node");
+		free(tmp); // unalloc malloc
+		return NIL;
 	}
 
 	new_type = (type *)new;
@@ -186,122 +227,164 @@ node *create_type(	char    *name,
 	new_type->eval = eval;
 	new_type->free = free;
 	new_type->print = print;
-	return new;
+	return new; // linked node
 }
 
 /*
 	Are nodes equals ?
+	Return linked result or NIL
 */
-bool equals_node(node *node1, node *node2)
+node *equals_node(node *node1, node *node2)
 {
 	if(node1 == node2)
-		return TRUE;
+	{
+		return link_node(node1);
+	}
 
 	if(nullp(node1) || nullp(node2))
-		return FALSE;
+		return NIL;
 
 	if(node1->type != node2->type)
-		return FALSE;
+		return NIL;
 
 	type *t = (type *)get_type_details(node1->type);
 	if(!t->equals)
-		return FALSE;
+		return MIL;
+
+	// t->equal will link or NIL
 	return t->equals(node1, node2);
 }
 
 /*
 	Compare nodes
+	return linked integer od NIL
 */
-int cmp_node(node *node1, node *node2)
+node *cmp_node(node *node1, node *node2)
 {
+	// exact identity
 	if(node1 == node2)
-		return 0;
+		return make_integer(0);
 
-	if(nullp(node1) || nullp(node2))
-	{
-		error("cmp_node : system error comparing with null\n");
-		return -1;
-	}
+	// get linked type or NIL
+	type *t = comparablep(node1, node2);
 
-	if(node1->type != node2->type)
+	// no detail on type
+	if(nullp(t))
 	{
-        error("cmp_node : system error comparing different types\n");
-        return -1;
+        error("cmp_node : system error, not comparable\n");
+        return NIL;
     }
 
-	type *t = (type *)get_type_details(node1->type);
-	if(!t->cmp) {
-        error("cmp_node : system error comparing uncomparables\n");
-        return -1;
-    }
-	return (t->cmp(node1, node2));
+    // returned value is linked or NIL
+    node *res = t->cmp(node1, node2);
+    t = unlink_node(t);
+	return res;
 }
 
 /*
 	Are nodes comparable ?
 */
-bool comparablep(node *node1, node *node2)
+node *comparablep(node *node1, node *node2)
 {
 	if(nullp(node1) || nullp(node2))
-		return FALSE;
+		return NIL;
 
 	if(node1->type != node2->type)
-		return FALSE;
+		return NIL;
 
-	type *t = (type *)get_type_details(node1->type);
-	if(!t->equals)
-		return FALSE;
+	type *t = (type *)get_type_details(node1->type); // t is linked or NIL
 
-	return TRUE;
+	if(!t)
+	{
+        error("comparablep : system error, not type details\n");
+		return NIL;
+	}
+
+	if(!t->cmp)
+	{
+		t = unlink_node(t); // unlink incomparable type
+		return NIL;
+	}
+
+	return t;
 }
 
 /*
 	unalloc node
 */
-bool free_node(node *node)
+node *free_node(node *node)
 {
 	if(nullp(node))
 	{
-		error("free_node : unallocation of a null pointer\n");
-		return FALSE;
+		return NIL;
 	}
 
-	type *t = (type *)get_type_details(node->type);
+	type *t = (type *)get_type_details(node->type); // get linked type or NIL
+
+	if(!t)
+	{
+        error("free_node: system error, not type details\n");
+		return NIL;
+	}
+
 	if(t->free)
-		t->free(node);
-	free(node);
-	return TRUE;
+		node = t->free(node);
+
+	unlink_node(t);
+	unlink_node(node);
+
+	return NIL;
 }
 
 /*
 	print node this one is public !!!!
 */
-char *print_node(node *node)
+node *print_node(node *node)
 {
 	if(nullp(node))
 	{
-		return strdup("nil");
+		return make_string_alloc("nil");
 	}
 
 	type *t = (type *)get_type_details(node->type);
+
+	if(!t)
+	(
+		return make_string_alloc("<invalid type>");
+	)
+
 	if(!t->print)
 	{
 		char *formatted;
 		asprintf(&formatted, "<%s %ld>", get_node_type_name(node), node);
-		return formatted;
+		return make_string(formatted); // string allocated by asprintf
 	}
 
+	// linked by the function
 	return t->print(node);
 }
 
 /*
 	print node
 */
-static char *print_type(node *node)
+static node *print_type(node *node)
 {
 	char *formatted;
-	asprintf(&formatted, "<type %s>", ((type *)node)->name);
-	return formatted;
+	node *name = ((type *)node)->name;
+	char *str_name;
+
+	if(!name)
+		str_name = "\"(print_type : no name)\"";
+	else
+	{
+		str_name = get_string(name);
+		if(!strName)
+			str_name = "\"(print_type : null)\"";
+		unlink(name);
+	}
+
+	asprintf(&formatted, "<type %s>", str_name);
+	return make_string(formatted); // formatted has been allocated by asprintf, string linked
 }
 
 /*
@@ -315,28 +398,33 @@ TYPES get_node_type(node *node)
 /*
 	Test type of node
 */
-bool typep(node *node, TYPES type)
+node *typep(node *node, TYPES type)
 {
-	return get_node_type(node) == TYPE;
+	if(get_node_type(node) == type)
+		return link_node(node) || true_node();  // we have to manage we try to test a NIL node
+												// typep(NIL, NIL_NODE) == TRUE
+	else
+		return NIL;
 }
 
 /*
     Is node NULL
 */
-bool nullp(node *node)
+node *nullp(node *node)
 {
-	return !node;
+	return node ? NIL : true_node();
 }
 
 /*
 	First initialisation of an allocated node, first link to the data segment
+	Return linked node or NIL
 */
 node *init_node(node *node, TYPES type)
 {
 	if(nullp(node))
 	{
 		error("init_node : absent node\n");
-		return NULL;
+		return NIL;
 	}
 
 	// DEBUG
@@ -345,7 +433,7 @@ node *init_node(node *node, TYPES type)
 	fprintf(stdout, "\n");
 
 	node->type = type;
-	node->occurences = 0;
+	node->occurences = 0; // will be incremented on link
 #ifdef DEBUG_ALLOC
 	if(nullp(last_node))
 	{
@@ -363,7 +451,7 @@ node *init_node(node *node, TYPES type)
 }
 
 /*
-	completely unaloc and init node list
+	completely unlink and init node list
 */
 bool init_node_list()
 {
@@ -372,7 +460,10 @@ bool init_node_list()
 	{
 		node *node = first_node;
 		first_node = node->next_node;
-		free_node(node);
+
+		// empty allocation
+		while(node)
+		    node = free_node(node);
 	}
 	last_node = NULL;
 #else
@@ -415,18 +506,20 @@ bool print_node_list()
 */
 bool init_types()
 {
-	types[TYPE] = create_type( "type",
+	node *t =       // we link the type if created
+	set_type(TYPE, create_type( "type",
 						sizeof(type),
 						NULL,   // equals
 						NULL,   // cmp
 						NULL,   // eval
 						NULL,   // free
-						&print_type);  // print
-	if(nullp((node *)types[TYPE]))
+						&print_type));  // print
+	if(nullp(t))
 	{
 		error("init_types : error creating type\n");
-		return FALSE;
+		return TRUE;
 	}
+	unlink_node(t); // unlink type
 	return TRUE;
 }
 
