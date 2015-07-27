@@ -18,7 +18,8 @@
 /*
 	Node of type TYPE
 */
-typedef struct {
+typedef struct
+{
 	NODE;
 	char    *name;
 	long    size;
@@ -37,7 +38,8 @@ node *types[TYPES_SIZE];
 /*
 	create a link to node
 */
-node *link_node(node *node) {
+node *link_node(node *node)
+{
 	if(!node)
 		return NULL;
 	node->occurences++;
@@ -47,7 +49,8 @@ node *link_node(node *node) {
 /*
 	Unlink node
 */
-node *unlink_node(node *node) {
+node *unlink_node(node *node)
+{
 	if(!node)
 		return NULL;
 	node->occurences--;
@@ -69,7 +72,8 @@ TYPES get_type(node *node)
 /*
 	Set type definition
 */
-bool set_type(TYPES type, node *type_def) {
+bool set_type(TYPES type, node *type_def)
+{
 	if(type < 0 || type >= TYPES_SIZE)
 	{
 		error("set_type : outer bound type\n");
@@ -87,8 +91,10 @@ bool set_type(TYPES type, node *type_def) {
 /*
 	get Type definition
 */
-node *get_type_details(TYPES type) {
-	if(type >= TYPES_SIZE || type < 0) {
+node *get_type_details(TYPES type)
+{
+	if(type >= TYPES_SIZE || type < 0)
+	{
 		error("get_type_details : invalid type\n");
 		return NULL;
 	}
@@ -98,10 +104,12 @@ node *get_type_details(TYPES type) {
 /*
 	get the type name from the type value
 */
-char *get_type_name(TYPES type_enum) {
+char *get_type_name(TYPES type_enum)
+{
 	node *type_det = get_type_details(type_enum);
 
-	if(nullp(type_det)) {
+	if(nullp(type_det))
+	{
 		error("get_type_name : invalid type\n");
 		return "Bad type";
 	}
@@ -111,20 +119,23 @@ char *get_type_name(TYPES type_enum) {
 /*
 	get the type name from the node
 */
-char *get_node_type_name(node *node) {
+char *get_node_type_name(node *node)
+{
 	return get_type_name(node->type);
 }
 
 /*
 	Create a node
 */
-node *create_node(TYPES type_of_node) {
+node *create_node(TYPES type_of_node)
+{
 	type *node_type = (type *)get_type_details(type_of_node);
 	long size = node_type->size;
 	node *new = malloc(size);
 
 	new = init_node(new, type_of_node);
-	if(nullp(new)) {
+	if(nullp(new))
+	{
 		error("create_node : Error : allocation of node");
 	}
 
@@ -140,12 +151,14 @@ node *create_type(	char    *name,
 			int     (*cmp)(node *node1, node *node2),
 			node    *(*eval)(node *node),
 			void    (*free)(node *node),
-			void    (*print)(node *node)) {
+			void    (*print)(node *node))
+{
 	type *new_type;
 	node *new = malloc(sizeof(type));
 
 	new = init_node(new, TYPE);
-	if(nullp(new)) {
+	if(nullp(new))
+	{
 		error("create_node : Error : allocation of node");
 		return NULL;
 	}
@@ -164,7 +177,8 @@ node *create_type(	char    *name,
 /*
 	Are nodes equals ?
 */
-bool equals_node(node *node1, node *node2) {
+bool equals_node(node *node1, node *node2)
+{
 	if(node1 == node2)
 		return TRUE;
 
@@ -183,16 +197,19 @@ bool equals_node(node *node1, node *node2) {
 /*
 	Compare nodes
 */
-int cmp_node(node *node1, node *node2) {
+int cmp_node(node *node1, node *node2)
+{
 	if(node1 == node2)
 		return 0;
 
-	if(nullp(node1) || nullp(node2)) {
+	if(nullp(node1) || nullp(node2))
+	{
 		error("cmp_node : system error comparing with null\n");
 		return -1;
 	}
 
-	if(node1->type != node2->type) {
+	if(node1->type != node2->type)
+	{
         error("cmp_node : system error comparing different types\n");
         return -1;
     }
@@ -208,7 +225,8 @@ int cmp_node(node *node1, node *node2) {
 /*
 	Are nodes comparable ?
 */
-bool comparablep(node *node1, node *node2) {
+bool comparablep(node *node1, node *node2)
+{
 	if(nullp(node1) || nullp(node2))
 		return FALSE;
 
@@ -225,8 +243,10 @@ bool comparablep(node *node1, node *node2) {
 /*
 	unalloc node
 */
-bool free_node(node *node) {
-	if(nullp(node)) {
+bool free_node(node *node)
+{
+	if(nullp(node))
+	{
 		error("free_node : unallocation of a null pointer\n");
 		return FALSE;
 	}
@@ -241,14 +261,17 @@ bool free_node(node *node) {
 /*
 	print node
 */
-void print_node(node *node) {
-	if(nullp(node)) {
+void print_node(node *node)
+{
+	if(nullp(node))
+	{
 		fprintf(stdout, "nil");
 		return;
 	}
 
 	type *t = (type *)get_type_details(node->type);
-	if(!t->print){
+	if(!t->print)
+	{
 		fprintf(stdout, "<%s>", get_node_type_name(node));
 		return;
 	}
@@ -259,7 +282,8 @@ void print_node(node *node) {
 /*
 	print node
 */
-void print_type(node *node) {
+void print_type(node *node)
+{
 	fprintf(stdout, "<type %s >", ((type *)node)->name);
 }
 
@@ -290,8 +314,10 @@ bool nullp(node *node)
 /*
 	First initialisation of an allocated node, first link to the data segment
 */
-node *init_node(node *node, TYPES type) {
-	if(nullp(node)) {
+node *init_node(node *node, TYPES type)
+{
+	if(nullp(node))
+	{
 		error("init_node : absent node\n");
 		return NULL;
 	}
@@ -304,10 +330,13 @@ node *init_node(node *node, TYPES type) {
 	node->type = type;
 	node->occurences = 0;
 #ifdef DEBUG_ALLOC
-	if(nullp(last_node)) {
+	if(nullp(last_node))
+	{
 		node->previous_node = node->next_node = NULL;
 		last_node = first_node = node;
-	} else {
+	}
+	else
+	{
 		node->previous_node = last_node;
 		node->next_node = NULL;
 		last_node->next_node = node;
@@ -319,9 +348,11 @@ node *init_node(node *node, TYPES type) {
 /*
 	completely unaloc and init node list
 */
-bool init_node_list() {
+bool init_node_list()
+{
 #ifdef DEBUG_ALLOC
-	while(first_node) {
+	while(first_node)
+	{
 		node *node = first_node;
 		first_node = node->next_node;
 		free_node(node);
@@ -335,10 +366,12 @@ bool init_node_list() {
 /*
 	Print node list
 */
-bool print_node_list() {
+bool print_node_list()
+{
 #ifdef DEBUG_ALLOC
 	node *walk = first_node;
-	while(walk) {
+	while(walk)
+	{
 		print_node(walk);
 		walk = walk->next_node;
 	}
@@ -361,7 +394,8 @@ bool init_types()
 						NULL,   // eval
 						NULL,   // free
 						&print_type);  // print
-	if(nullp((node *)types[TYPE])) {
+	if(nullp((node *)types[TYPE]))
+	{
 		error("init_types : error creating type\n");
 		return FALSE;
 	}

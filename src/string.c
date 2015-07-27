@@ -11,7 +11,8 @@
 #include <string.h>
 #include "string.h"
 
-typedef struct {
+typedef struct
+{
 	NODE;
 	char        *value;
 } string;
@@ -19,13 +20,15 @@ typedef struct {
 /*
 	Create a string
 */
-node *make_string(char *value) {
+node *make_string(char *value)
+{
 	node *s = create_node(STRING);
 
 	if(nullp(s))
 		return NULL;
 
-	if(!value) {
+	if(!value)
+	{
 		error("make_string : string is null");
 		return NULL;
 	}
@@ -35,18 +38,26 @@ node *make_string(char *value) {
 	return link_node(s);
 }
 
+node *concat_string(node *s, char *add)
+{
+
+}
+
 /*
 	test if node is a string
 */
-bool stringp(node *node) {
+bool stringp(node *node)
+{
 	return get_type(node) == STRING;
 }
 
 /*
 	Return value of string
 */
-char *get_string(node *s) {
-	if(!stringp(s)) {
+char *get_string(node *s)
+{
+	if(!stringp(s))
+	{
 		error("node is not a string\n");
 		return "\"(null)\"";
 	}
@@ -56,9 +67,11 @@ char *get_string(node *s) {
 /*
 	Unalloc string
 */
-static void free_string(node *node) {
+static void free_string(node *node)
+{
 	string *str = (string *)node;
-	if(str->value) {
+	if(str->value)
+	{
 		free(str->value);
 		str->value = NULL;
 	}
@@ -67,7 +80,8 @@ static void free_string(node *node) {
 /*
 	print string
 */
-static void print_string(node *node) {
+static void print_string(node *node)
+{
 	fprintf(stdout, "\"%s\"", get_string(node));
 }
 

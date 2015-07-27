@@ -16,7 +16,8 @@
 #define FALSE 0
 #define TRUE (!FALSE)
 
-enum {
+enum
+{
 	NULL_TYPE,
 	ERROR,
 	TYPE,
@@ -51,7 +52,8 @@ enum {
 /*
 	Struct of a base node
 */
-typedef struct {
+typedef struct
+{
 	NODE;
 } node;
 

@@ -1,5 +1,5 @@
 /****
-	General reader to create objects
+	LWC language core functions
 
 	Lambda Calculus Workshop
 	C version
@@ -7,4 +7,12 @@
 */
 
 #include <stdio.h>
+#include "global.h"
 
+/*
+	Special functions
+*/
+
+/*
+    Normal functions
+*/

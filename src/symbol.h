@@ -9,7 +9,8 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-typedef struct {
+typedef struct
+{
 	void    *segment;
 	void    *name;
 	void    *value;

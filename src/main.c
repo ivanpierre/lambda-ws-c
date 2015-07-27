@@ -10,7 +10,8 @@
 /*
 	global initialization
 */
-static bool init_all() {
+static bool init_all()
+{
 	return  init_node_list() ||
 			init_types() ||
 			init_string_type() ||
@@ -21,8 +22,10 @@ static bool init_all() {
 /*
 	main entry point
 */
-int main(int argc, const char* argv[]) {
-	if(!init_all()) {
+int main(int argc, const char* argv[])
+{
+	if(!init_all())
+	{
 		error("Can't init language\n");
 		return -1;
 	}

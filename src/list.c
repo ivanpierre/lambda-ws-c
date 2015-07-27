@@ -9,14 +9,17 @@
 #include <stdio.h>
 #include "list.h"
 
-typedef struct {
+typedef struct
+{
 	NODE;
 	node    *car;
 	node    *cdr;
 } list;
 
-static node *set_car(node *cons, node *car) {
-	if(nullp(cons)) {
+static node *set_car(node *cons, node *car)
+{
+	if(nullp(cons))
+	{
 		error("set_car: can't set car of nil\n");
 		return NULL;
 	}
@@ -25,12 +28,15 @@ static node *set_car(node *cons, node *car) {
 	return cons;
 }
 
-static node *set_cdr(node *cons, node *cdr) {
-	if(nullp(cons)) {
+static node *set_cdr(node *cons, node *cdr)
+{
+	if(nullp(cons))
+	{
 		error("set_car: can't set car of nil\n");
 		return NULL;
 	}
-	if(!nullp(cdr) && (get_type(cdr) != LIST)) {
+	if(!nullp(cdr) && (get_type(cdr) != LIST))
+	{
 		error("set_car: can't set cdr as a non list or nil\n");
 		return NULL;
 	}
@@ -39,7 +45,8 @@ static node *set_cdr(node *cons, node *cdr) {
 	return cons;
 }
 
-node *cons(node *car, node *cdr) {
+node *cons(node *car, node *cdr)
+{
 	node *cons = create_node(LIST);
 	node *new = NULL;
 
@@ -60,15 +67,19 @@ node *cons(node *car, node *cdr) {
 	return new;
 }
 
-node *car(node *cons) {
-	if(nullp(cons)) {
+node *car(node *cons)
+{
+	if(nullp(cons))
+	{
 		return NULL;
 	}
 	return link_node(((list*)cons)->car);
 }
 
-node *cdr(node *cons) {
-	if(nullp(cons)) {
+node *cdr(node *cons)
+{
+	if(nullp(cons))
+	{
 		return NULL;
 	}
 	return link_node(((list*)cons)->cdr);
@@ -77,7 +88,8 @@ node *cdr(node *cons) {
 /*
 	unalloc list content
 */
-static void free_list(node *node) {
+static void free_list(node *node)
+{
 	list *lst = (list *)node;
 	unlink_node(lst->car);
 	lst->car = NULL;
@@ -88,9 +100,11 @@ static void free_list(node *node) {
 /*
 	print list
 */
-static void print_list(node *node) {
+static void print_list(node *node)
+{
 	fprintf(stdout, "(");
-	while(!nullp(node)) {
+	while(!nullp(node))
+	{
 		print_node(((list *)node)->car);
 		node = ((list *)node)->cdr;
 		if(((list *)node)->cdr)

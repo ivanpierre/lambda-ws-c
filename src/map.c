@@ -9,9 +9,9 @@
 #include <stdio.h>
 #include "map.h"
 
-typedef struct {
+typedef struct
+{
 	NODE;
-	long    size;
 	void    *hash_table;
 } map;
 

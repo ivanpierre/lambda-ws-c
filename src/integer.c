@@ -9,7 +9,8 @@
 #include <stdio.h>
 #include "integer.h"
 
-typedef struct {
+typedef struct
+{
 	NODE;
 	long        value;
 } integer;
@@ -17,7 +18,8 @@ typedef struct {
 /*
 	Create an integer
 */
-node *make_integer(long value) {
+node *make_integer(long value)
+{
 	node *i = create_node(INTEGER);
 
 	if(nullp(i))
@@ -31,15 +33,18 @@ node *make_integer(long value) {
 /*
 	test if node is an integer
 */
-bool integerp(node *node) {
+bool integerp(node *node)
+{
 	return get_type(node) == INTEGER;
 }
 
 /*
 	Return value of integer
 */
-long get_integer(node *i) {
-	if(!integerp(i)) {
+long get_integer(node *i)
+{
+	if(!integerp(i))
+	{
 		error("node is not an integer\n");
 		return 0l;
 	}
@@ -49,7 +54,8 @@ long get_integer(node *i) {
 /*
 	print string
 */
-static void print_integer(node *node) {
+static void print_integer(node *node)
+{
 	fprintf(stdout, "%ld", get_integer(node));
 }
 
