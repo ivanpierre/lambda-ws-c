@@ -20,7 +20,7 @@ This means too that a garbage collector should be written. C memory management i
 The memory management should be included in AST inner implementation so LSC user doesn't hate to bother with
 these type of problem. Memory fragmentation is not taken in account for now.
 
-AST of LSC should be implementation agnostic, so that public function should not have usage change even if inner 
+AST of LWC should be implementation agnostic, so that public function should not have usage change even if inner 
 structure drastically changes. Inner structure of data and even size and so on are not public. the only thing we'll 
 have acces on nodes are the type. only management functions will be public. More, lot of core function will receive 
 pointer to data and manage the type by themself completely putting out the inner structure to the user.
@@ -100,7 +100,7 @@ continuous segments lists and so on... so keep that as implementation details.
 #### Nodes
 Now nodes contains the number of links it manages. There is an option to manage an allocated node list witch is 
 updated when allocation or deallocation occurs. This process is for debugging purposes only, so the program can be 
-compiled with or without it with no more convenient problems than change a constant definition. The debugging 
+compiled with or without it with no more convenient problems than change of a constant definition. The debugging 
 implementation only add a previous and next link to every nodes and call to appropriate management for allocation 
 and desallocation.
 

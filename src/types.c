@@ -355,6 +355,10 @@ node *print_node(node *node)
 
 	if(!t->print)
 	{
+		// Strings are strings, no change
+		if(get_type(t) == STRING)
+			return link_node(node);
+
 		char *formatted;
 		asprintf(&formatted, "<%s %ld>", get_node_type_name(node), node);
 		return make_string(formatted); // string allocated by asprintf
@@ -394,6 +398,24 @@ TYPES get_node_type(node *node)
 {
 	return node->type;
 }
+
+/*
+	Unalloc type
+*/
+static node *free_type(node *node)
+{
+	type *t = (type *)node;
+	if(!typep(node))
+		return node;
+
+	if(t->name)
+	{
+		free_node(t->name);
+		t-name = NIL;
+	}
+	return node;
+}
+
 
 /*
 	Test type of node
@@ -512,7 +534,7 @@ bool init_types()
 						NULL,   // equals
 						NULL,   // cmp
 						NULL,   // eval
-						NULL,   // free
+						&free_type,   // free
 						&print_type));  // print
 	if(nullp(t))
 	{
