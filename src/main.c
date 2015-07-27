@@ -5,7 +5,7 @@
 */
 
 #include <stdio.h>
-#include "types.h"
+#include "global.h"
 
 /*
 	global initialization

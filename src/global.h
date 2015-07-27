@@ -7,11 +7,9 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#define error(message) \
-	fprintf(stderr, message)
-
-#define bool int
-#define FALSE 0
-#define TRUE (!FALSE)
+#include "types.h"
+#include "string.h"
+#include "integer.h"
+#include "list.h"
 
 #endif

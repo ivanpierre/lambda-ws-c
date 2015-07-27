@@ -7,6 +7,8 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "string.h"
 
 typedef struct {
@@ -56,9 +58,9 @@ char *get_string(node *s) {
 */
 static void free_string(node *node) {
 	string *str = (string *)node;
-	if(node->value) {
-		free(node->value)
-		node->value = NULL;
+	if(str->value) {
+		free(str->value);
+		str->value = NULL;
 	}
 }
 
@@ -75,14 +77,14 @@ static void print_string(node *node) {
 */
 bool init_string_type()
 {
-	types[STRING] = create_type( "string",
+	if(!set_type(STRING, create_type( "string",
 						sizeof(string),
 						NULL,   // equals
 						NULL,   // cmp
 						NULL,   // eval
 						&free_string,   // free
-						&print_string);  // print
-	if(nullp((node *)types[STRING])) {
+						&print_string)))  // print
+	{
 		error("init_string_type : error creating string type\n");
 		return FALSE;
 	}

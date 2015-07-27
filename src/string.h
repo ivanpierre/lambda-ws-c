@@ -13,7 +13,7 @@
 
 node *make_string(char *value);
 bool stringp(node *node);
-long get_string(node *s);
+char *get_string(node *s);
 bool init_string_type();
 
 #endif

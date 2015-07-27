@@ -50,7 +50,7 @@ long get_integer(node *i) {
 	print string
 */
 static void print_integer(node *node) {
-	fprintf(stdout, "%l", get_integer(node));
+	fprintf(stdout, "%ld", get_integer(node));
 }
 
 /*
@@ -58,14 +58,14 @@ static void print_integer(node *node) {
 */
 bool init_integer_type()
 {
-	types[INTEGER] = create_type( "integer",
-						sizeof(type),
+	if(!set_type(INTEGER, create_type( "integer",
+						sizeof(integer),
 						NULL,   // equals
 						NULL,   // cmp
 						NULL,   // eval
 						NULL,   // free
-						&print_integer);  // print
-	if(nullp((node *)types[TYPE])) {
+						&print_integer)))  // print
+	{
 		error("init_integer_types : error creating type\n");
 		return FALSE;
 	}

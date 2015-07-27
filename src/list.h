@@ -13,6 +13,7 @@
 node *cons(node *car, node *cdr);
 node *car(node *list);
 node *cdr(node *list);
+bool init_list_type();
 // static node *set_car(node *list);
 // static node *set_cdr(node *list);
 

@@ -66,6 +66,27 @@ TYPES get_type(node *node)
 	return node->type;
 }
 
+/*
+	Set type definition
+*/
+bool set_type(TYPES type, node *type_def) {
+	if(type < 0 || type >= TYPES_SIZE)
+	{
+		error("set_type : outer bound type\n");
+		return FALSE;
+	}
+	if(nullp(type_def))
+	{
+		error("set_type : null type\n");
+		return FALSE;
+	}
+	types[type] = type_def;
+	return TRUE;
+}
+
+/*
+	get Type definition
+*/
 node *get_type_details(TYPES type) {
 	if(type >= TYPES_SIZE || type < 0) {
 		error("get_type_details : invalid type\n");

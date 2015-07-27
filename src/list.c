@@ -79,10 +79,10 @@ node *cdr(node *cons) {
 */
 static void free_list(node *node) {
 	list *lst = (list *)node;
-	unlink_mode(node->car);
-	node->car = NULL;
-	unlink_node(node->cdr);
-	node->cdr = NULL;
+	unlink_node(lst->car);
+	lst->car = NULL;
+	unlink_node(lst->cdr);
+	lst->cdr = NULL;
 }
 
 /*
@@ -105,14 +105,14 @@ static void print_list(node *node) {
 */
 bool init_list_type()
 {
-	types[LIST] = create_type( "list",
-						sizeof(string),
+	if(!set_type(LIST, create_type( "list",
+						sizeof(list),
 						NULL,   // equals
 						NULL,   // cmp
 						NULL,   // eval
 						&free_list,   // free
-						&print_list);  // print
-	if(nullp((node *)types[LIST])) {
+						&print_list)))  // print
+	{
 		error("init_list_type : error creating list type\n");
 		return FALSE;
 	}

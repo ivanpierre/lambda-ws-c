@@ -8,7 +8,13 @@
 
 #ifndef TYPES_H
 #define TYPES_H
-#include "global.h"
+
+#define error(message) \
+	fprintf(stderr, message)
+
+#define bool int
+#define FALSE 0
+#define TRUE (!FALSE)
 
 enum {
 	NULL_TYPE,
@@ -55,6 +61,7 @@ bool        typep(node *node, TYPES type);
 node        *get_type_details(TYPES type);
 char        *get_type_name(TYPES type);
 bool        init_types();
+bool        set_type(TYPES type, node *type_def);
 node        *create_type(	char    *name,
 							long    size,
 							bool    (*equals)(node *node1, node *node2),
@@ -70,6 +77,7 @@ node        *unlink_node(node *node);
 bool        equals_node(node *node1, node *node2);
 bool        free_node(node *node);
 int         cmp_node(node *node1, node *node2);
+void        print_node(node *node);
 bool        comparablep(node *node1, node *node2);
 node        *init_node(node *node, TYPES type);
 node        *create_node(TYPES type);

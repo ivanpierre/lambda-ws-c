@@ -13,5 +13,6 @@
 node *make_integer(long value);
 bool integerp(node *node);
 long get_integer(node *i);
+bool init_integer_type();
 
 #endif
