@@ -18,7 +18,7 @@ typedef struct
 } string;
 
 /*
-	Create a string
+	Create a string, don't allocate space for the string
 */
 node *make_string(char *value)
 {
@@ -30,17 +30,53 @@ node *make_string(char *value)
 	if(!value)
 	{
 		error("make_string : string is null");
+		unlink_node(s);
 		return NULL;
 	}
 
-	((string *)s)->value = strdup(value);
+	((string *)s)->value = value;
 
-	return link_node(s);
+	return s;
 }
 
-node *concat_string(node *s, char *add)
+/*
+	Create a string, allocate space for the string
+*/
+node *make_string_allocate(char *value)
 {
+	if(value)
+		return make_string(strdup(value));
+	else
+	{
+		error("make_string_allocate : value is null");
+		return NULL;
+	}
+}
 
+/*
+	create a new string node appending another one
+*/
+node *concat_string(node *s, node *add)
+{
+	char *formatted = NULL;;
+	char *tmp = print_node(add);
+	node *new = NULL; // default return value if error
+
+	if(!tmp)
+	{
+		error("concat_string : cannot format node");
+		return new;
+	}
+
+	asprintf(&formatted, "%s%s", ((string *)s)->value, tmp);
+	free(tmp);                          // unallocate string verstion of add
+	if(formatted)
+		new = make_string(formatted);   // formatted has been allocated
+
+	unlink_node(s);
+	unlink_node(add);
+
+	return new;
 }
 
 /*
@@ -52,7 +88,7 @@ bool stringp(node *node)
 }
 
 /*
-	Return value of string
+	Return value of string.... !!! immutable
 */
 char *get_string(node *s)
 {
@@ -78,15 +114,6 @@ static void free_string(node *node)
 }
 
 /*
-	print string
-*/
-static void print_string(node *node)
-{
-	fprintf(stdout, "\"%s\"", get_string(node));
-}
-
-
-/*
 	init type STRING, so the type exists in the types... ;)
 */
 bool init_string_type()
@@ -97,7 +124,7 @@ bool init_string_type()
 						NULL,   // cmp
 						NULL,   // eval
 						&free_string,   // free
-						&print_string)))  // print
+						NULL)))  // print
 	{
 		error("init_string_type : error creating string type\n");
 		return FALSE;

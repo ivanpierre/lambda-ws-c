@@ -7,6 +7,8 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "list.h"
 
 typedef struct
@@ -100,19 +102,26 @@ static void free_list(node *node)
 /*
 	print list
 */
-static void print_list(node *node)
+static char *print_list(node *node)
 {
-	fprintf(stdout, "(");
+	char *formatted = strdup("(");
+	char *sep = " ";
+	char *tmp;
 	while(!nullp(node))
 	{
-		print_node(((list *)node)->car);
+		tmp = print_node(((list *)node)->car);
+		asprintf(&tmp, "%s%s%s", formatted, tmp, sep);
+		free(formatted);
+		formatted = tmp;
 		node = ((list *)node)->cdr;
-		if(((list *)node)->cdr)
-			fprintf(stdout, " ");
+		if(!((list *)node)->cdr)
+			sep = "";
 	}
-	fprintf(stdout, ")");
-}
+	asprintf(&formatted, "%s%s", tmp, ")");
+	free(tmp);
+	return formatted;
 
+}
 
 /*
 	init type LIST, so the type exists in the types... ;)

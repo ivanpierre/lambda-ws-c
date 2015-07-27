@@ -15,5 +15,6 @@ node *make_string(char *value);
 bool stringp(node *node);
 char *get_string(node *s);
 bool init_string_type();
+node *concat_string(node *s, char *add);
 
 #endif

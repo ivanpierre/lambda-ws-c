@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 #include "integer.h"
 
 typedef struct
@@ -40,23 +41,32 @@ bool integerp(node *node)
 
 /*
 	Return value of integer
+	TODO should be able to do coercision
 */
 long get_integer(node *i)
 {
-	if(!integerp(i))
+	switch(get_type(i))
 	{
-		error("node is not an integer\n");
-		return 0l;
+		case INTEGER:
+			return ((integer *)i)->value;
+
+		default:
+			error("node is not an integer\n");
+			return 0l;
 	}
-	return ((integer *)i)->value;
 }
 
 /*
 	print string
 */
-static void print_integer(node *node)
+static char *print_integer(node *node)
 {
-	fprintf(stdout, "%ld", get_integer(node));
+	char *formatted;
+	asprintf(&formatted, "%ld", get_integer(node));
+	if(formatted)
+		return formatted;
+	else
+		return strdup("<badly formatted Integer>");
 }
 
 /*

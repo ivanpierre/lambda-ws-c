@@ -26,8 +26,8 @@ typedef struct
 	bool    (*equals)(node *node1, node *node2);
 	int     (*cmp)(node *node1, node *node2);
 	node    *(*eval)(node *node);
-	void    (*free)(node *node);
-	void    (*print)(node *node);
+	node    *(*free)(node *node);
+	node    *(*print)(node *node);
 } type;
 
 /*
@@ -151,7 +151,7 @@ node *create_type(	char    *name,
 			int     (*cmp)(node *node1, node *node2),
 			node    *(*eval)(node *node),
 			void    (*free)(node *node),
-			void    (*print)(node *node))
+			char    *(*print)(node *node))
 {
 	type *new_type;
 	node *new = malloc(sizeof(type));
@@ -259,32 +259,34 @@ bool free_node(node *node)
 }
 
 /*
-	print node
+	print node this one is public !!!!
 */
-void print_node(node *node)
+char *print_node(node *node)
 {
 	if(nullp(node))
 	{
-		fprintf(stdout, "nil");
-		return;
+		return strdup("nil");
 	}
 
 	type *t = (type *)get_type_details(node->type);
 	if(!t->print)
 	{
-		fprintf(stdout, "<%s>", get_node_type_name(node));
-		return;
+		char *formatted;
+		asprintf(&formatted, "<%s %ld>", get_node_type_name(node), node);
+		return formatted;
 	}
 
-	t->print(node);
+	return t->print(node);
 }
 
 /*
 	print node
 */
-void print_type(node *node)
+static char *print_type(node *node)
 {
-	fprintf(stdout, "<type %s >", ((type *)node)->name);
+	char *formatted;
+	asprintf(&formatted, "<type %s>", ((type *)node)->name);
+	return formatted;
 }
 
 /*
@@ -370,11 +372,22 @@ bool print_node_list()
 {
 #ifdef DEBUG_ALLOC
 	node *walk = first_node;
+	fprintf(stdout, "Node list\n", formatted);
 	while(walk)
 	{
-		print_node(walk);
+		char *formatted = print_node(walk);
+		if(formatted)
+		{
+			fprintf(stdout, "%s\n", formatted);
+			free(formatted);
+		}
+		else
+		{
+			error("print_node_list : cannot format the node");
+		}
 		walk = walk->next_node;
 	}
+	fprintf(stdout, "End of node list\n", formatted);
 	return TRUE;
 #else
 	error("print_node_list : not in debug mode, no list to print\n");
