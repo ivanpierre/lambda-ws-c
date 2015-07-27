@@ -1,13 +1,16 @@
 # very simplified Makefile working with minimal makefile version
 
-lcw : main.o list.o map.o reader.o string.o symbol.o types.o
-	cc -o lcw main.o list.o map.o reader.o string.o symbol.o types.o
+lcw : main.o integer.o list.o map.o reader.o string.o symbol.o types.o
+	cc -o lcw main.o integer.o list.o map.o reader.o string.o symbol.o types.o
 
 types.h : global.h
 	touch types.h
 
 main.o : main.c types.h
 	cc -c main.c
+
+integer.o : integer.c integer.h types.h
+	cc -c integer.c
 
 list.o : list.c list.h types.h
 	cc -c list.c

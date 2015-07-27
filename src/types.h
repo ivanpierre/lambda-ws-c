@@ -22,7 +22,7 @@ enum {
 	SPECIAL,
 	LAMBDA,
 	STRING,
-	INT,
+	INTEGER,
 	TYPES_SIZE
 };
 
