@@ -34,9 +34,9 @@ node *make_integer(long value)
 /*
 	test if node is an integer
 */
-bool integerp(node *node)
+node *integerp(node *node)
 {
-	return get_type(node) == INTEGER;
+	return (get_type(node) == INTEGER) ? link_node(node) : NIL;
 }
 
 /*
@@ -51,22 +51,27 @@ long get_integer(node *i)
 			return ((integer *)i)->value;
 
 		default:
-			error("node is not an integer\n");
+			error("get_integer : node is not an integer\n");
 			return 0l;
 	}
 }
 
 /*
-	print string
+	print integer
 */
-static char *print_integer(node *node)
+static node *print_integer(node *node)
 {
+	if(!integerp(node))
+	{
+		error("print_integer : node is not an integer\n");
+		return NIL;
+	}
 	char *formatted;
 	asprintf(&formatted, "%ld", get_integer(node));
 	if(formatted)
-		return formatted;
+		return make_string(formatted);
 	else
-		return strdup("<badly formatted Integer>");
+		return make_string_alloc("<badly formatted Integer>");
 }
 
 /*
@@ -74,17 +79,20 @@ static char *print_integer(node *node)
 */
 bool init_integer_type()
 {
-	if(!set_type(INTEGER, create_type( "integer",
+	node *integer =
+	set_type(INTEGER, create_type( "integer",
 						sizeof(integer),
 						NULL,   // equals
 						NULL,   // cmp
 						NULL,   // eval
 						NULL,   // free
-						&print_integer)))  // print
+						&print_integer));  // print
+	if(!integer)
 	{
 		error("init_integer_types : error creating type\n");
 		return FALSE;
 	}
+	unlink_node(integer);
 	return TRUE;
 }
 

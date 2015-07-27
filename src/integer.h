@@ -11,8 +11,8 @@
 #include "types.h"
 
 node *make_integer(long value);
-bool integerp(node *node);
-long get_integer(node *i);
+node *integerp(node *node);
+long get_integer(node *node);
 bool init_integer_type();
 
 #endif
