@@ -1,13 +1,13 @@
 /****
-	Hash Map structure
+	Strings. This is base for all named nodes
 
 	Lambda Calculus Workshop
 	C version
 	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#ifndef MAP_H
-#define MAP_H
+#ifndef STRING_H
+#define STRING_H
 
 #include "types.h"
 
