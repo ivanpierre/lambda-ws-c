@@ -41,7 +41,34 @@ bool integerp(node *node) {
 long get_integer(node *i) {
 	if(!integerp(i)) {
 		error("node is not an integer\n");
-		return 0;
+		return 0l;
 	}
 	return ((integer *)i)->value;
 }
+
+/*
+	print string
+*/
+static void print_integer(node *node) {
+	fprintf(stdout, "%l", get_integer(node));
+}
+
+/*
+	init type INTEGER, so the type exists in the types... ;)
+*/
+bool init_integer_type()
+{
+	types[INTEGER] = create_type( "integer",
+						sizeof(type),
+						NULL,   // equals
+						NULL,   // cmp
+						NULL,   // eval
+						NULL,   // free
+						&print_integer);  // print
+	if(nullp((node *)types[TYPE])) {
+		error("init_integer_types : error creating type\n");
+		return FALSE;
+	}
+	return TRUE;
+}
+

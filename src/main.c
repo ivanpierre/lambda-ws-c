@@ -12,7 +12,10 @@
 */
 static bool init_all() {
 	return  init_node_list() ||
-			init_types();
+			init_types() ||
+			init_string_type() ||
+			init_integer_type() ||
+			init_list_type();
 }
 
 /*

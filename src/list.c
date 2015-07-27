@@ -74,4 +74,49 @@ node *cdr(node *cons) {
 	return link_node(((list*)cons)->cdr);
 }
 
+/*
+	unalloc list content
+*/
+static void free_list(node *node) {
+	list *lst = (list *)node;
+	unlink_mode(node->car);
+	node->car = NULL;
+	unlink_node(node->cdr);
+	node->cdr = NULL;
+}
+
+/*
+	print list
+*/
+static void print_list(node *node) {
+	fprintf(stdout, "(");
+	while(!nullp(node)) {
+		print_node(((list *)node)->car);
+		node = ((list *)node)->cdr;
+		if(((list *)node)->cdr)
+			fprintf(stdout, " ");
+	}
+	fprintf(stdout, ")");
+}
+
+
+/*
+	init type LIST, so the type exists in the types... ;)
+*/
+bool init_list_type()
+{
+	types[LIST] = create_type( "list",
+						sizeof(string),
+						NULL,   // equals
+						NULL,   // cmp
+						NULL,   // eval
+						&free_list,   // free
+						&print_list);  // print
+	if(nullp((node *)types[LIST])) {
+		error("init_list_type : error creating list type\n");
+		return FALSE;
+	}
+	return TRUE;
+}
+
 
