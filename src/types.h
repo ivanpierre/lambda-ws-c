@@ -18,6 +18,8 @@
 #define NIL NULL
 enum
 {
+	INVALID,
+	CONST_NODE,
 	TYPE,
 	LIST,
 	ARRAY,
@@ -28,8 +30,6 @@ enum
 	LAMBDA,
 	STRING,
 	INTEGER,
-	TRUE_NODE,
-	FALSE_NODE,
 	TYPES_SIZE
 };
 
@@ -59,11 +59,11 @@ typedef struct
 
 // public functions for types
 TYPES       get_type(node *node);
-bool        typep(node *node, TYPES type);
+node        *typep(node *node, TYPES type);
 node        *get_type_details(TYPES type);
 node        *get_type_name(TYPES type);
-bool        init_types();
-bool        set_type(TYPES type, node *type_def);
+node        *init_types();
+node        *set_type(TYPES type, node *type_def);
 node        *create_type(	char    *name,
 							long    size,
 							node    *(*equals)(node *node1, node *node2),
@@ -73,23 +73,23 @@ node        *create_type(	char    *name,
 							node    *(*print)(node *node));
 
 // public function for nodes
-bool        nullp(node *node);
+node        *nullp(node *node);
 node        *link_node(node *node);
 node        *unlink_node(node *node);
 node        *equals_node(node *node1, node *node2);
 node        *free_node(node *node);
-int         cmp_node(node *node1, node *node2);
+node        *cmp_node(node *node1, node *node2);
 node        *print_node(node *node);
-bool        comparablep(node *node1, node *node2);
+node        *comparablep(node *node1, node *node2);
 node        *init_node(node *node, TYPES type);
 node        *create_node(TYPES type);
-bool        falsep(node *node);
-bool        truep(node *node);
+node        *falsep(node *node);
+node        *truep(node *node);
 node        *true_node();
 node        *false_node();
 
 // DEBUG_ALLOC functions
-bool        init_node_list();
-bool        print_node_list();
+node        *init_node_list();
+node        *print_node_list();
 
 #endif

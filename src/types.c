@@ -23,8 +23,8 @@ typedef struct
 	NODE;
 	char    *name;
 	long    size;
-	bool    (*equals)(node *node1, node *node2);
-	int     (*cmp)(node *node1, node *node2);
+	node    *(*equals)(node *node1, node *node2);
+	node    (*cmp)(node *node1, node *node2);
 	node    *(*eval)(node *node);
 	node    *(*free)(node *node);
 	node    *(*print)(node *node);
@@ -42,7 +42,8 @@ node *link_node(node *node)
 {
 	if(!node)
 		return NULL;
-	node->occurences++;
+	if(!falsep(node) && !truep(node))
+		node->occurences++;
 	return node;
 }
 
@@ -53,9 +54,12 @@ node *unlink_node(node *node)
 {
 	if(!node)
 		return NULL;
-	node->occurences--;
-	if(!node->occurences)
-		free_node(node);
+	if(!falsep(node) && !truep(node))
+	{
+		node->occurences--;
+		if(!node->occurences)
+			return free_node(node);
+	)
 	return NULL;
 }
 
@@ -65,27 +69,38 @@ node *unlink_node(node *node)
 TYPES get_type(node *node)
 {
 	if(nullp(node))
-		return NULL_TYPE;
-	return node->type;
+		return NIL_TYPE;
+	return test_type(node->type);
 }
+
+/*
+    Test type boundaries
+*/
+TYPES test_type(TYPES type)
+{
+	if(type < 0 || type >TYPES_SIZE)
+		return NIL_TYPE;
+	return type;
+}
+
 
 /*
 	Set type definition
 */
-bool set_type(TYPES type, node *type_def)
+node *set_type(TYPES type, node *type_def)
 {
-	if(type < 0 || type >= TYPES_SIZE)
+	if(test_type(type))
 	{
 		error("set_type : outer bound type\n");
-		return FALSE;
+		return NIL;
 	}
 	if(nullp(type_def))
 	{
 		error("set_type : null type\n");
-		return FALSE;
+		return NIL;
 	}
 	types[type] = type_def;
-	return TRUE;
+	return type_def;
 }
 
 /*
@@ -93,10 +108,10 @@ bool set_type(TYPES type, node *type_def)
 */
 node *get_type_details(TYPES type)
 {
-	if(type >= TYPES_SIZE || type < 0)
+	if(test_type(type))
 	{
 		error("get_type_details : invalid type\n");
-		return NULL;
+		return NIL;
 	}
 	return types[type];
 }
