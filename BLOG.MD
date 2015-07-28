@@ -10,6 +10,7 @@ data type that can change. They will accept all data types and if not managed gi
 - [ ] Going to unify the structures functions names. So global function will be easier to manage.
 - [ ] Create a new node .c and .h. With a structure embedding the whole other structures. SO NODE macro will have no 
 sense anymore.
+- [ ] Update doc...
 
 This should greatly simplify the code and enable a better journey.
 
