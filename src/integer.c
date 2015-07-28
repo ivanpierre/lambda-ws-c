@@ -19,9 +19,9 @@ typedef struct
 /*
 	Create an integer
 */
-node *make_integer(long value)
+Node *make_integer(long value)
 {
-	node *i = create_node(INTEGER);
+	Node *i = create_node(INTEGER);
 
 	if(nullp(i))
 		return NULL;
@@ -34,7 +34,7 @@ node *make_integer(long value)
 /*
 	test if node is an integer
 */
-node *integerp(node *node)
+Node *integerp(node *node)
 {
 	return (get_type(node) == INTEGER) ? link_node(node) : NIL;
 }
@@ -43,7 +43,7 @@ node *integerp(node *node)
 	Return value of integer
 	TODO should be able to do coercision
 */
-long get_integer(node *i)
+long get_integer(Node *i)
 {
 	switch(get_type(i))
 	{
@@ -59,11 +59,11 @@ long get_integer(node *i)
 /*
 	print integer
 */
-static node *print_integer(node *node)
+static Node *print_integer(Node *node)
 {
 	if(!integerp(node))
 	{
-		error("print_integer : node is not an integer\n");
+		error("print_integer : Node is not an integer\n");
 		return NIL;
 	}
 	char *formatted;
@@ -79,7 +79,7 @@ static node *print_integer(node *node)
 */
 bool init_integer_type()
 {
-	node *integer =
+	Node *integer =
 	set_type(INTEGER, create_type( "integer",
 						sizeof(integer),
 						NULL,   // equals

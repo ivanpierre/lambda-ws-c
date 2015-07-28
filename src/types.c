@@ -12,8 +12,8 @@
 #include "string.h"
 
 #if defined(DEBUG_ALLOC)
-	node *first_node    = NULL;
-	node *last_node     = NULL;
+	Node *first_node    = NULL;
+	Node *last_node     = NULL;
 #endif
 
 /*
@@ -22,24 +22,24 @@
 typedef struct
 {
 	NODE;
-	node    *name;
+	Node    *name;
 	long    size;
-	node    *(*equals)(node *node1, node *node2);
-	node    (*cmp)(node *node1, node *node2);
-	node    *(*eval)(node *node);
-	node    *(*free)(node *node);
-	node    *(*print)(node *node);
+	Node    *(*equals)(Node *Node1, node *node2);
+	Node    (*cmp)(Node *node1, Node *node2);
+	Node    *(*eval)(Node *node);
+	Node    *(*free)(Node *node);
+	Node    *(*print)(Node *node);
 } type;
 
 /*
 	Array of types definition
 */
-node *types[TYPES_SIZE];
+Node *types[TYPES_SIZE];
 
 /*
 	test if linking is applyable
 */
-node *unlinkable(node *n)
+Node *unlinkable(Node *n)
 {
 	return nulp(node) || falsep(node) || truep(node);
 }
@@ -48,7 +48,7 @@ node *unlinkable(node *n)
 	create a link to node
 	Return Linked node or NIL
 */
-node *link_node(node *node)
+Node *link_node(Node *node)
 {
 	if(!unlinkable(node))
 		node->occurences++;
@@ -59,7 +59,7 @@ node *link_node(node *node)
 	Unlink node
 	return NIL or subsisting node
 */
-node *unlink_node(node *node)
+Node *unlink_node(Node *node)
 {
 	if(!unlinkable(node))
 	{
@@ -84,7 +84,7 @@ static TYPES test_type(TYPES type)
 /*
 	return type of node
 */
-TYPES get_type(node *node)
+TYPES get_type(Node *node)
 {
 	if(nullp(node))
 		return NIL_TYPE;
@@ -95,7 +95,7 @@ TYPES get_type(node *node)
 	Set type definition
 	Return linked definition or NIL
 */
-node *set_type(TYPES type, node *type_def)
+Node *set_type(TYPES type, Node *type_def)
 {
 	if(test_type(type))
 	{
@@ -115,7 +115,7 @@ node *set_type(TYPES type, node *type_def)
 	get Type definition
 	Return linked definition or NIL
 */
-node *get_type_details(TYPES type)
+Node *get_type_details(TYPES type)
 {
 	if(test_type(type))
 	{
@@ -129,10 +129,10 @@ node *get_type_details(TYPES type)
 	get the type name from the type value
 	return linked name or NIL
 */
-node *get_type_name(TYPES type_enum)
+Node *get_type_name(TYPES type_enum)
 {
-	node *type_det = get_type_details(type_enum);
-	node *name;
+	Node *type_det = get_type_details(type_enum);
+	Node *name;
 	if(nullp(type_det))
 	{
 		error("get_type_name : invalid type\n");
@@ -147,7 +147,7 @@ node *get_type_name(TYPES type_enum)
 	get the type name from the node
 	transfer linked name
 */
-node *get_node_type_name(node *node)
+Node *get_node_type_name(Node *node)
 {
 	TYPES type = NIL_TYPE;
 	if(node)
@@ -160,7 +160,7 @@ node *get_node_type_name(node *node)
 	Create a node
 	Constructor, return linked
 */
-node *create_node(TYPES type_of_node)
+Node *create_node(TYPES type_of_node)
 {
 	type *node_type = (type *)get_type_details(type_of_node); // linked
 	long size;
@@ -170,8 +170,8 @@ node *create_node(TYPES type_of_node)
 	size = node_type->size;
 	node_type = unlink_node(node_type); // unlink
 
-	node *new = malloc(size);
-	node *tmp = new;
+	Node *new = malloc(size);
+	Node *tmp = new;
 
 	if(nullp(new))
 	{
@@ -192,17 +192,17 @@ node *create_node(TYPES type_of_node)
 	Create a type node
 	Constructor, return linked or NIL
 */
-node *create_type(	node  *name,
+Node *create_type(	node  *name,
 					long    size,
-					node    *(*equals)(node *node1, node *node2),
-					node    *(*cmp)(node *node1, node *node2),
-					node    *(*eval)(node *node),
-					node    *(*free)(node *node),
-					node    *(*print)(node *node))
+					node    *(*equals)(Node *node1, Node *node2),
+					node    *(*cmp)(node *node1, Node *node2),
+					Node    *(*eval)(Node *node),
+					Node    *(*free)(Node *node),
+					Node    *(*print)(Node *node))
 {
 	type *new_type;
-	node *new = malloc(sizeof(type));
-	node *tmp = new;
+	Node *new = malloc(sizeof(type));
+	Node *tmp = new;
 
 	if(nullp(new))
 	{
@@ -234,7 +234,7 @@ node *create_type(	node  *name,
 	Are nodes equals ?
 	Return linked result or NIL
 */
-node *equals_node(node *node1, node *node2)
+Node *equals_node(Node *node1, Node *node2)
 {
 	if(node1 == node2)
 	{
@@ -259,7 +259,7 @@ node *equals_node(node *node1, node *node2)
 	Compare nodes
 	return linked integer od NIL
 */
-node *cmp_node(node *node1, node *node2)
+Node *cmp_node(Node *node1, Node *node2)
 {
 	// exact identity
 	if(node1 == node2)
@@ -276,7 +276,7 @@ node *cmp_node(node *node1, node *node2)
     }
 
     // returned value is linked or NIL
-    node *res = t->cmp(node1, node2);
+    Node *res = t->cmp(node1, node2);
     t = unlink_node(t);
 	return res;
 }
@@ -284,7 +284,7 @@ node *cmp_node(node *node1, node *node2)
 /*
 	Are nodes comparable ?
 */
-node *comparablep(node *node1, node *node2)
+Node *comparablep(Node *node1, Node *node2)
 {
 	if(nullp(node1) || nullp(node2))
 		return NIL;
@@ -312,7 +312,7 @@ node *comparablep(node *node1, node *node2)
 /*
 	unalloc node
 */
-node *free_node(node *node)
+Node *free_node(Node *node)
 {
 	if(nullp(node))
 	{
@@ -339,7 +339,7 @@ node *free_node(node *node)
 /*
 	print node this one is public !!!!
 */
-node *print_node(node *node)
+Node *print_node(Node *node)
 {
 	if(nullp(node))
 	{
@@ -371,10 +371,10 @@ node *print_node(node *node)
 /*
 	print node
 */
-static node *print_type(node *node)
+static Node *print_type(Node *node)
 {
 	char *formatted;
-	node *name = ((type *)node)->name;
+	Node *name = ((type *)node)->name;
 	char *str_name;
 
 	if(!name)
@@ -394,7 +394,7 @@ static node *print_type(node *node)
 /*
 	Type of node
 */
-TYPES get_node_type(node *node)
+TYPES get_node_type(Node *node)
 {
 	return node->type;
 }
@@ -402,7 +402,7 @@ TYPES get_node_type(node *node)
 /*
 	Unalloc type
 */
-static node *free_type(node *node)
+static Node *free_type(Node *node)
 {
 	type *t = (type *)node;
 	if(!typep(node))
@@ -420,7 +420,7 @@ static node *free_type(node *node)
 /*
 	Test type of node
 */
-node *typep(node *node, TYPES type)
+Node *typep(Node *node, TYPES type)
 {
 	if(get_node_type(node) == type)
 		return link_node(node) || true_node();  // we have to manage we try to test a NIL node
@@ -432,7 +432,7 @@ node *typep(node *node, TYPES type)
 /*
     Is node NULL
 */
-node *nullp(node *node)
+Node *nullp(Node *node)
 {
 	return node ? NIL : true_node();
 }
@@ -441,7 +441,7 @@ node *nullp(node *node)
 	First initialisation of an allocated node, first link to the data segment
 	Return linked node or NIL
 */
-node *init_node(node *node, TYPES type)
+Node *init_node(Node *node, TYPES type)
 {
 	if(nullp(node))
 	{
@@ -480,7 +480,7 @@ bool init_node_list()
 #ifdef DEBUG_ALLOC
 	while(first_node)
 	{
-		node *node = first_node;
+		Node *node = first_node;
 		first_node = node->next_node;
 
 		// empty allocation
@@ -499,7 +499,7 @@ bool init_node_list()
 bool print_node_list()
 {
 #ifdef DEBUG_ALLOC
-	node *walk = first_node;
+	Node *walk = first_node;
 	fprintf(stdout, "Node list\n", formatted);
 	while(walk)
 	{
@@ -528,7 +528,7 @@ bool print_node_list()
 */
 bool init_types()
 {
-	node *t =       // we link the type if created
+	Node *t =       // we link the type if created
 	set_type(TYPE, create_type( "type",
 						sizeof(type),
 						NULL,   // equals

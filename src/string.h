@@ -11,10 +11,11 @@
 
 #include "types.h"
 
-node *make_string(char *value);
-node *stringp(node *node);
-char *get_string(node *s);
+Node *make_string(char *value);
+Node *make_string_alloc(char *value);
+Node *stringp(Node *node);
+char *get_string(Node *s);
 bool init_string_type();
-node *concat_string(node *s, node *add);
+Node *concat_string(Node *s, Node *add);
 
 #endif

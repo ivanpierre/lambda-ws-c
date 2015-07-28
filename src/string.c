@@ -15,14 +15,14 @@ typedef struct
 {
 	NODE;
 	char        *value;
-} string;
+} String;
 
 /*
 	Create a linked string, don't allocate space for the string
 */
-node *make_string(char *value)
+Node *make_string(char *value)
 {
-	node *s = create_node(STRING);
+	Node *s = create_node(STRING);
 
 	if(nullp(s))
 		return NIL;
@@ -34,7 +34,7 @@ node *make_string(char *value)
 		return NIL;
 	}
 
-	((string *)s)->value = value;
+	((String *)s)->value = value;
 
 	return s; // create node does the link
 }
@@ -42,7 +42,7 @@ node *make_string(char *value)
 /*
 	Create a linked string, allocate space for the string
 */
-node *make_string_allocate(char *value)
+Node *make_string_allocate(char *value)
 {
 	if(value)
 		return make_string(strdup(value)); // make_string does the link
@@ -56,11 +56,11 @@ node *make_string_allocate(char *value)
 /*
 	create a new string node appending another one
 */
-node *concat_string(node *s, node *add)
+Node *concat_string(Node *s, Node *add)
 {
 	char *formatted = NULL;;
-	char *tmp = print_node(add);
-	node *new = NIL; // default return value if error
+	Node *tmp = print_node(add);
+	Node *new = NIL; // default return value if error
 
 	if(!tmp)
 	{
@@ -68,7 +68,7 @@ node *concat_string(node *s, node *add)
 		return NIL; // return NIL
 	}
 
-	asprintf(&formatted, "%s%s", ((string *)s)->value, tmp);
+	asprintf(&formatted, "%s%s", ((String *)s)->value, tmp);
 	free(tmp);                          // unallocate string verstion of add
 	if(formatted)
 		new = make_string(formatted);   // formatted has been allocated
@@ -80,7 +80,7 @@ node *concat_string(node *s, node *add)
 	test if node is a string
 	Return the linked string or NIL
 */
-node *stringp(node *node)
+Node *stringp(Node *node)
 {
 	return (get_type(node) == STRING) ? link_node(node) : NIL;
 }
@@ -88,22 +88,22 @@ node *stringp(node *node)
 /*
 	Return linked value of string...
 */
-char *get_string(node *s)
+char *get_string(Node *s)
 {
 	if(!stringp(s))
 	{
 		error("node is not a string\n");
 		return "\"(null)\"";
 	}
-	return strdup(((string *)s)->value);
+	return strdup(((String *)s)->value);
 }
 
 /*
 	Unalloc string
 */
-static node *free_string(node *node)
+static Node *free_string(Node *node)
 {
-	string *str = (string *)node;
+	String *str = (String *)node;
 	if(!stringp(node))
 		return node;
 	if(str->value)
@@ -119,9 +119,9 @@ static node *free_string(node *node)
 */
 bool init_string_type()
 {
-	node *string =
+	Node *string =
 	set_type(STRING, create_type( "string",
-						sizeof(string),
+						sizeof(String),
 						NULL,   // equals
 						NULL,   // cmp
 						NULL,   // eval

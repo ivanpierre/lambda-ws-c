@@ -14,11 +14,11 @@
 typedef struct
 {
 	NODE;
-	node    *car;
-	node    *cdr;
+	Node    *car;
+	Node    *cdr;
 } list;
 
-static node *set_car(node *cons, node *car)
+static Node *set_car(Node *cons, Node *car)
 {
 	if(nullp(cons))
 	{
@@ -30,7 +30,7 @@ static node *set_car(node *cons, node *car)
 	return cons;
 }
 
-static node *set_cdr(node *cons, node *cdr)
+static Node *set_cdr(Node *cons, Node *cdr)
 {
 	if(nullp(cons))
 	{
@@ -47,10 +47,10 @@ static node *set_cdr(node *cons, node *cdr)
 	return cons;
 }
 
-node *cons(node *car, node *cdr)
+Node *cons(Node *car, Node *cdr)
 {
-	node *cons = create_node(LIST);
-	node *new = NULL;
+	Node *cons = create_node(LIST);
+	Node *new = NULL;
 
 	if(nullp(cons))
 		return NULL;
@@ -69,7 +69,7 @@ node *cons(node *car, node *cdr)
 	return new;
 }
 
-node *car(node *cons)
+Node *car(Node *cons)
 {
 	if(nullp(cons))
 	{
@@ -78,7 +78,7 @@ node *car(node *cons)
 	return link_node(((list*)cons)->car);
 }
 
-node *cdr(node *cons)
+Node *cdr(Node *cons)
 {
 	if(nullp(cons))
 	{
@@ -90,7 +90,7 @@ node *cdr(node *cons)
 /*
 	unalloc list content
 */
-static void free_list(node *node)
+static void free_list(Node *node)
 {
 	list *lst = (list *)node;
 	unlink_node(lst->car);
@@ -102,7 +102,7 @@ static void free_list(node *node)
 /*
 	print list
 */
-static char *print_list(node *node)
+static char *print_list(Node *node)
 {
 	char *formatted = strdup("(");
 	char *sep = " ";

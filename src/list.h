@@ -10,11 +10,11 @@
 #define LIST_H
 #include "types.h"
 
-node *cons(node *car, node *cdr);
-node *car(node *list);
-node *cdr(node *list);
+Node *cons(Node *car, Node *cdr);
+Node *car(Node *list);
+Node *cdr(Node *list);
 bool init_list_type();
-// static node *set_car(node *list);
-// static node *set_cdr(node *list);
+// static Node *set_car(Node *list);
+// static Node *set_cdr(Node *list);
 
 #endif

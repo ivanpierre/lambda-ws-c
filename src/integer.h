@@ -10,9 +10,9 @@
 #define INTEGER_H
 #include "types.h"
 
-node *make_integer(long value);
-node *integerp(node *node);
-long get_integer(node *node);
+Node *make_integer(long value);
+Node *integerp(Node *node);
+long get_integer(Node *node);
 bool init_integer_type();
 
 #endif
