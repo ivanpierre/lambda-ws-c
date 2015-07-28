@@ -13,6 +13,8 @@ You can see the github https://github.com/FunctionalRomandie/LambdaCalculusWorks
 
 - [Project requirements](REQUIREMENTS)
 
+You can see the [blog](BLOG.MD) to see advance... ;)
+
 ## And now what ?
 For any question or issue you can write to me on twitter @ivanpierre. It's currently a WIP.
 
@@ -22,7 +24,7 @@ functional language is ways to easy ;)
 
 Well, it will be when all the data types will be implemented.
 
-But the BIG difficulty, is managing the memory, when we don't have an embedded garbage collector... :D
+But the BIG difficulty, is managing the memory, even if we dont use a real garbage collector.
 
 ## Licence
 For now Eclipse Public License - v 1.0
