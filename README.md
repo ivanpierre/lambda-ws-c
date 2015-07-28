@@ -13,8 +13,6 @@ You can see the github https://github.com/FunctionalRomandie/LambdaCalculusWorks
 
 - [Project requirements](REQUIREMENTS)
 
-You can see the [blog](BLOG.MD) to see advance and changes... ;)
-
 ## And now what ?
 For any question or issue you can write to me on twitter @ivanpierre. It's currently a WIP.
 

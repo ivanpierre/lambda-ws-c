@@ -6,6 +6,8 @@
 - A writer to be able to output AST data and program result in a readable form.
 - A simple REPL probably implemented in the language itself.
 
+You can see the [blog](BLOG.MD) to see advance... ;)
+
 ## Issues
 As the program is written in C, I'll try to only use the language and the standard library. This mean that all
 data structures of LWC should be created. 
