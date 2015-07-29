@@ -16,6 +16,35 @@
 #define FALSE 0
 #define TRUE (!FALSE)
 
+/*
+	Errors and assertions
+*/
+extern struct Node *error_node;
+void ERROR(const char *fmt, ...);
+
+#define abort(fmt, ...) \
+	{ \
+		ERROR(fmt, ##_VA_ARGS__); \
+		return NULL; \
+	}
+
+#define assert(cond, fmt, ...) \
+	if(!(tst)) \
+	{ \
+		ERROR(fmt, ##_VA_ARGS__); \
+		return NULL; \
+	}
+
+#define assert_type(node, type, fmt, ...) \
+	if(!(node->type & (type))) \
+	{ \
+		ERROR(fmt, ##_VA_ARGS__); \
+		return NULL; \
+	}
+
+/*
+	type of nodes
+*/
 enum
 {
 	NIL_NODE,   1
@@ -86,6 +115,7 @@ typedef struct Node
 		Array       *array;
 		Map         *map;
 		Function    *func;
+		Env         *env;
 	} val;
 	int             func_arg_cnt;
 	bool            is_macro;

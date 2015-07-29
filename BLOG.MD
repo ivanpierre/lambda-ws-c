@@ -6,6 +6,7 @@
 - [x] Suppress unnecessary sources : map.*, array.*, list.*, symbol.*
 - [x] Add collection.* to manage array, map, list, set
 - [x] Add set type.
+- [ ] All function and data definitions for structures are in node.h
 
 ##28 juil 2015
 Some changes in view.
