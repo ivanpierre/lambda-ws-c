@@ -32,33 +32,63 @@ enum
 	FUNCTION,   2048
 	LAMBDA,     4096
 	TYPES_SIZE  100000
-};
-
-#define TYPES int
+} NodeType;
 
 #define DEBUG_ALLOC
+
+/*
+	Used type definitions
+*/
+#define Array   GArray
+#define Map     GHashTable
+#define Integer gint64
+#define Decimal gdouble
+#define String  char *
+struct  Node; // forward
+
+/*
+	Environment
+*/
+typedef struct Env
+{
+	struct Env  *previous;
+	Map         *binds;
+} Env;
+
+/*
+	Lambda functions
+*/
+typedef struct Function
+{
+	struct Node *(*eval)(struct Node *args, Env *env);
+	struct Node *args;
+	struct Node *body;
+	Env         *env;
+} Function;
 
 /*
 	Struct of a base node
 */
 typedef struct Node
 {
-	TYPES   type; \
-	long    occurences; \
+	NodeType        type;
+	long            occurences;
 #ifndef DEBUG_ALLOC
-	Node    *previous_node; \
-	Node    *next_node
+	Node            *previous_node;
+	Node            *next_node
 #endif
 	union
 	{
-		long        integer;
-		float       decimal;
-		char        *string;
-		char        *symbol;
-		GArray      *array;
-		GHashTable  *map;
-
+		Integer     integer;
+		Decimal     decimal;
+		String      *string;
+		String      *symbol;
+		Array       *array;
+		Map         *map;
+		Function    *func;
 	} val;
+	int             func_arg_cnt;
+	bool            is_macro;
 } Node;
 
 // global values
@@ -66,24 +96,11 @@ extern Node *nil_node;
 extern Node *true_node;
 extern Node *false_node;
 
-
-
-// public functions for types
 // public function for nodes
-Node        *nullp(Node *node);
-Node        *truep(Node *node);
-Node        *falsep(Node *node);
+bool        *unlinkable(Node *n);
 Node        *link_node(Node *node);
 Node        *unlink_node(Node *node);
-Node        *equals_node(Node *node1, Node *node2);
-Node        *free_node(Node *node);
-Node        *cmp_node(Node *node1, Node *node2);
-Node        *print_node(Node *node);
-Node        *comparablep(Node *node1, Node *node2);
-Node        *init_node(Node *node, TYPES type);
-Node        *create_node(TYPES type);
-Node        *unlinkable(Node *n);
-Node        *falsep(Node *node);
+Node        *new_node(TYPES type);
 
 // DEBUG_ALLOC functions
 Node        *init_node_list();
