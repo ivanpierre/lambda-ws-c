@@ -9,13 +9,13 @@
 #ifndef NODES_H
 #define NODES_H
 
-#define error(message) \
-	fprintf(stderr, message)
+#define error(message, ...) \
+	fprintf(stderr, message, ...)
 
 #define bool int
 #define FALSE 0
 #define TRUE (!FALSE)
-#define NIL NULL
+
 enum
 {
 	NIL_NODE,   1
@@ -62,8 +62,11 @@ typedef struct Node
 } Node;
 
 // global values
+extern Node *nil_node;
 extern Node *true_node;
 extern Node *false_node;
+
+
 
 // public functions for types
 // public function for nodes

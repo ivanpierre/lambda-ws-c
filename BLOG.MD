@@ -1,14 +1,22 @@
 #BLOG (just what happens)
+##29 juil 2015
+- [x] Change node structure as value is an union to ease the data access.
+- [x] Change list as an array access
+- [x] Put all structures definitions in node.c
+- [x] Suppress unnecessary sources : map.*, array.*, list.*, symbol.*
+- [x] Add collection.* to manage array, map, list, set
+- [x] Add set type.
+
 ##28 juil 2015
 Some changes in view.
 
-- [ ] use of glib library for ARRAY, MAP and SET. It will be easier doesn't change the problem a lot. Just unifies the 
+- [ ] Use of glib library for ARRAY, MAP and SET. It will be easier doesn't change the problem a lot. Just unifies the 
 management of collection of objects.
-- [ ] Suppress the Type type. No real usage, these functions will be in global.c and so will be more managable than 
+- [x] Suppress the Type type. No real usage, these functions will be in global.c and so will be more managable than 
 specific 
 data type that can change. They will accept all data types and if not managed give an appropriate error message.
-- [ ] Going to unify the structures functions names. So global function will be easier to manage.
-- [ ] Create a new node .c and .h. With a structure embedding the whole other structures. SO NODE macro will have no 
+- [x] Going to unify the structures functions names. So global function will be easier to manage.
+- [x] Create a new node .c and .h. With a structure embedding the whole other structures. SO NODE macro will have no 
 sense anymore.
 - [ ] Update doc...
 
