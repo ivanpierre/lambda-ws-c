@@ -132,6 +132,20 @@ Node        *link_node(Node *node);
 Node        *unlink_node(Node *node);
 Node        *new_node(TYPES type);
 
+// Integer
+Node *new_integer(Integer value);
+Integer get_integer(Node *node);
+bool integerp(node *node);
+static Node *string_integer(Node *node);
+
+// Decimal
+Node *new_decimal(Decimal value);
+long get_integer(Node *node);
+bool decimalp(node *node);
+static Node *string_decimal(Node *node)
+
+
+
 // DEBUG_ALLOC functions
 Node        *init_node_list();
 Node        *print_node_list();

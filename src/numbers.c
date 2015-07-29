@@ -10,10 +10,11 @@
 #include <string.h>
 #include "nodes.h"
 
+/////// Integers
 /*
 	Create an integer
 */
-Node *new_integer(long value)
+Node *new_integer(Integer value)
 {
 	Node *node = new_node(INTEGER);
 
@@ -28,7 +29,7 @@ Node *new_integer(long value)
 /*
 	Return value of integer
 */
-long get_integer(Node *node)
+Integer get_integer(Node *node)
 {
 	Node tmp = integerp(node);
 	if(tmp)
@@ -68,6 +69,50 @@ static Node *string_integer(Node *node)
 	else
 	{
 		free(formatted);
-		return make_string_alloc("<badly formatted Integer>");
+		return make_string_alloc("NaN");
+	}
+}
+
+////// Decimals
+/*
+	Create a decimal
+*/
+Node *new_decimal(Decimal value)
+{
+	Node *node = new_node(INTEGER);
+	node->val.decimal = value;
+	return link_node(node);
+}
+
+/*
+	Return value of integer
+*/
+long get_integer(Node *node)
+{
+	return node->val.integer;
+}
+
+/*
+	test if node is a decimal
+*/
+bool decimalp(node *node)
+{
+	return node->type & INTEGER;
+}
+
+/*
+	print decimal
+*/
+static Node *string_decimal(Node *node)
+{
+	char *formatted;
+	asprintf(&formatted, "%lf", get_integer(node));
+
+	if(formatted)
+		return new_string(formatted);
+	else
+	{
+		free(formatted);
+		return make_string_alloc("NaN");
 	}
 }
