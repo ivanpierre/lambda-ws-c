@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "integer.h"
+#include "nodes.h"
 
 /*
 	Create an integer
