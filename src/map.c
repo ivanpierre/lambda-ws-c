@@ -9,9 +9,3 @@
 #include <stdio.h>
 #include "map.h"
 
-typedef struct
-{
-	NODE;
-	void    *hash_table;
-} map;
-

@@ -16,7 +16,7 @@ typedef struct
 	NODE;
 	Node    *car;
 	Node    *cdr;
-} list;
+} List;
 
 static Node *set_car(Node *cons, Node *car)
 {
@@ -25,8 +25,8 @@ static Node *set_car(Node *cons, Node *car)
 		error("set_car: can't set car of nil\n");
 		return NULL;
 	}
-	unlink_node(((list *)cons)->car);
-	((list *)cons)->car = link_node(car);
+	unlink_node(((List *)cons)->car);
+	((List *)cons)->car = link_node(car);
 	return cons;
 }
 
@@ -37,13 +37,13 @@ static Node *set_cdr(Node *cons, Node *cdr)
 		error("set_car: can't set car of nil\n");
 		return NULL;
 	}
-	if(!nullp(cdr) && (get_type(cdr) != LIST))
+	if(!nullp(cdr) && (cdr->type != LIST))
 	{
 		error("set_car: can't set cdr as a non list or nil\n");
 		return NULL;
 	}
-	unlink_node(((list *)cons)->cdr);
-	((list *)cons)->car = link_node(cdr);
+	unlink_node(((List *)cons)->cdr);
+	((List *)cons)->car = link_node(cdr);
 	return cons;
 }
 
