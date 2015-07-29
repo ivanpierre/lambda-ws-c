@@ -55,14 +55,7 @@ typedef struct Node
 		float       decimal;
 		char        *string;
 		char        *symbol;
-		char        *keyword;
 		GArray      *array;
-		List        *list;
-		struct
-		{
-			struct Node *car;
-			struct Node *cdr;
-		} list;
 		GHashTable  *map;
 
 	} val;

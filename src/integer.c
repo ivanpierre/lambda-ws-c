@@ -10,89 +10,64 @@
 #include <string.h>
 #include "integer.h"
 
-typedef struct
-{
-	NODE;
-	long        value;
-} integer;
-
 /*
 	Create an integer
 */
-Node *make_integer(long value)
+Node *new_integer(long value)
 {
-	Node *i = create_node(INTEGER);
+	Node *node = new_node(INTEGER);
 
-	if(nullp(i))
+	if(nullp(node))
 		return NULL;
 
-	((integer *)i)->value = value;
+	node->val.integer = value;
 
-	return link_node(i);
+	return link_node(node);
+}
+
+/*
+	Return value of integer
+*/
+long get_integer(Node *node)
+{
+	Node tmp = integerp(node);
+	if(tmp)
+	{
+		unlink(tmp);
+		return node->val.integer;
+	}
+
+	unlink(tmp);
+	return 0l;
 }
 
 /*
 	test if node is an integer
 */
-Node *integerp(node *node)
+bool integerp(node *node)
 {
-	return (get_type(node) == INTEGER) ? link_node(node) : NIL;
-}
-
-/*
-	Return value of integer
-	TODO should be able to do coercision
-*/
-long get_integer(Node *i)
-{
-	switch(get_type(i))
-	{
-		case INTEGER:
-			return ((integer *)i)->value;
-
-		default:
-			error("get_integer : node is not an integer\n");
-			return 0l;
-	}
+	return (node->type == INTEGER) ? true_node : NIL;
 }
 
 /*
 	print integer
 */
-static Node *print_integer(Node *node)
+static Node *string_integer(Node *node)
 {
 	if(!integerp(node))
 	{
 		error("print_integer : Node is not an integer\n");
 		return NIL;
 	}
+
 	char *formatted;
 	asprintf(&formatted, "%ld", get_integer(node));
+
 	if(formatted)
-		return make_string(formatted);
+		return new_string(formatted);
 	else
-		return make_string_alloc("<badly formatted Integer>");
-}
-
-/*
-	init type INTEGER, so the type exists in the types... ;)
-*/
-bool init_integer_type()
-{
-	Node *integer =
-	set_type(INTEGER, create_type( "integer",
-						sizeof(integer),
-						NULL,   // equals
-						NULL,   // cmp
-						NULL,   // eval
-						NULL,   // free
-						&print_integer));  // print
-	if(!integer)
 	{
-		error("init_integer_types : error creating type\n");
-		return FALSE;
+		free(formatted);
+		return make_string_alloc("<badly formatted Integer>");
 	}
-	unlink_node(integer);
-	return TRUE;
 }
-

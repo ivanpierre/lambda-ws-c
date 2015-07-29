@@ -11,98 +11,82 @@
 #include <string.h>
 #include "list.h"
 
-typedef struct
+static Node *set_car(Node *node, Node *car)
 {
-	NODE;
-	Node    *car;
-	Node    *cdr;
-} List;
-
-static Node *set_car(Node *cons, Node *car)
-{
-	if(nullp(cons))
+	if(!nullp(node))
 	{
 		error("set_car: can't set car of nil\n");
-		return NULL;
+		return NIL;
 	}
-	unlink_node(((List *)cons)->car);
-	((List *)cons)->car = link_node(car);
-	return cons;
+	if(!listp(node))
+	{
+		error("set_car: only can set car of a list\n");
+		return node;
+	}
+	node->val.car = link_node(car);
+	return node;
 }
 
-static Node *set_cdr(Node *cons, Node *cdr)
+static Node *set_cdr(Node *nodes, Node *cdr)
 {
-	if(nullp(cons))
+	if(!node)
 	{
-		error("set_car: can't set car of nil\n");
-		return NULL;
+		error("set_car: can't set cdr of nil\n");
+		return NIL;
 	}
 	if(!nullp(cdr) && (cdr->type != LIST))
 	{
-		error("set_car: can't set cdr as a non list or nil\n");
-		return NULL;
+		error("set_cdr: set cdr with a non list or nil\n");
+		return NIL;
 	}
-	unlink_node(((List *)cons)->cdr);
-	((List *)cons)->car = link_node(cdr);
+	node->val.cdr = link_node(cdr);
 	return cons;
 }
 
-Node *cons(Node *car, Node *cdr)
+Node *new_list(Node *car, Node *cdr)
 {
-	Node *cons = create_node(LIST);
-	Node *new = NULL;
+	Node *node = create_node(LIST);
 
-	if(nullp(cons))
-		return NULL;
+	if(!node)
+		return NIL;
 
-	((list*)cons)->car = NULL;
-	((list*)cons)->cdr = NULL;
+	node->val.car = link_node(car);
+	node->val.cdr = link_node(cdr);
 
-	new = set_car(cons, car);
-	if(nullp(new))
-		unlink_node(cons);
-
-	new = set_cdr(new, cdr);
-	if(nullp(new))
-		unlink_node(cons);
-
-	return new;
+	return node;
 }
 
-Node *car(Node *cons)
+Node *get_car(Node *node)
 {
-	if(nullp(cons))
-	{
-		return NULL;
-	}
-	return link_node(((list*)cons)->car);
+	if(!node)
+		return NIL;
+	return link_node(node->val.car);
 }
 
-Node *cdr(Node *cons)
+Node *get_cdr(Node *node)
 {
-	if(nullp(cons))
-	{
-		return NULL;
-	}
-	return link_node(((list*)cons)->cdr);
+	if(!node)
+		return NIL;
+	return link_node(node->val.cdr);
 }
 
 /*
 	unalloc list content
 */
-static void free_list(Node *node)
+void free_list(Node *node)
 {
 	list *lst = (list *)node;
 	unlink_node(lst->car);
 	lst->car = NULL;
 	unlink_node(lst->cdr);
 	lst->cdr = NULL;
+
 }
 
 /*
 	print list
 */
-static char *print_list(Node *node)
+Node *string_list(Node *node)
 {
 	char *formatted = strdup("(");
 	char *sep = " ";
@@ -122,24 +106,4 @@ static char *print_list(Node *node)
 	return formatted;
 
 }
-
-/*
-	init type LIST, so the type exists in the types... ;)
-*/
-bool init_list_type()
-{
-	if(!set_type(LIST, create_type( "list",
-						sizeof(list),
-						NULL,   // equals
-						NULL,   // cmp
-						NULL,   // eval
-						&free_list,   // free
-						&print_list)))  // print
-	{
-		error("init_list_type : error creating list type\n");
-		return FALSE;
-	}
-	return TRUE;
-}
-
 

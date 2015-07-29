@@ -8,11 +8,11 @@
 
 #ifndef INTEGER_H
 #define INTEGER_H
-#include "types.h"
+#include "nodes.h"
 
-Node *make_integer(long value);
-Node *integerp(Node *node);
+Node *new_integer(long value);
 long get_integer(Node *node);
-bool init_integer_type();
+bool integerp(Node *node);
+Node *string_integer(Node *node);
 
 #endif
