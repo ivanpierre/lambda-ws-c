@@ -7,9 +7,6 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#include "types.h"
-#include "string.h"
-#include "integer.h"
-#include "list.h"
+#include "nodes.h"
 
 #endif

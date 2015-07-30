@@ -53,7 +53,7 @@ bool integerp(node *node)
 /*
 	print integer
 */
-static Node *string_integer(Node *node)
+Node *string_integer(Node *node)
 {
 	if(!integerp(node))
 	{
@@ -87,9 +87,9 @@ Node *new_decimal(Decimal value)
 /*
 	Return value of integer
 */
-long get_integer(Node *node)
+Decimal get_decimal(Node *node)
 {
-	return node->val.integer;
+	return node->val.decimal;
 }
 
 /*
@@ -97,16 +97,16 @@ long get_integer(Node *node)
 */
 bool decimalp(node *node)
 {
-	return node->type & INTEGER;
+	return node->type & DECIMAL;
 }
 
 /*
 	print decimal
 */
-static Node *string_decimal(Node *node)
+Node *string_decimal(Node *node)
 {
 	char *formatted;
-	asprintf(&formatted, "%lf", get_integer(node));
+	asprintf(&formatted, "%lf", get_decimal(node));
 
 	if(formatted)
 		return new_string(formatted);

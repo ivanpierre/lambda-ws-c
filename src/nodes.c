@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "nodes.h""
-#include "string.h"
 
 #if defined(DEBUG_ALLOC)
 	Node *first_node    = NULL;

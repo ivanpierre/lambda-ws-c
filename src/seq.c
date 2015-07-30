@@ -1,5 +1,5 @@
 /****
-	Collections sets and maps
+	Sequences : arrays and lists
 
 	Lambda Calculus Workshop
 	C version

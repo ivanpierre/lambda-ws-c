@@ -1,34 +1,39 @@
 # very simplified Makefile working with minimal makefile version
 
-lcw : main.o integer.o list.o map.o reader.o string.o symbol.o types.o
-	cc -o lcw main.o integer.o list.o map.o reader.o string.o symbol.o types.o
+lcw : main.o global.o atom.o collections.o env.o function.o numbers.o reader.o seq.o string.o
+	cc -o lcw main.o global.o atom.o collections.o env.o function.o numbers.o reader.o seq.o string.o
 
-global.h : types.h string.h list.h integer.h
+global.h : nodes.h
 	touch global.h
 
 main.o : main.c global.h
 	cc -c main.c
 
-integer.o : integer.c integer.h types.h
-	cc -c integer.c
+global.o : global.c global.h
 
-list.o : list.c list.h types.h
-	cc -c list.c
+atom.o : atom.c nodes.h
+	cc -c atom.c
 
-map.o : map.c map.h types.h
-	cc -c map.c
+collections.o : nodes.h
+	cc -c collections.c
 
-reader.o : reader.c reader.h types.h
+env.o : env.c nodes.h
+	cc -c env.c
+
+function.o : function.c nodes.h
+	cc -c function.c
+
+numbers.o : nodes.h
+	cc -c numbers.c
+
+reader.o : reader.c nodes.h
 	cc -c reader.c
 
-string.o : string.c string.h types.h
+seq.o : seq.c nodes.h
+	cc -c seq.c
+
+string.o : string.c nodes.h
 	cc -c string.c
-
-symbol.o : symbol.c symbol.h types.h
-	cc -c symbol.c
-
-types.o : types.c types.h
-	cc -c types.c
 
 # .o : .c .h
 # 	cc -c .c

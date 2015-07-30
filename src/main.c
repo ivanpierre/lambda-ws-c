@@ -8,28 +8,10 @@
 #include "global.h"
 
 /*
-	global initialization
-*/
-static bool init_all()
-{
-	return  init_node_list() ||
-			init_types() ||
-			init_string_type() ||
-			init_integer_type() ||
-			init_list_type();
-}
-
-/*
 	main entry point
 */
 int main(int argc, const char* argv[])
 {
-	if(!init_all())
-	{
-		error("Can't init language\n");
-		return -1;
-	}
-	print_node_list();
 	return 0;
 }
 

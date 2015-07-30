@@ -9,6 +9,8 @@
 #ifndef NODES_H
 #define NODES_H
 
+#include <glib.h>
+
 #define error(message, ...) \
 	fprintf(stderr, message, ...)
 
@@ -22,21 +24,21 @@
 extern struct Node *error_node;
 void ERROR(const char *fmt, ...);
 
-#define abort(fmt, ...) \
+#define ABORT(fmt, ...) \
 	{ \
 		ERROR(fmt, ##_VA_ARGS__); \
 		return NULL; \
 	}
 
-#define assert(cond, fmt, ...) \
-	if(!(tst)) \
+#define ASSERT(cond, fmt, ...) \
+	if(!(cond)) \
 	{ \
 		ERROR(fmt, ##_VA_ARGS__); \
 		return NULL; \
 	}
 
-#define assert_type(node, type, fmt, ...) \
-	if(!(node->type & (type))) \
+#define ASSERT_TYPE(node, type, fmt, ...) \
+	if(!(node && node->type & (type))) \
 	{ \
 		ERROR(fmt, ##_VA_ARGS__); \
 		return NULL; \
@@ -47,20 +49,22 @@ void ERROR(const char *fmt, ...);
 */
 enum
 {
-	NIL_NODE,   1
-	TRUE_NODE,  2
-	FALSE_NODE, 4
-	SYMBOL,     8
-	INTEGER,    16
-	FLOAT,      32
-	STRING,     64
-	LIST,       128
-	ARRAY,      256
-	MAP,        512
-	ENVIRONMENT,1024
-	FUNCTION,   2048
-	LAMBDA,     4096
-	TYPES_SIZE  100000
+	NIL_NODE    =   1,
+	TRUE_NODE   =   1 << 2,
+	FALSE_NODE  =   1 << 3,
+	SYMBOL      =   1 << 4,
+	INTEGER     =   1 << 5,
+	FLOAT       =   1 << 6,
+	STRING      =   1 << 7,
+	LIST        =   1 << 8,
+	ARRAY       =   1 << 9,
+	MAP         =   1 << 10,
+	SET         =   1 << 11,
+	ENVIRONMENT =   1 << 12,
+	FUNCTION    =   1 << 13,
+	LAMBDA      =   1 << 14,
+	ATOM        =   1 << 15.
+	READER      =   1 << 16
 } NodeType;
 
 #define DEBUG_ALLOC
@@ -68,8 +72,8 @@ enum
 /*
 	Used type definitions
 */
-#define Array   GArray
-#define Map     GHashTable
+#define Array   GArray *
+#define Map     GHashTable *
 #define Integer gint64
 #define Decimal gdouble
 #define String  char *
@@ -78,22 +82,23 @@ struct  Node; // forward
 /*
 	Environment
 */
-typedef struct Env
+typedef struct Env_s
 {
-	struct Env  *previous;
-	Map         *binds;
-} Env;
+	struct Env_s    *previous;
+	Map             binds;
+} *Env;
 
 /*
 	Lambda functions
 */
-typedef struct Function
+typedef struct
 {
 	struct Node *(*eval)(struct Node *args, Env *env);
+	bool        is_macro;
 	struct Node *args;
 	struct Node *body;
 	Env         *env;
-} Function;
+} *Function;
 
 /*
 	Struct of a base node
@@ -110,15 +115,13 @@ typedef struct Node
 	{
 		Integer     integer;
 		Decimal     decimal;
-		String      *string;
-		String      *symbol;
-		Array       *array;
-		Map         *map;
-		Function    *func;
-		Env         *env;
+		String      string;
+		Array       array;
+		Map         map;
+		Function    func;
+		Env         env;
 	} val;
 	int             func_arg_cnt;
-	bool            is_macro;
 } Node;
 
 // global values
@@ -133,18 +136,28 @@ Node        *unlink_node(Node *node);
 Node        *new_node(TYPES type);
 
 // Integer
-Node *new_integer(Integer value);
-Integer get_integer(Node *node);
-bool integerp(node *node);
-static Node *string_integer(Node *node);
+Node        *new_integer(Integer value);
+Integer     get_integer(Node *node);
+bool        integerp(node *node;
+Node        *string_integer(Node *node);
 
 // Decimal
-Node *new_decimal(Decimal value);
-long get_integer(Node *node);
-bool decimalp(node *node);
-static Node *string_decimal(Node *node)
+Node        *new_decimal(Decimal value);
+Decimal     get_decimal(Node *node);
+bool        decimalp(node *node);
+Node        *string_decimal(Node *node)
 
-
+// Strings, symbols, keywords
+Node        *new_string(char *value);
+Node        *new_string_allocate(char *value);
+Node        *new_symbol(char *value);
+Node        *new_keyword(char *value);
+Node        *concat_string(Node *s, Node *add);
+bool        stringp(Node *node);
+bool        symbolp(Node *node);
+bool        keywordp(Node *node);
+String      get_string(Node *s);
+Node        *free_string(Node *node);
 
 // DEBUG_ALLOC functions
 Node        *init_node_list();
