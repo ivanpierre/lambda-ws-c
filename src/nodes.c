@@ -10,17 +10,33 @@
 #include <stdlib.h>
 #include "nodes.h""
 
+
 #if defined(DEBUG_ALLOC)
+	/*
+		double linked list of nodes
+	*/
 	Node *first_node    = NULL;
 	Node *last_node     = NULL;
+
+	// global values
+	Node *nil_node = {NIL_NODE, 0, NULL, NULL, {0};
+	Node *true_node = {TRUE_NODE, 0, NULL, NULL, {0};
+	Node *false_node = {FALSE_NODE, 0, NULL, NULL, {0};
+#else
+	Node *nil_node = {NIL_NODE, 0, {0};
+	Node *true_node = {TRUE_NODE, 0, {0};
+	Node *false_node = {FALSE_NODE, 0, {0};
 #endif
+
+// Error signal
+Node *error_node = NULL;
 
 /*
 	test if linking is applyable
 */
-Node *unlinkable(Node *n)
+bool unlinkable(Node *n)
 {
-	return node->type & (NIL_NODE || TRUE_NODE || FALSE_NODE);
+	return node && node->type & (NIL_NODE || TRUE_NODE || FALSE_NODE);
 }
 
 /*
@@ -46,8 +62,8 @@ Node *unlink_node(Node *node)
 			node->occurences--;
 		if(!node->occurences)
 			free_node(node);
-	)
-	return NIL;
+	}
+	return NULL;
 }
 
 /*
@@ -67,7 +83,7 @@ Node *create_node(TYPES type_of_node)
 	Node *new = malloc(size);
 	Node *tmp = new;
 
-	if(nullp(new))
+	if(!new)
 	{
 		error("create_node : Error : allocation of node\n");
 		return NIL;
@@ -91,7 +107,7 @@ static Node *init_node(Node *node, TYPES type)
 	node->type = type;
 	node->occurences = 0; // will be incremented on link
 #ifdef DEBUG_ALLOC
-	if(nullp(last_node))
+	if(!last_node)
 	{
 		node->previous_node = node->next_node = NULL;
 		last_node = first_node = node;
@@ -101,6 +117,7 @@ static Node *init_node(Node *node, TYPES type)
 		node->previous_node = last_node;
 		node->next_node = NULL;
 		last_node->next_node = node;
+		last_node = node;
 	}
 #endif
 	return link_node(node);
@@ -125,4 +142,60 @@ bool init_node_list()
 #else
 #endif
 	return TRUE;
+}
+
+/*
+	Free all nodes according to type
+*/
+Node *free_node(Node *node)
+{
+	ASSERT(node, "free_node : NULL node");
+
+	switch(node->type)
+	{
+		case NIL_NODE :
+    	case TRUE_NODE :
+    	case FALSE_NODE :
+			return NULL;
+
+    	case KEYWORD :
+    	case SYMBOL :
+    	case STRING :
+    	    free_string(node);
+    	    break;
+
+    	case LIST :
+    	case ARRAY :
+    	case MAP :
+    	case SET :
+    	    free_array(node->array);
+    	    break;
+
+    	case ENVIRONMENT :
+    	    free_env(node->env);
+    	    break;
+
+    	case FUNCTION :
+    	    free_function(node->function);
+    	    break;
+
+    	case LAMBDA :
+    	    free_lambda(node->lambda);
+    	    break;
+
+    	case ATOM :
+    	    free_node(node->atom);
+			break;
+
+    	case READER :
+    	    free_node(node->atom);
+			break;
+
+		case INTEGER :
+		case DECIMAL :
+		default :
+	}
+
+	free(node);
+	return NULL;
 }

@@ -66,13 +66,13 @@ Node *new_keyword(char *value)
 */
 Node *concat_string(Node *s, Node *add)
 {
-	char *formatted = NULL;;
+	char *formated = NULL;
 	Node *tmp = string_node(add);
 	ASSERT(tmp, "concat_string : cannot format node");
-	asprintf(&formatted, "%s%s", ((String *)s)->value, tmp);
-	free(tmp);                          // unallocate string verstion of add
-	ASSERT(formatted, "concat_string : cannot format node");
-	return make_string(formatted);   // formatted has been allocated
+	asprintf(&formated, "%s%s", ((String *)s)->val.string, tmp->val.string);
+	free_node(tmp);                          // unallocate string version of add
+	ASSERT(formated, "concat_string : cannot format node");
+	return make_string(formated);   // formated has been allocated
 }
 
 /*
@@ -104,8 +104,43 @@ bool keywordp(Node *node)
 */
 String get_string(Node *s)
 {
-	ASSERT_TYPE(STRING|SYMBOL|KEYWORD, "get_string : node is not a string");
-	return strdup(((String *)s)->value);
+	ASSERT_TYPE(STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
+	return strdup(((String *)s)->value.string);
+}
+
+/*
+	Return allocated string of string formatted according to type
+*/
+String get_formated_string(Node *s)
+{
+	ASSERT_TYPE(STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
+	String formated = NULL;
+	switch(s->type)
+	{
+		case KEYWORD :
+			asprintf(&formated, ":%s", ((String *)s)->value.string);
+		case SYMBOL :
+			asprintf(&formated, "%s", ((String *)s)->value.string);
+		case STRING :
+			asprintf(&formated, "\"%s\"", ((String *)s)->value.string);
+		default :
+	}
+	ASSERT(formated, "get_formated_string : cannot format node");
+	return formated;
+}
+
+
+/*
+	Return allocated string node of string formatted according to type
+*/
+Node *string_string(Node *node)
+{
+	ASSERT_TYPE(STRING|SYMBOL|KEYWORD, "string_string : node is not a string, symbol or keyword");
+	String formated = get_formated_string(node);
+	ASSERT(formated, "string_string : cannot format node");
+	Node *res = new_string(formated);
+	free(formatted);
+	return res;
 }
 
 /*

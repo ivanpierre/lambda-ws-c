@@ -9,8 +9,6 @@
 #ifndef NODES_H
 #define NODES_H
 
-#include <glib.h>
-
 #define error(message, ...) \
 	fprintf(stderr, message, ...)
 
@@ -53,18 +51,19 @@ enum
 	TRUE_NODE   =   1 << 2,
 	FALSE_NODE  =   1 << 3,
 	SYMBOL      =   1 << 4,
-	INTEGER     =   1 << 5,
-	FLOAT       =   1 << 6,
-	STRING      =   1 << 7,
-	LIST        =   1 << 8,
-	ARRAY       =   1 << 9,
-	MAP         =   1 << 10,
-	SET         =   1 << 11,
-	ENVIRONMENT =   1 << 12,
-	FUNCTION    =   1 << 13,
-	LAMBDA      =   1 << 14,
-	ATOM        =   1 << 15.
-	READER      =   1 << 16
+	KEYWORD     =   1 << 5,
+	INTEGER     =   1 << 6,
+	FLOAT       =   1 << 7,
+	STRING      =   1 << 8,
+	LIST        =   1 << 9,
+	ARRAY       =   1 << 10,
+	MAP         =   1 << 11,
+	SET         =   1 << 12,
+	ENVIRONMENT =   1 << 13,
+	FUNCTION    =   1 << 14,
+	LAMBDA      =   1 << 15,
+	ATOM        =   1 << 16.
+	READER      =   1 << 17
 } NodeType;
 
 #define DEBUG_ALLOC
@@ -72,21 +71,29 @@ enum
 /*
 	Used type definitions
 */
-#define Array   GArray *
-#define Map     GHashTable *
-#define Integer gint64
-#define Decimal gdouble
+#define Integer long
+#define Decimal double
 #define String  char *
 struct  Node; // forward
 
 /*
 	Environment
 */
-typedef struct Env_s
+typedef struct Env
 {
-	struct Env_s    *previous;
-	Map             binds;
+	struct Node     *previous; // Environment
+	struct Node     *binds;    // Map
 } *Env;
+
+/*
+	Array
+*/
+typedef struct
+{
+	bool            mutable;
+	long            size;
+	struct Node     *Node;
+} *Array;
 
 /*
 	Lambda functions
@@ -97,7 +104,65 @@ typedef struct
 	bool        is_macro;
 	struct Node *args;
 	struct Node *body;
-	Env         *env;
+	struct Node *closure;
+} *Lambda;
+
+/*
+	Compiled functions
+*/
+typedef struct
+{
+	struct Node *(*eval)(struct Node *args, Env *env);
+	bool                is_macro;
+	int                 nb_args;
+	union
+	{
+        struct Node     *(*f0) ();
+        struct Node     *(*f1) (struct Node*);
+        struct Node     *(*f2) (struct Node*,struct Node*);
+        struct Node     *(*f3) (struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f4) (struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f5) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f6) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f7) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*);
+        struct Node     *(*f8) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*);
+        struct Node     *(*f9) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f10)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f11)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f12)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f13)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*);
+        struct Node     *(*f14)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*);
+        struct Node     *(*f15)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f16)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f17)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f18)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
+        struct Node     *(*f19)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*);
+        struct Node     *(*f20)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
+                                struct Node*,struct Node*);
+	} func;
 } *Function;
 
 /*
@@ -108,8 +173,8 @@ typedef struct Node
 	NodeType        type;
 	long            occurences;
 #ifndef DEBUG_ALLOC
-	Node            *previous_node;
-	Node            *next_node
+	struct Node     *previous_node;
+	struct Node     *next_node
 #endif
 	union
 	{
@@ -117,11 +182,11 @@ typedef struct Node
 		Decimal     decimal;
 		String      string;
 		Array       array;
-		Map         map;
-		Function    func;
+		Lambda      lambda;
+		Function    function;
 		Env         env;
+		struct Node *atom;
 	} val;
-	int             func_arg_cnt;
 } Node;
 
 // global values
@@ -134,6 +199,7 @@ bool        *unlinkable(Node *n);
 Node        *link_node(Node *node);
 Node        *unlink_node(Node *node);
 Node        *new_node(TYPES type);
+Node        *free_node(Node *node);
 
 // Integer
 Node        *new_integer(Integer value);
@@ -157,7 +223,10 @@ bool        stringp(Node *node);
 bool        symbolp(Node *node);
 bool        keywordp(Node *node);
 String      get_string(Node *s);
+String      get_formated_string(Node *s);
 Node        *free_string(Node *node);
+Node        *string_string(Node *node);
+
 
 // DEBUG_ALLOC functions
 Node        *init_node_list();

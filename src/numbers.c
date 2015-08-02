@@ -31,15 +31,7 @@ Node *new_integer(Integer value)
 */
 Integer get_integer(Node *node)
 {
-	Node tmp = integerp(node);
-	if(tmp)
-	{
-		unlink(tmp);
-		return node->val.integer;
-	}
-
-	unlink(tmp);
-	return 0l;
+	return node->val.integer;
 }
 
 /*
@@ -47,7 +39,7 @@ Integer get_integer(Node *node)
 */
 bool integerp(node *node)
 {
-	return (node->type == INTEGER) ? true_node : NIL;
+	return node && node->type == INTEGER;
 }
 
 /*
@@ -97,7 +89,7 @@ Decimal get_decimal(Node *node)
 */
 bool decimalp(node *node)
 {
-	return node->type & DECIMAL;
+	return node && node->type & DECIMAL;
 }
 
 /*
@@ -116,3 +108,4 @@ Node *string_decimal(Node *node)
 		return make_string_alloc("NaN");
 	}
 }
+

@@ -27,4 +27,7 @@ Well, it will be when all the data types will be implemented.
 But the BIG difficulty, is managing the memory, even if we dont use a real garbage collector.
 
 ## Licence
-For now Eclipse Public License - v 1.0
+For now :
+
+- Eclipse Public License - v 1.0 for the code.
+- CC creative common for documentation.
