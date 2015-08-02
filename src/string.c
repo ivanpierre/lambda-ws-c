@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include "nodes.h"
 
@@ -19,9 +20,9 @@
 static Node *new_string_base(String value, NodeType type)
 {
 	ASSERT(value, "make_string_value : value is null");
-	Node *s = create_node(type);
+	Node *s = new_node(type);
 	if(!s) return s;
-	s->value.string = value;
+	s->val.string = value;
 	return s; // create node does the link
 }
 
@@ -31,7 +32,7 @@ static Node *new_string_base(String value, NodeType type)
 Node *new_string(char *value)
 {
 	ASSERT(value, "make_string : value is null");
-	return make_string_base(value, STRING); // make_string does the link
+	return new_string_base(value, STRING); // make_string does the link
 }
 
 /*
@@ -40,7 +41,7 @@ Node *new_string(char *value)
 Node *new_string_allocate(char *value)
 {
 	ASSERT(value, "make_string_allocate : value is null");
-	return make_string_base(strdup(value), STRING); // make_string does the link
+	return new_string_base(strdup(value), STRING); // make_string does the link
 }
 
 /*
@@ -49,7 +50,7 @@ Node *new_string_allocate(char *value)
 Node *new_symbol(char *value)
 {
 	ASSERT(value, "make_symbol : value is null");
-	return make_string_base(strdup(value), SYMBOL); // make_string does the link
+	return new_string_base(strdup(value), SYMBOL); // make_string does the link
 }
 
 /*
@@ -58,21 +59,23 @@ Node *new_symbol(char *value)
 Node *new_keyword(char *value)
 {
 	ASSERT(value, "make_keyword : value is null");
-	return make_string_base(strdup(value), KEYWORD); // make_string does the link
+	return new_string_base(strdup(value), KEYWORD); // make_string does the link
 }
 
 /*
 	create a new string node appending another one
 */
-Node *concat_string(Node *s, Node *add)
+Node *sprintf_string(char *fmt, ...)
 {
-	char *formated = NULL;
-	Node *tmp = string_node(add);
-	ASSERT(tmp, "concat_string : cannot format node");
-	asprintf(&formated, "%s%s", ((String *)s)->val.string, tmp->val.string);
-	free_node(tmp);                          // unallocate string version of add
-	ASSERT(formated, "concat_string : cannot format node");
-	return make_string(formated);   // formated has been allocated
+	va_list args;
+	va_start(args, fmt);
+	String formated = NULL;
+	asprintf(&formated, fmt, args);
+	if(!formated)
+		return new_string_allocate("Cannot format string");
+	return new_string_allocate(formated);
+
+
 }
 
 /*
@@ -104,8 +107,8 @@ bool keywordp(Node *node)
 */
 String get_string(Node *s)
 {
-	ASSERT_TYPE(STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
-	return strdup(((String *)s)->value.string);
+	ASSERT_TYPE(s, STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
+	return strdup(s->val.string);
 }
 
 /*
@@ -113,17 +116,21 @@ String get_string(Node *s)
 */
 String get_formated_string(Node *s)
 {
-	ASSERT_TYPE(STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
+	ASSERT_TYPE(s, STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
 	String formated = NULL;
 	switch(s->type)
 	{
 		case KEYWORD :
-			asprintf(&formated, ":%s", ((String *)s)->value.string);
+			asprintf(&formated, ":%s", (s->val.string));
+			break;
 		case SYMBOL :
-			asprintf(&formated, "%s", ((String *)s)->value.string);
+			asprintf(&formated, "%s", (s->val.string));
+			break;
 		case STRING :
-			asprintf(&formated, "\"%s\"", ((String *)s)->value.string);
+			asprintf(&formated, "\"%s\"", (s->val.string));
+			break;
 		default :
+			break;
 	}
 	ASSERT(formated, "get_formated_string : cannot format node");
 	return formated;
@@ -135,12 +142,10 @@ String get_formated_string(Node *s)
 */
 Node *string_string(Node *node)
 {
-	ASSERT_TYPE(STRING|SYMBOL|KEYWORD, "string_string : node is not a string, symbol or keyword");
+	ASSERT_TYPE(node, STRING|SYMBOL|KEYWORD, "string_string : node is not a string, symbol or keyword");
 	String formated = get_formated_string(node);
 	ASSERT(formated, "string_string : cannot format node");
-	Node *res = new_string(formated);
-	free(formatted);
-	return res;
+	return new_string(formated); // formated allocated
 }
 
 /*
@@ -148,12 +153,11 @@ Node *string_string(Node *node)
 */
 Node *free_string(Node *node)
 {
-	ASSERT_TYPE(STRING|SYMBOL|KEYWORD, "free_string : node is not a string");
-	String *str = (String *)node;
-	if(str->value)
+	ASSERT_TYPE(node, STRING|SYMBOL|KEYWORD, "free_string : node is not a string");
+	if(node->val.string)
 	{
-		free(str->value);
-		str->value = NULL;
+		free(node->val.string);
+		node->val.string = NULL;
 	}
 	return node;
 }

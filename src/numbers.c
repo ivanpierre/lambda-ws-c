@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "nodes.h"
 
@@ -18,7 +19,7 @@ Node *new_integer(Integer value)
 {
 	Node *node = new_node(INTEGER);
 
-	if(nullp(node))
+	if(!node)
 		return NULL;
 
 	node->val.integer = value;
@@ -37,7 +38,7 @@ Integer get_integer(Node *node)
 /*
 	test if node is an integer
 */
-bool integerp(node *node)
+bool integerp(Node *node)
 {
 	return node && node->type == INTEGER;
 }
@@ -47,22 +48,16 @@ bool integerp(node *node)
 */
 Node *string_integer(Node *node)
 {
-	if(!integerp(node))
-	{
-		error("print_integer : Node is not an integer\n");
-		return NIL;
-	}
+	ASSERT_TYPE(node, INTEGER, "print_integer : Node is not an integer\n");
 
-	char *formatted;
-	asprintf(&formatted, "%ld", get_integer(node));
+	char *formated;
+	asprintf(&formated, "%ld", get_integer(node));
 
-	if(formatted)
-		return new_string(formatted);
-	else
-	{
-		free(formatted);
-		return make_string_alloc("NaN");
-	}
+	if(formated)
+		return new_string(formated);
+
+	free(formated);
+	return new_string_allocate("NaN");
 }
 
 ////// Decimals
@@ -87,7 +82,7 @@ Decimal get_decimal(Node *node)
 /*
 	test if node is a decimal
 */
-bool decimalp(node *node)
+bool decimalp(Node *node)
 {
 	return node && node->type & DECIMAL;
 }
@@ -105,7 +100,7 @@ Node *string_decimal(Node *node)
 	else
 	{
 		free(formatted);
-		return make_string_alloc("NaN");
+		return new_string_allocate("NaN");
 	}
 }
 

@@ -8,35 +8,41 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "nodes.h""
+#include <stdarg.h>
+#include "nodes.h"
 
 
+/*
+	double linked list of nodes
+*/
 #if defined(DEBUG_ALLOC)
-	/*
-		double linked list of nodes
-	*/
 	Node *first_node    = NULL;
 	Node *last_node     = NULL;
-
-	// global values
-	Node *nil_node = {NIL_NODE, 0, NULL, NULL, {0};
-	Node *true_node = {TRUE_NODE, 0, NULL, NULL, {0};
-	Node *false_node = {FALSE_NODE, 0, NULL, NULL, {0};
-#else
-	Node *nil_node = {NIL_NODE, 0, {0};
-	Node *true_node = {TRUE_NODE, 0, {0};
-	Node *false_node = {FALSE_NODE, 0, {0};
 #endif
+
+// global values
+Node *nil_node = NULL;
+Node *true_node = NULL;
+Node *false_node = NULL;
 
 // Error signal
 Node *error_node = NULL;
 
+// Error function
+void ERROR( char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	error_node = sprintf_string(fmt, args);
+}
+
+
 /*
 	test if linking is applyable
 */
-bool unlinkable(Node *n)
+bool unlinkable(Node *node)
 {
-	return node && node->type & (NIL_NODE || TRUE_NODE || FALSE_NODE);
+	return node && node->type & (NIL_NODE | TRUE_NODE | FALSE_NODE);
 }
 
 /*
@@ -58,7 +64,7 @@ Node *unlink_node(Node *node)
 {
 	if(!unlinkable(node))
 	{
-		if(node-occurence)
+		if(node->occurences)
 			node->occurences--;
 		if(!node->occurences)
 			free_node(node);
@@ -67,42 +73,10 @@ Node *unlink_node(Node *node)
 }
 
 /*
-	Create a node
-	Constructor, return linked
-*/
-Node *create_node(TYPES type_of_node)
-{
-	type *node_type = (type *)get_type_details(type_of_node); // linked
-	long size;
-	if(!node_type)
-		return NIL;
-
-	size = node_type->size;
-	node_type = unlink_node(node_type); // unlink
-
-	Node *new = malloc(size);
-	Node *tmp = new;
-
-	if(!new)
-	{
-		error("create_node : Error : allocation of node\n");
-		return NIL;
-	}
-	new = init_node(new, type_of_node); // init_node does link
-	if(nullp(new))
-	{
-		free(tmp); //
-		error("create_node : Error : initialisation of node\n");
-	}
-
-	return new;
-}
-
-/*
 	First initialisation of an allocated node, first link to the data segment
 	Return linked node or NIL
 */
-static Node *init_node(Node *node, TYPES type)
+static Node *init_node(Node *node, NodeType type)
 {
 	node->type = type;
 	node->occurences = 0; // will be incremented on link
@@ -121,27 +95,6 @@ static Node *init_node(Node *node, TYPES type)
 	}
 #endif
 	return link_node(node);
-}
-
-/*
-	completely unlink and init node list
-*/
-bool init_node_list()
-{
-#ifdef DEBUG_ALLOC
-	while(first_node)
-	{
-		Node *node = first_node;
-		first_node = node->next_node;
-
-		// empty allocation
-		while(node)
-		    node = free_node(node);
-	}
-	last_node = NULL;
-#else
-#endif
-	return TRUE;
 }
 
 /*
@@ -168,34 +121,136 @@ Node *free_node(Node *node)
     	case ARRAY :
     	case MAP :
     	case SET :
-    	    free_array(node->array);
+    	    free_collection(node);
     	    break;
 
     	case ENVIRONMENT :
-    	    free_env(node->env);
+    	    free_env(node);
     	    break;
 
     	case FUNCTION :
-    	    free_function(node->function);
+    	    free_function(node);
     	    break;
 
     	case LAMBDA :
-    	    free_lambda(node->lambda);
+    	    free_lambda(node);
     	    break;
 
     	case ATOM :
-    	    free_node(node->atom);
+    	    free_node(node->val.atom);
+    	    node->val.atom = NULL;
 			break;
 
     	case READER :
-    	    free_node(node->atom);
+    	    free_reader(node);
 			break;
 
 		case INTEGER :
 		case DECIMAL :
 		default :
+			break;
 	}
 
 	free(node);
 	return NULL;
 }
+
+/*
+	return string version of nodes according to type
+*/
+Node *string_node(Node *node)
+{
+	ASSERT(node, "free_node : NULL node");
+
+	switch(node->type)
+	{
+		case NIL_NODE :
+			return sprintf_string("nil");
+
+    	case TRUE_NODE :
+			return sprintf_string("true");
+
+    	case FALSE_NODE :
+			return sprintf_string("strue");
+
+    	case KEYWORD :
+    	case SYMBOL :
+    	case STRING :
+    	    return string_string(node);
+
+    	case LIST :
+    	case ARRAY :
+    	case MAP :
+    	case SET :
+    	    return string_collection(node);
+
+    	case ENVIRONMENT :
+    	    return string_env(node);
+
+    	case FUNCTION :
+    	    return string_function(node);
+
+    	case LAMBDA :
+    	    return string_lambda(node);
+
+    	case ATOM :
+    	    return string_atom(node->val.atom);
+
+    	case READER :
+    	    return string_reader(node);
+
+		case INTEGER :
+			return string_integer(node);
+
+		case DECIMAL :
+			return string_decimal(node);
+
+		default :
+			break;
+	}
+
+	free(node);
+	return NULL;
+}
+
+/*
+	Create a node
+	Constructor, return linked
+*/
+Node *new_node(NodeType type_of_node)
+{
+	Node *new = malloc(sizeof(Node));
+	ASSERT(new, "create_node : Error : allocation of node\n");
+
+	Node *tmp = new;
+	new = init_node(new, type_of_node); // init_node does link
+	if(!new)
+	{
+		free(tmp);
+		ABORT("create_node : Error : initialisation of node\n");
+	}
+
+	return new;
+}
+
+/*
+	completely unlink and init node list
+*/
+bool init_node_list()
+{
+#ifdef DEBUG_ALLOC
+	while(first_node)
+	{
+		Node *node = first_node;
+		first_node = node->next_node;
+
+		// empty allocation
+		while(node)
+		    node = free_node(node);
+	}
+	last_node = NULL;
+#else
+#endif
+	return TRUE;
+}
+
