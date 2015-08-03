@@ -56,20 +56,20 @@ typedef enum
 	ARRAY       =   1 << 10,
 	MAP         =   1 << 11,
 	SET         =   1 << 12,
-	SEQ         =   1 << 13
+	SEQ         =   1 << 13,
 	ENVIRONMENT =   1 << 14,
 	FUNCTION    =   1 << 15,
 	LAMBDA      =   1 << 16,
 	ATOM        =   1 << 17,
 	READER      =   1 << 18,
-	KEYVAL      =   1 << 19;
-	INVALID     =   20;
+	KEYVAL      =   1 << 19,
+	INVALID     =   20
 } NodeType;
 
 /*
 	String representation of types
 */
-external char **str_types;
+extern char *str_types[];
 
 /*
 	Define in case of allocation debugging
@@ -101,13 +101,13 @@ typedef struct
 	bool            mutable;
 	long            size;
 	long            max;
-	struct Node     *nodes;
+	struct Node     **nodes;
 } Collection;
 
 typedef struct
 {
 	long            index;
-	Node            *coll;
+	struct Node     *coll;
 } Seq;
 
 /*
@@ -214,7 +214,7 @@ typedef struct Node
 		Decimal     decimal;
 		String      string;
 		Collection  *coll;
-		Keyval      *keyval;
+		KeyValue    *keyval;
 		Lambda      *lambda;
 		Function    *function;
 		Env         *env;
@@ -279,7 +279,8 @@ long        size_coll(Node *coll);
 Node        *first_coll(Node *coll);
 Node        *last_coll(Node *coll);
 Node        *take_coll(Node *coll);
-Node        *alloc_clone_coll(Node *coll, long diff);
+Node        *malloc_clone_coll(Node *coll, long diff);
+Node        *malloc_coll(Node *coll, long diff);
 Node        *realloc_coll(Node *coll, long diff);
 Node        *assoc(Node *map, Node *keyval);
 Node        *dissoc(Node *map, Node *keyval);

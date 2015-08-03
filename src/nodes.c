@@ -38,7 +38,7 @@ void ERROR( char *fmt, ...)
 /*
 	String representation of types
 */
-char            **str_types =
+char            *str_types[] =
 							{
 								"nil",
 								"true",
@@ -59,17 +59,17 @@ char            **str_types =
 								"reader",
 								"keyval",
 								"<invalid type>"
-
 							};
 
 
 
 String str_type(NodeType type)
 {
-	for(int i = 0; i < INVALID; i++)
+	int i = 0;
+	for(;i < INVALID; i++)
 		if(1 << i == type)
 			break;
-	return str_types
+	return str_types[i];
 }
 
 /*
@@ -156,7 +156,7 @@ Node *free_node(Node *node)
     	case ARRAY :
     	case MAP :
     	case SET :
-    	    free_collection(node);
+    	    free_coll(node);
     	    break;
 
     	case KEYVAL :
@@ -221,7 +221,7 @@ Node *string_node(Node *node)
     	case ARRAY :
     	case MAP :
     	case SET :
-    	    return string_collection(node);
+    	    return string_coll(node);
 
 		case KEYVAL :
 			return string_keyval(node);
@@ -262,7 +262,7 @@ Node *string_node(Node *node)
 Node *new_node(NodeType type_of_node)
 {
 	Node *new = malloc(sizeof(Node));
-	ASSERT(new, "create_node : Error : allocation of node of type %s", str_type(type_of_node);
+	ASSERT(new, "create_node : Error : allocation of node of type %s", str_type(type_of_node));
 
 	Node *tmp = new;
 	new = init_node(new, type_of_node); // init_node does link
@@ -291,7 +291,6 @@ bool init_node_list()
 		    node = free_node(node);
 	}
 	last_node = NULL;
-#else
 #endif
 	return TRUE;
 }

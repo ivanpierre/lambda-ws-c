@@ -6,15 +6,17 @@ management. Boxing is needed to manage data types as C doesn't do it for us...
 
 All instances of these types are nodes witch will be managed by the allocator.
 
-`nodes.c`: contain allocation and general node management.
-`nodes.h`: gives all structures of nodes and all public management functions.
+- `nodes.c`: contain allocation and general node management.
+- `nodes.h`: gives all structures of nodes and all public management functions.
 
 Ordering of nodes as keys is defined by the comparison function. witch is different from the equality function.
-For example 0 is equal to 0.0, but they can both be keys.
+For example 0 is equal to 0.0, but they can both be keys for maps or sets.
 
 ## Collections `collections.c`
-All collections are stored in an array. With `size`, giving the prensent number of valid nodes of the
-collection and `max`, giviong the number of allocated nodes.
+All collections are stored in an array. With 
+
+- `size`, giving the prensent number of valid nodes of the collection and 
+- `max`, giving the number of allocated nodes.
 
 LIST and ARRAY are ordinated node's sequences. List goes backward growing to the head and arrays upward
 growing to the tail. Other collections are ordinated by the key order.
