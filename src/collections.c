@@ -167,6 +167,20 @@ Node *string_keyval(Node *node)
 }
 
 /*
+	Free keyval
+*/
+Node *free_keyval(Node *node)
+{
+	ASSERT_TYPE(node, KEYVAL,
+				"free_keyval : error unallocatig bad type : %s",
+				str_type(node->type));
+
+	free_node(node->val.keyval->key);
+	free_node(node->val.keyval->value);
+	return NULL;
+}
+
+/*
 	get inner conttent of collection as a string
 */
 String get_inner_content_coll(Node *coll)
@@ -325,6 +339,7 @@ Node *new_empty_coll(long alloc, NodeType type)
 
 /*
 Node        *reduce_coll(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *coll);
+Node        *filter_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map2_coll(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
 Node        *new_empty_coll(long alloc, NodeType type);

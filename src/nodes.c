@@ -199,7 +199,7 @@ Node *free_node(Node *node)
 */
 Node *string_node(Node *node)
 {
-	ASSERT(node, "free_node : NULL node");
+	ASSERT(node, "string_node : NULL node");
 
 	switch(node->type)
 	{
@@ -236,7 +236,7 @@ Node *string_node(Node *node)
     	    return string_lambda(node);
 
     	case ATOM :
-    	    return string_atom(node->val.atom);
+    	    return string_node(node->val.atom);
 
     	case READER :
     	    return string_reader(node);

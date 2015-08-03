@@ -90,7 +90,7 @@ struct  Node; // forward
 typedef struct Env
 {
 	struct Node     *previous; // Environment
-	struct Node     *binds;    // Map
+	struct Node     *map;    // Map
 } Env;
 
 /*
@@ -134,6 +134,7 @@ typedef struct
 {
 	struct Node *(*eval)(struct Node *args, Env *env);
 	bool        is_macro;
+	bool        is_special;
 	struct Node *args;
 	struct Node *body;
 	struct Node *closure;
@@ -146,7 +147,9 @@ typedef struct
 {
 	struct Node *(*eval)(struct Node *args, Env *env);
 	bool                is_macro;
+	bool                is_special;
 	int                 nb_args;
+	struct Node         *closure;
 	union
 	{
         struct Node     *(*f0) ();
@@ -289,6 +292,7 @@ Node        *push(Node *coll, Node *elem);
 Node        *sort(Node coll);
 long        pos_coll(Node *coll, Node *search);
 Node        *reduce_coll(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *coll);
+Node        *filter_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map2_coll(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
 Node        *new_empty_coll(long alloc, NodeType type);
@@ -305,9 +309,8 @@ Node        *string_env(Node *node); // internal
 Node        *free_reader(Node *node); // internal
 Node        *string_reader(Node *node); // internal
 
-// Reader
-Node        *free_atom(Node *node); // internal
-Node        *string_atom(Node *node); // internal
+// Atom
+Node        *deref_atom(Node *node); // internal
 
 // DEBUG_ALLOC functions
 bool        init_node_list();
