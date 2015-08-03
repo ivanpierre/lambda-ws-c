@@ -1,4 +1,19 @@
 #BLOG (just what happens)
+##03 aug 2015
+- [ ] Clarify and precise implementation details.
+- [ ] Finalizing previous enhancements. 
+- [ ] Functions definition, creation calling.
+- [ ] Environments creation and management based on MAP.
+- [ ] Reader functions and dispatch functions.
+- [ ] TDD functions
+- [ ] Begin to test extensively all this stuff.
+- Change and precise implementation documentation.
+- String representation for types.
+- Implementation as Strings for SYMBOL, KEYWORD, STRING.
+- Implementation as Array for LIST, ARRAY, MAP and SET.
+- Added type KEYVAL for maps key / values bindings.
+- Implementation in numbers.c for INTEGER and DECIMAL.
+
 ##30 jul 2015
 Ok, `glib` is a nice library. But I will go with the idea of writing the whole with standard lib.
 
@@ -17,7 +32,7 @@ environment to grab bindings in...
 - [x] Add set type.
 - [x] All function and data definitions for structures are in node.h
 - [x] Numbers are now managed by numbers.c
-- [ ] consolidate changes.
+- [x] consolidate changes.
 
 ##28 jul 2015
 Some changes in view.
