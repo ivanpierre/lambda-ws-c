@@ -11,7 +11,6 @@
 #include <stdarg.h>
 #include "nodes.h"
 
-
 /*
 	double linked list of nodes
 */
@@ -36,11 +35,47 @@ void ERROR( char *fmt, ...)
 	error_node = sprintf_string(fmt, args);
 }
 
+/*
+	String representation of types
+*/
+char            **str_types =
+							{
+								"nil",
+								"true",
+								"false",
+								"symbol",
+								"keyword",
+								"integer",
+								"decimal",
+								"string",
+								"list",
+								"array",
+								"map",
+								"set",
+								"environment",
+								"function",
+								"lambda",
+								"atom",
+								"reader",
+								"keyval",
+								"<invalid type>"
+
+							};
+
+
+
+String str_type(NodeType type)
+{
+	for(int i = 0; i < INVALID; i++)
+		if(1 << i == type)
+			break;
+	return str_types
+}
 
 /*
 	test if linking is applyable
 */
-bool unlinkable(Node *node)
+static bool unlinkable(Node *node)
 {
 	return node && node->type & (NIL_NODE | TRUE_NODE | FALSE_NODE);
 }
@@ -124,6 +159,10 @@ Node *free_node(Node *node)
     	    free_collection(node);
     	    break;
 
+    	case KEYVAL :
+    	    free_keyval(node);
+    	    break;
+
     	case ENVIRONMENT :
     	    free_env(node);
     	    break;
@@ -171,7 +210,7 @@ Node *string_node(Node *node)
 			return sprintf_string("true");
 
     	case FALSE_NODE :
-			return sprintf_string("strue");
+			return sprintf_string("false");
 
     	case KEYWORD :
     	case SYMBOL :
@@ -183,6 +222,9 @@ Node *string_node(Node *node)
     	case MAP :
     	case SET :
     	    return string_collection(node);
+
+		case KEYVAL :
+			return string_keyval(node);
 
     	case ENVIRONMENT :
     	    return string_env(node);
@@ -220,14 +262,14 @@ Node *string_node(Node *node)
 Node *new_node(NodeType type_of_node)
 {
 	Node *new = malloc(sizeof(Node));
-	ASSERT(new, "create_node : Error : allocation of node\n");
+	ASSERT(new, "create_node : Error : allocation of node of type %s", str_type(type_of_node);
 
 	Node *tmp = new;
 	new = init_node(new, type_of_node); // init_node does link
 	if(!new)
 	{
 		free(tmp);
-		ABORT("create_node : Error : initialisation of node\n");
+		ABORT("create_node : Error : initialisation of node of type %s", str_type(type_of_node));
 	}
 
 	return new;

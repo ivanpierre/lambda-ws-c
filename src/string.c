@@ -74,8 +74,6 @@ Node *sprintf_string(char *fmt, ...)
 	if(!formated)
 		return new_string_allocate("Cannot format string");
 	return new_string_allocate(formated);
-
-
 }
 
 /*

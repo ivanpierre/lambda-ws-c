@@ -9,17 +9,23 @@ All instances of these types are nodes witch will be managed by the allocator.
 `nodes.c`: contain allocation and general node management.
 `nodes.h`: gives all structures of nodes and all public management functions.
 
-### LIST `seq.c`
+### LIST `collections.c`
 This is linked list data type. We need it to implement function calls and definitions.
 
 This contains a first element witch is a node and a next element witch should be a LIST or NULL (for list ending). 
 This should ensure that all lists are lists and not conses to enable another management of lists (i.e. arrays)
 
-### ARRAY `seq.c`
+### ARRAY `collections.c`
 Not needed now, but 'ça ne mange pas de pain' ;)
 
-### MAP `seq.c`
+### MAP `collections.c`
 Is needed to define data dictionary and environment for functions and lets.
+
+### SET `collections.c`
+Sets are maps where keys and values are the same.
+
+### KEYVAL `collection.c`
+Association of keys and values, especially in maps
 
 ### STRING `strings.c`
 Hosts the name of symbols,
