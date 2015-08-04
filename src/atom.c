@@ -1,5 +1,5 @@
 /****
-	Atoms for references
+	Atoms for references, var, futures
 
 	Lambda Calculus Workshop
 	C version

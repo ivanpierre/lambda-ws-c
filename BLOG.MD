@@ -1,15 +1,19 @@
 #BLOG (just what happens)
 ##04 aug 2015
 
+- Separate STRING et SYMBOL, new [symbol.c`](symbol.c) for keywords and symbols.
+- Adding evaluation functions.
+- Adding NAMESPACE.
+- ATOM is deprecated split into VAR, REF, FUTURE... [`atom.c`](src/atom.c) get the foll management
 - Changed function definition, functions will be a map of FUNCTION mapped by argument list characteristics.
 - LAMBDA and FUNCTION share the same structure Function.
 - The type for a function collection with the same name is API.
 - ENVIRONMENT are grouped as a LIST (stack) named ENV_STACK.
 - There will be two environment stacks, the global one and the local one. Local one is passed on call to the functions.
 - Searches for symbols is done on the local environment witch test global one automatically.
-- Local environment is stored in the function if it is defined in a non top context.
-- Local environement is passed as argument and push and pop managed by the eval function.
-- Local environment shaining pass through closure. Let for example is just a function call.
+- Local environment is stored in the function as a closure if it is defined in a non top context.
+- Local environment is passed as argument and push and pop managed by the FUNCTION eval function.
+- Local environment chaining pass through closure. Let for example is just a function call.
 
 ```
     (let [a va
