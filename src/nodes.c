@@ -162,15 +162,17 @@ Node *free_node(Node *node)
     	case ARRAY :
     	case MAP :
     	case SET :
+		case ENV_STACK :
+    	case ENVIRONMENT :
     	    free_coll(node);
     	    break;
 
+//    	case SEQ :
+//    	    free_coll(node);
+//    	    break;
+
     	case KEYVAL :
     	    free_keyval(node);
-    	    break;
-
-    	case ENVIRONMENT :
-    	    free_env(node);
     	    break;
 
     	case FUNCTION :
@@ -181,7 +183,9 @@ Node *free_node(Node *node)
     	    free_lambda(node);
     	    break;
 
-    	case ATOM :
+//      case REF
+//      case FUTURE
+    	case VAR :
     	    free_node(node->val.atom);
     	    node->val.atom = NULL;
 			break;
@@ -191,6 +195,7 @@ Node *free_node(Node *node)
 			break;
 
 		case INTEGER :
+//      case FRACTION :
 		case DECIMAL :
 		default :
 			break;
@@ -227,13 +232,12 @@ Node *string_node(Node *node)
     	case ARRAY :
     	case MAP :
     	case SET :
+    	case ENV_STACK :
+    	case ENVIRONMENT :
     	    return string_coll(node);
 
 		case KEYVAL :
 			return string_keyval(node);
-
-    	case ENVIRONMENT :
-    	    return string_env(node);
 
     	case FUNCTION :
     	    return string_function(node);
@@ -241,7 +245,9 @@ Node *string_node(Node *node)
     	case LAMBDA :
     	    return string_lambda(node);
 
-    	case ATOM :
+    	case VAR :
+//    	case REF :
+//    	case FUTURE :
     	    return string_node(node->val.atom);
 
     	case READER :
@@ -257,6 +263,53 @@ Node *string_node(Node *node)
 			break;
 	}
 
+	free(node);
+	return NULL;
+}
+
+/*
+	return evaluation of nodes according to type
+*/
+Node *eval_node(Node *node, Node *env)
+{
+	ASSERT(node, "eval_node : NULL node");
+
+	switch(node->type)
+	{
+    	case SYMBOL :
+    	    return eval_symbol(node, env);
+
+    	case LIST :
+    	case SEQ :
+			return eval_list(node, env);
+
+    	case ARRAY :
+    	case MAP :
+    	case SET :
+    	    return eval_coll(node, env);
+
+    	case KEYVAL :
+    	    return eval_keyval(node, env);
+
+
+		case NIL_NODE :
+		case TRUE_NODE :
+		case FALSE_NODE :
+		case KEYWORD :
+		case INTEGER :
+//		case FRACTION :
+		case DECIMAL :
+		case STRING :
+		case ENV_STACK :
+		case ENVIRONMENT :
+		case API :
+		case FUNCTION :
+		case LAMBDA :
+    	case VAR :
+//		case REF :
+		case READER :
+			return node;
+	}
 	free(node);
 	return NULL;
 }

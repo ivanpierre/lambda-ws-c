@@ -13,16 +13,16 @@
 
 ```
     (let [a va
-          b vb]
+          b a]
        body)
 ```
 
 is the same as
 
 ```
-	((fn [a b] 
-        body) 
-       va vb)
+	((fn [a b] ; fn do the evaluation of args, so the [a b] is accessible while
+        body)  ; evaluating va and a, so b is bind to a bind to the evaluation of va.
+       va a)
 ```
 
 so the body is evaluated with the fn arguments. And fn evaluation is made with the previous environment witch is

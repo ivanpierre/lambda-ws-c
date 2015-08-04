@@ -58,23 +58,24 @@ typedef enum
 	MAP             =   1 << 12, // Mapped array of KEYVAL
 	SET             =   1 << 13, // Mapped array of keys
 //	SEQ             =   1 << 14, // Walker on a collection
-	ENV_STACK       =   1 << 15, // is a list of ENVIRONMENT
-	ENVIRONMENT     =   1 << 16, // is a map of nodes, mapped by SYMBOL
-	API             =   1 << 17  // is a map of FUNCTION, mapped by args (ARRAY)
-	FUNCTION        =   1 << 18, // Function pointer
-	LAMBDA          =   1 << 19, // Body of language to evaluate
-	VAR             =   1 << 20, // Values of global vars (bind)
-//	REF             =   1 << 21, // CSP managed values
-//	FUTURE          =   1 << 22, // Asynchronously managed values
-	READER          =   1 << 23, // Reader for a syntax
-	KEYVAL          =   1 << 24, // Binding of key / values for MAP
-	INVALID         =        25  // Self explaining... used not to go too far... :D
+	NAMESPACE       =   1 << 15,
+	ENV_STACK       =   1 << 16, // is a list of ENVIRONMENT
+	ENVIRONMENT     =   1 << 17, // is a map of nodes, mapped by SYMBOL
+	API             =   1 << 18,  // is a map of FUNCTION, mapped by args (ARRAY)
+	FUNCTION        =   1 << 19, // Function pointer
+	LAMBDA          =   1 << 20, // Body of language to evaluate
+	VAR             =   1 << 21, // Values of global vars (bind)
+//	REF             =   1 << 22, // CSP managed values
+//	FUTURE          =   1 << 23, // Asynchronously managed values
+	READER          =   1 << 24, // Reader for a syntax
+	KEYVAL          =   1 << 25, // Binding of key / values for MAP
+	INVALID         =        26  // Self explaining... used not to go too far... :D
 } NodeType;  // WIP
 
 /*
 	String representation of types
 */
-extern char *str_types[];
+// extern char *str_types[];
 
 /*
 	Define in case of allocation debugging
@@ -95,7 +96,7 @@ struct  Node; // forward
 typedef struct Env
 {
 	struct Node     *previous; // Environment
-	struct Node     *map;    // Map
+	struct Node     *map;
 } Env;
 
 /*
@@ -125,6 +126,15 @@ typedef struct
 } KeyValue;
 
 /*
+	Symbol
+*/
+typedef struct
+{
+	Node            *ns;
+	Node            *name;
+} Symbol;
+
+/*
 	Reader
 */
 typedef struct
@@ -137,15 +147,14 @@ typedef struct
 */
 typedef struct
 {
-	struct Node *(*eval)(struct Node *args, Env *env);
 	bool                is_macro;
 	bool                is_special;
-	struct Node         *closure;
-	struct Node         *args;
+	struct Node         *closure; // MAP
+	struct Node         *args;    // LIST
 	union
 	{
-        struct Node         *(*func) (int count, ...);
-		struct Node         *body;
+        struct Node     *(*func) (struct Node *args, ...);
+		struct Node     *body;
 	} func;
 } Function;
 
@@ -165,6 +174,7 @@ typedef struct Node
 		Integer     integer;
 		Decimal     decimal;
 		String      string;
+		Symbol      *symbol;
 		Collection  *coll;
 		KeyValue    *keyval;
 		Function    *function;
@@ -201,19 +211,26 @@ Decimal     get_decimal(Node *node);
 bool        decimalp(Node *node);
 Node        *string_decimal(Node *node); // internal
 
-// Strings, symbols, keywords
+// Strings
 Node        *new_string(char *value);
 Node        *new_string_allocate(char *value);
-Node        *new_symbol(char *value);
-Node        *new_keyword(char *value);
 Node        *sprintf_string(char *fmt, ...);
 bool        stringp(Node *node);
-bool        symbolp(Node *node);
-bool        keywordp(Node *node);
 String      get_string(Node *string);
 String      get_formated_string(Node *string);
 Node        *free_string(Node *string); // internal
 Node        *string_string(Node *string); // internal
+Node        *eval_symbol(Node *node, Node *env);
+
+// symbols, keywords
+Node        *new_symbol(char *value);
+Node        *new_keyword(char *value);
+bool        symbolp(Node *node);
+bool        keywordp(Node *node);
+String      get_symbol_name(Node *s)
+String      get_symbol_formatted_name(Node *s)
+Node        *free_symbol(Node *string); // internal
+Node        *string_symbol(Node *string); // internal
 
 // Function
 Node        *free_function(Node *func); // internal
@@ -245,6 +262,9 @@ Node        *filter_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map2_coll(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
 Node        *new_empty_coll(NodeType type, long alloc);
+Node        *eval_coll(Node *node, Node *env);
+Node        *eval_list(Node *node, Node *env);
+Node        *eval_keyval(Node *node, Node *env);
 
 // Keyval
 Node        *free_keyval(Node *node); // internal
@@ -259,7 +279,7 @@ Node        *free_reader(Node *node); // internal
 Node        *string_reader(Node *node); // internal
 
 // Atom
-Node        *deref_atom(Node *node); // internal
+Node        *deref_var(Node *node); // internal
 
 // DEBUG_ALLOC functions
 bool        init_node_list();

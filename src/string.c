@@ -1,5 +1,5 @@
 /****
-	Strings. This is base for all named nodes
+	Strings
 
 	Lambda Calculus Workshop
 	C version
@@ -17,10 +17,10 @@
 /*
 	Create a linked string, don't allocate space for the string
 */
-static Node *new_string_base(String value, NodeType type)
+static Node *new_string_base(String value)
 {
 	ASSERT(value, "make_string_value : value is null");
-	Node *s = new_node(type);
+	Node *s = new_node(STRING);
 	if(!s) return s;
 	s->val.string = value;
 	return s; // create node does the link
@@ -32,7 +32,7 @@ static Node *new_string_base(String value, NodeType type)
 Node *new_string(char *value)
 {
 	ASSERT(value, "make_string : value is null");
-	return new_string_base(value, STRING); // make_string does the link
+	return new_string_base(value); // make_string does the link
 }
 
 /*
@@ -41,25 +41,7 @@ Node *new_string(char *value)
 Node *new_string_allocate(char *value)
 {
 	ASSERT(value, "make_string_allocate : value is null");
-	return new_string_base(strdup(value), STRING); // make_string does the link
-}
-
-/*
-	Create a linked symbol, allocate space for the string
-*/
-Node *new_symbol(char *value)
-{
-	ASSERT(value, "make_symbol : value is null");
-	return new_string_base(strdup(value), SYMBOL); // make_string does the link
-}
-
-/*
-	Create a linked keyword, allocate space for the string
-*/
-Node *new_keyword(char *value)
-{
-	ASSERT(value, "make_keyword : value is null");
-	return new_string_base(strdup(value), KEYWORD); // make_string does the link
+	return new_string_base(strdup(value)); // make_string does the link
 }
 
 /*
@@ -85,22 +67,6 @@ bool stringp(Node *node)
 }
 
 /*
-	test if node is a symbol
-*/
-bool symbolp(Node *node)
-{
-	return node && node->type & SYMBOL;
-}
-
-/*
-	test if node is a keyword
-*/
-bool keywordp(Node *node)
-{
-	return node && node->type & KEYWORD;
-}
-
-/*
 	Return linked value of string...
 */
 String get_string(Node *s)
@@ -118,12 +84,6 @@ String get_formated_string(Node *s)
 	String formated = NULL;
 	switch(s->type)
 	{
-		case KEYWORD :
-			asprintf(&formated, ":%s", (s->val.string));
-			break;
-		case SYMBOL :
-			asprintf(&formated, "%s", (s->val.string));
-			break;
 		case STRING :
 			asprintf(&formated, "\"%s\"", (s->val.string));
 			break;

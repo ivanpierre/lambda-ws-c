@@ -23,8 +23,8 @@ Node *free_function(Node *node)
 	if(node->val.function->closure)
 		node->val.function->closure = free_node(node->val.function->closure);
 	return NULL;
-	if(node->type & LAMBDA, node->val.function->body)
-		node->val.function->boda = free_node(node->val.function->body);
+	if(node->type & LAMBDA && node->val.function->func.body)
+		node->val.function->func.body = free_node(node->val.function->func.body);
 	return NULL;
 }
 
@@ -37,13 +37,13 @@ Node *string_function(Node *node)
 	ASSERT(node, "string_function : null environment");
 	ASSERT_TYPE(node, FUNCTION, "string_function : Bad type %s", str_type(node->type));
 	Node *map = string_node(node->val.function->closure);
-	Node *args = string_node(node->val.function->closure);
-//	Node *body = string_node(node->val.function->body);
+	Node *args = string_node(node->val.function->args);
+//	Node *body = string_node(node->val.function->func.body);
 	Node *res = sprintf_string("<%s macro=%s special=%s args=%s closure=%s>",
 								node->type,
 								node->val.function->is_macro ? "yes" : "no",
 								node->val.function->is_special ? "yes" : "no",
-								args->val.string;
+								args->val.string,
 								map->val.string);
 	unlink_node(map);
 	return res;
