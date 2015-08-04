@@ -322,7 +322,7 @@ Node *realloc_coll(Node *coll, long size)
 /*
 	create a new empty collection
 */
-Node *new_empty_coll(long alloc, NodeType type)
+Node *new_empty_coll(NodeType type,  long alloc)
 {
 	ASSERT(type & (LIST | ARRAY | MAP | SET), "new_empty_coll : bad type %s", str_type(type));
 	Node *coll = new_node(type);
@@ -342,12 +342,12 @@ Node        *reduce_coll(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *
 Node        *filter_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map2_coll(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
-Node        *new_empty_coll(long alloc, NodeType type);
 Node        *alloc_clone_coll(Node *coll, long diff);
-Node        *realloc_coll(Node *coll, long diff);
 Node        *assoc_coll(Node *map, Node *keyval);
 Node        *dissoc_coll(Node *map, Node *keyval);
 Node        *push(Node *coll, Node *elem);
+Node        *pop(Node *coll);
 Node        *sort(Node coll);
+Node        *new_keyval(Node *key, Node *value);
 long        pos_coll(Node *coll, Node *search);
 */

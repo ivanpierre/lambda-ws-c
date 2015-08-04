@@ -44,27 +44,32 @@ void ERROR(char *fmt, ...);
 */
 typedef enum
 {
-	NIL_NODE    =   1,
-	TRUE_NODE   =   1 << 2,
-	FALSE_NODE  =   1 << 3,
-	SYMBOL      =   1 << 4,
-	KEYWORD     =   1 << 5,
-	INTEGER     =   1 << 6,
-	DECIMAL     =   1 << 7,
-	STRING      =   1 << 8,
-	LIST        =   1 << 9,
-	ARRAY       =   1 << 10,
-	MAP         =   1 << 11,
-	SET         =   1 << 12,
-	SEQ         =   1 << 13,
-	ENVIRONMENT =   1 << 14,
-	FUNCTION    =   1 << 15,
-	LAMBDA      =   1 << 16,
-	ATOM        =   1 << 17,
-	READER      =   1 << 18,
-	KEYVAL      =   1 << 19,
-	INVALID     =   20
-} NodeType;
+	NIL_NODE        =   1,       // Constant nil value
+	TRUE_NODE       =   1 << 2,  // Constant true value
+	FALSE_NODE      =   1 << 3,  // Constant false value
+	SYMBOL          =   1 << 4,  // Symbol that can be binded in ENVIRONMENT
+	KEYWORD         =   1 << 5,  // Constant symbol :key evaluate to itself
+	INTEGER         =   1 << 6,  // Integer numeric values
+//	FRACTION        =   1 << 7,  // Fractional numeric values
+	DECIMAL         =   1 << 8,  // floating numeric values
+	STRING          =   1 << 9,  // String
+	LIST            =   1 << 10, // reversed array (growing from head)
+	ARRAY           =   1 << 11, // ARRAY
+	MAP             =   1 << 12, // Mapped array of KEYVAL
+	SET             =   1 << 13, // Mapped array of keys
+//	SEQ             =   1 << 14, // Walker on a collection
+	ENV_STACK       =   1 << 15, // is a list of ENVIRONMENT
+	ENVIRONMENT     =   1 << 16, // is a map of nodes, mapped by SYMBOL
+	API             =   1 << 17  // is a map of FUNCTION, mapped by args (ARRAY)
+	FUNCTION        =   1 << 18, // Function pointer
+	LAMBDA          =   1 << 19, // Body of language to evaluate
+	VAR             =   1 << 20, // Values of global vars (bind)
+//	REF             =   1 << 21, // CSP managed values
+//	FUTURE          =   1 << 22, // Asynchronously managed values
+	READER          =   1 << 23, // Reader for a syntax
+	KEYVAL          =   1 << 24, // Binding of key / values for MAP
+	INVALID         =        25  // Self explaining... used not to go too far... :D
+} NodeType;  // WIP
 
 /*
 	String representation of types
@@ -128,19 +133,6 @@ typedef struct
 } Reader;
 
 /*
-	Lambda functions
-*/
-typedef struct
-{
-	struct Node *(*eval)(struct Node *args, Env *env);
-	bool        is_macro;
-	bool        is_special;
-	struct Node *args;
-	struct Node *body;
-	struct Node *closure;
-} Lambda;
-
-/*
 	Compiled functions
 */
 typedef struct
@@ -148,55 +140,12 @@ typedef struct
 	struct Node *(*eval)(struct Node *args, Env *env);
 	bool                is_macro;
 	bool                is_special;
-	int                 nb_args;
 	struct Node         *closure;
+	struct Node         *args;
 	union
 	{
-        struct Node     *(*f0) ();
-        struct Node     *(*f1) (struct Node*);
-        struct Node     *(*f2) (struct Node*,struct Node*);
-        struct Node     *(*f3) (struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f4) (struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f5) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f6) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f7) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*);
-        struct Node     *(*f8) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*);
-        struct Node     *(*f9) (struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f10)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f11)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f12)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f13)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*);
-        struct Node     *(*f14)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*);
-        struct Node     *(*f15)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f16)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f17)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f18)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*);
-        struct Node     *(*f19)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*);
-        struct Node     *(*f20)(struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,struct Node*,
-                                struct Node*,struct Node*);
+        struct Node         *(*func) (int count, ...);
+		struct Node         *body;
 	} func;
 } Function;
 
@@ -218,7 +167,6 @@ typedef struct Node
 		String      string;
 		Collection  *coll;
 		KeyValue    *keyval;
-		Lambda      *lambda;
 		Function    *function;
 		Env         *env;
 		struct Node *atom;
@@ -289,13 +237,14 @@ Node        *assoc(Node *map, Node *keyval);
 Node        *dissoc(Node *map, Node *keyval);
 Node        *nth(Node *coll, long index);
 Node        *push(Node *coll, Node *elem);
+Node        *pop(Node *coll);
 Node        *sort(Node coll);
 long        pos_coll(Node *coll, Node *search);
 Node        *reduce_coll(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *coll);
 Node        *filter_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map_coll(Node *(*fn)(Node *node), Node *coll);
 Node        *map2_coll(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
-Node        *new_empty_coll(long alloc, NodeType type);
+Node        *new_empty_coll(NodeType type, long alloc);
 
 // Keyval
 Node        *free_keyval(Node *node); // internal

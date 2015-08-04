@@ -6,8 +6,8 @@ management. Boxing is needed to manage data types as C doesn't do it for us...
 
 All instances of these types are nodes witch will be managed by the allocator.
 
-- `nodes.c`: contain allocation and general node management.
-- `nodes.h`: gives all structures of nodes and all public management functions.
+- [`nodes.c`](src/node.c) : contain allocation and general node management.
+- [`nodes.h`](src/node.h) : gives all structures of nodes and all public management functions.
 
 Ordering of nodes as keys is defined by the comparison function. witch is different from the equality function.
 For example 0 is equal to 0.0, but they can both be keys for maps or sets.
@@ -58,11 +58,17 @@ To define symbolic constant names. Keywords evaluate to themselves.
 They keep track of their arity and their eventual closures. They can have a macro-expansion capability (only at 
 read/compile time), and an evaluation of args capability.
 
+- `is_macro` defines if the function is for macro expansion.
+- `is special` defines if argument are evaluated before execution.
+- `closure` the optional closure environment of the function.
+- `args` array of arguments in case of vararg an '&' symbol is the penultimate.
+- `next` Other function with other arities. Perhaps a map with args as keys...
+
 ### FUNCTION 
-To define a call to a C function. Normally core functions
+To define a call to C functions. These are varargs functions where the function arguments should match the args data.
 
 ### LAMBDA
-To define an LWC function that should be evaluated. Interpreted function.
+To define LWC functions that should be evaluated under the arguments. Interpreted function.
 These are not defined now in the current language definition, but will be used in REPL creation.
 
 ### ENVIRONMENT 
