@@ -1,4 +1,33 @@
 #BLOG (just what happens)
+##04 aug 2015
+
+- Changed function definition, functions will be a map of FUNCTION mapped by argument list characteristics.
+- LAMBDA and FUNCTION share the same structure Function.
+- The type for a function collection with the same name is API.
+- ENVIRONMENT are grouped as a LIST (stack) named ENV_STACK.
+- There will be two environment stacks, the global one and the local one. Local one is passed on call to the functions.
+- Searches for symbols is done on the local environment witch test global one automatically.
+- Local environment is stored in the function if it is defined in a non top context.
+- Local environement is passed as argument and push and pop managed by the eval function.
+- Local environment shaining pass through closure. Let for example is just a function call.
+
+```
+    (let [a va
+          b vb]
+       body)
+```
+
+is the same as
+
+```
+	((fn [a b] 
+        body) 
+       va vb)
+```
+
+so the body is evaluated with the fn arguments. And fn evaluation is made with the previous environment witch is
+linked to the new local environment.
+
 ##03 aug 2015
 - [ ] Clarify and precise implementation details.
 - [ ] Finalizing previous enhancements. 

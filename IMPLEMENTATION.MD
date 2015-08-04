@@ -104,8 +104,5 @@ This will manage :
 ### Reader [`reader.c`](src/reader.c)
 The reader will read in the current reader file handler to transform character strings into AST structure. This will 
 recognize symbols, numbers. Complementary syntax will be managed by a functional indirection through an array linking
- character with specific reader function. For example '(' character with list reader or '[' with array reader.
- 
-
-
+character with specific reader function. For example '(' character with list reader or '[' with array reader.
 

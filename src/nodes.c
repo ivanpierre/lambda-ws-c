@@ -38,7 +38,7 @@ void ERROR( char *fmt, ...)
 /*
 	String representation of types
 */
-char            *str_types[] =
+static char            *str_types[] =
 							{
 								"nil",
 								"true",
@@ -46,16 +46,22 @@ char            *str_types[] =
 								"symbol",
 								"keyword",
 								"integer",
+								"fraction",
 								"decimal",
 								"string",
 								"list",
 								"array",
 								"map",
 								"set",
+								"seq",
+								"env_stack",
 								"environment",
+								"api",
 								"function",
 								"lambda",
-								"atom",
+								"var",
+								"ref",
+								"future",
 								"reader",
 								"keyval",
 								"<invalid type>"
