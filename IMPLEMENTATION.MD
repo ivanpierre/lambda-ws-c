@@ -174,10 +174,10 @@ There is no automatic type enhancement on overflow, but cast to DECIMAL will be 
 FLOAT value.
 
 ### INTEGER
-Manage integers. Implemented as longs
+Manage integer values. Implemented as longs
 
 ### DECIMAL
-Manage integers. Implemented as doubles.
+Manage floating point values. Implemented as doubles.
 
 ## Other elements
 ### Global [`global.c`](src/global.c)

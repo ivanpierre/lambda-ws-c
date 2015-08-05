@@ -25,16 +25,43 @@ What is specific to languages ? The AST, well it can limit, but in fact the only
 part of language is its syntax (the reader, the writer) and semantic (the core elements of the 
 laguage). THE AST only give access to basis computational concepts all languages would like to use.
 
-In the AST point of view, the two following pieces of code here are the same.
+In the AST point of view, the two following pieces of code here are the same :
 
-```
+```basic
     10 IF A& = 0 THEN PRINT "COUCOU" ELSE PRINT "CACA"
 ```
-```
+```clj
     (if (zerop a) 
       (println "coucou")
       (println "caca"))
 ```
+
+But the following are different :
+
+```basic
+    10 SUM = 0
+    10 FOR I = 0 to 1000 - 1
+    20 SUM = SUM + I
+    30 NEXT SUM
+    40 PRINT SUM
+```
+```clj
+    (prinln (reduce + (range 1000)))
+```
+
+So what's the difference ? 
+
+In BASIC we are stateful, so we can modify the SUM variable, but we don't have function as first class
+type, we don't have lazy list data structure. But we can spaghettify the code with an implicit GOTO in 
+the form of NEXT.
+
+So is AST different, no... just BASIC programmer has no access to certain data structure, so AST, if you wanted 
+to enhance BASIC you would try to manage an access to these elements, but without changing syntax and
+main language idea... 
+
+OR you do with the language. For example, some would think to use variable indexed GOSUB, and yes you can
+do it with an old BASIC... but some would say, it's not idiomatically correct... poor guy... probably not a BASIC 
+programmer :D But yes, it can become an awful boilerplate nobody would like to manage.
 
 So to have a proof of concept the better is to try to implement some different paradigms with
 the same AST library. I so choose :
