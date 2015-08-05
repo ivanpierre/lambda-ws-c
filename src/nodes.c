@@ -176,11 +176,8 @@ Node *free_node(Node *node)
     	    break;
 
     	case FUNCTION :
-    	    free_function(node);
-    	    break;
-
     	case LAMBDA :
-    	    free_lambda(node);
+    	    free_function(node);
     	    break;
 
 //      case REF
@@ -240,10 +237,8 @@ Node *string_node(Node *node)
 			return string_keyval(node);
 
     	case FUNCTION :
-    	    return string_function(node);
-
     	case LAMBDA :
-    	    return string_lambda(node);
+    	    return string_function(node);
 
     	case VAR :
 //    	case REF :

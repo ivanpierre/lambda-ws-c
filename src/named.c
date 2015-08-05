@@ -1,5 +1,5 @@
 /****
-	Symbol. This is base for all named nodes
+	This is base for all named nodes
 
 	Lambda Calculus Workshop
 	C version
@@ -29,19 +29,19 @@ static Node *new_symbol_base(Node *ns, String value, NodeType type)
 /*
 	Create a linked symbol, allocate space for the string
 */
-Node *new_symbol(char *value)
+Node *new_symbol(Node *ns, char *value)
 {
 	ASSERT(value, "make_symbol : value is null");
-	return new_symbol_base(strdup(value), SYMBOL); // make_string does the link
+	return new_symbol_base(ns, strdup(value), SYMBOL); // make_string does the link
 }
 
 /*
 	Create a linked keyword, allocate space for the string
 */
-Node *new_keyword(char *value)
+Node *new_keyword(Node * ns, char *value)
 {
 	ASSERT(value, "make_keyword : value is null");
-	return new_symbol_base(strdup(value), KEYWORD); // make_string does the link
+	return new_symbol_base(ns, strdup(value), KEYWORD); // make_string does the link
 }
 
 /*

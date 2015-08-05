@@ -57,11 +57,11 @@ typedef enum
 	ARRAY           =   1 << 11, // ARRAY
 	MAP             =   1 << 12, // Mapped array of KEYVAL
 	SET             =   1 << 13, // Mapped array of keys
-//	SEQ             =   1 << 14, // Walker on a collection
-	NAMESPACE       =   1 << 15,
+	SEQ             =   1 << 14, // Walker on a collection
+	NAMESPACE       =   1 << 15, //
 	ENV_STACK       =   1 << 16, // is a list of ENVIRONMENT
 	ENVIRONMENT     =   1 << 17, // is a map of nodes, mapped by SYMBOL
-	API             =   1 << 18,  // is a map of FUNCTION, mapped by args (ARRAY)
+	API             =   1 << 18, // is a map of FUNCTION, mapped by args (ARRAY)
 	FUNCTION        =   1 << 19, // Function pointer
 	LAMBDA          =   1 << 20, // Body of language to evaluate
 	VAR             =   1 << 21, // Values of global vars (bind)
@@ -69,7 +69,26 @@ typedef enum
 //	FUTURE          =   1 << 23, // Asynchronously managed values
 	READER          =   1 << 24, // Reader for a syntax
 	KEYVAL          =   1 << 25, // Binding of key / values for MAP
-	INVALID         =        26  // Self explaining... used not to go too far... :D
+	INVALID         =        26,  // Self explaining... used not to go too far... :D
+
+	NUMBER          =   INTEGER | DECIMAL,
+
+	SEQUABLE        =   STRING |        // Walk on string's characters
+					    LIST |          // Walk on list's nodes
+					    ARRAY |         // Walk on array's nodes
+					    MAP |           // Walk on map's keyvals. [key value]
+					    SEQ |           // returns itself's ref
+					    NAMESPACE |     // Walk on namespace's symbols
+					    ENV_STACK       // Walk on binding's environments
+					    ENVIRONMENT |   // Walk on environment's bindings as keyvals [symbol value]
+					    API |           // Walk on function's implementations as keyval [args function]
+					    LAMBDA          // Walk on body's Nodes
+
+	INDEXED         =   STRING |        // Get char at position
+						ARRAY |         // Get Node at postion
+						KEYVAL          // 0 = key, 1 = val (kewyval is a tuple of 2)
+
+
 } NodeType;  // WIP
 
 /*
@@ -130,8 +149,8 @@ typedef struct
 */
 typedef struct
 {
-	Node            *ns;
-	Node            *name;
+	struct Node     *ns;
+	struct Node     *name;
 } Symbol;
 
 /*
@@ -223,12 +242,12 @@ Node        *string_string(Node *string); // internal
 Node        *eval_symbol(Node *node, Node *env);
 
 // symbols, keywords
-Node        *new_symbol(char *value);
-Node        *new_keyword(char *value);
+Node        *new_symbol(Node *ns, char *value);
+Node        *new_keyword(Node *ns, char *value);
 bool        symbolp(Node *node);
 bool        keywordp(Node *node);
-String      get_symbol_name(Node *s)
-String      get_symbol_formatted_name(Node *s)
+String      get_symbol_name(Node *s);
+String      get_symbol_formatted_name(Node *s);
 Node        *free_symbol(Node *string); // internal
 Node        *string_symbol(Node *string); // internal
 

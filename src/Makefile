@@ -1,7 +1,7 @@
 # very simplified Makefile working with minimal makefile version
 
-lcw : main.o global.o atom.o collections.o env.o function.o nodes.o numbers.o reader.o string.o
-	cc -o lcw main.o global.o atom.o collections.o env.o function.o nodes.o numbers.o reader.o string.o
+lcw : main.o global.o atom.o collections.o env.o function.o named.o nodes.o numbers.o reader.o string.o
+	cc -o lcw main.o global.o atom.o collections.o env.o function.o named.o nodes.o numbers.o reader.o string.o
 
 global.h : nodes.h
 	touch global.h
@@ -22,6 +22,9 @@ env.o : env.c nodes.h
 
 function.o : function.c nodes.h
 	cc -c function.c
+
+named.o : named.c nodes.h
+	cc -c named.c
 
 nodes.o : nodes.c nodes.h
 	cc -c nodes.c
