@@ -42,7 +42,7 @@ But that is not the case for the followings :
     10 SUM = 0
     20 FOR I = 0 to 1000 - 1
     30 SUM = SUM + I
-    40 NEXT SUM
+    40 NEXT I
     50 PRINT SUM
 ```
 ```clj
