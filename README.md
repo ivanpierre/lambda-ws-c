@@ -40,10 +40,10 @@ But the following are different :
 
 ```basic
     10 SUM = 0
-    10 FOR I = 0 to 1000 - 1
-    20 SUM = SUM + I
-    30 NEXT SUM
-    40 PRINT SUM
+    20 FOR I = 0 to 1000 - 1
+    30 SUM = SUM + I
+    40 NEXT SUM
+    50 PRINT SUM
 ```
 ```clj
     (prinln (reduce + (range 1000)))
@@ -63,12 +63,19 @@ OR you do with the language. For example, some would think to use variable index
 do it with an old BASIC... but some would say, it's not idiomatically correct... poor guy... probably not a BASIC 
 programmer :D But yes, it can become an awful boilerplate nobody would like to manage.
 
-So to have a proof of concept the better is to try to implement some different paradigms with
-the same AST library. I so choose :
+## How to figure out ?
+
+So to have a proof of concept, the better way is to try to implement some different paradigms with
+the same AST library. 
+
+I so choose :
 
 - Clojure - like. functional, dynamically typed, immutable.
 - BASIC - original non structured, spaghetti, stateful, line based language.
 - Java - like. object, structured, statically typed.
+
+Clearly separating the stuff better the implementation problems will arise. If I have to update the library to 
+implement my language means or I don't know how to use it, or there is a paradigm that is not manageable by my AST.
 
 ## So what ?
 
