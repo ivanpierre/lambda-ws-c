@@ -1,9 +1,9 @@
 /****
-	Types
+    Types
 
-	Lambda Calculus Workshop
-	C version
-	Ivan Pierre <ivan@kilroysoft.ch> 2015
+    Lambda Calculus Workshop
+    C version
+    Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #ifndef NODES_H
@@ -14,95 +14,100 @@
 #define TRUE (!FALSE)
 
 /*
-	Errors and assertions
+    Errors and assertions
 */
 extern struct Node *error_node;
 void ERROR(char *fmt, ...);
 
 #define ABORT(fmt, ...) \
-	{ \
-		ERROR(fmt, ##__VA_ARGS__); \
-		return NULL; \
-	}
+    { \
+        ERROR(fmt, ##__VA_ARGS__); \
+        return NULL; \
+    }
 
 #define ASSERT(cond, fmt, ...) \
-	if(!(cond)) \
-	{ \
-		ERROR(fmt, ##__VA_ARGS__); \
-		return NULL; \
-	}
+    if(!(cond)) \
+    { \
+        ERROR(fmt, ##__VA_ARGS__); \
+        return NULL; \
+    }
 
 #define ASSERT_TYPE(node, typ, fmt, ...) \
-	if(!(node && (node->type & (typ)))) \
-	{ \
-		ERROR(fmt, ##__VA_ARGS__); \
-		return NULL; \
-	}
+    if(!(node && (node->type & (typ)))) \
+    { \
+        ERROR(fmt, ##__VA_ARGS__); \
+        return NULL; \
+    }
 
 /*
-	type of nodes
+    type of nodes
 */
 typedef enum
 {
-	NIL_NODE        =   1,       // Constant nil value
-	TRUE_NODE       =   1 << 2,  // Constant true value
-	FALSE_NODE      =   1 << 3,  // Constant false value
-	SYMBOL          =   1 << 4,  // Symbol that can be binded in ENVIRONMENT
-	KEYWORD         =   1 << 5,  // Constant symbol :key evaluate to itself
-	INTEGER         =   1 << 6,  // Integer numeric values
+    NIL_NODE        =   1,       // Constant nil value
+    TRUE_NODE       =   1 << 2,  // Constant true value
+    FALSE_NODE      =   1 << 3,  // Constant false value
+    SYMBOL          =   1 << 4,  // Symbol that can be binded in ENVIRONMENT
+    KEYWORD         =   1 << 5,  // Constant symbol :key evaluate to itself
+    INTEGER         =   1 << 6,  // Integer numeric values
 //	FRACTION        =   1 << 7,  // Fractional numeric values
-	DECIMAL         =   1 << 8,  // floating numeric values
-	STRING          =   1 << 9,  // String
-	LIST            =   1 << 10, // reversed array (growing from head)
-	ARRAY           =   1 << 11, // ARRAY
-	MAP             =   1 << 12, // Mapped array of KEYVAL
-	SET             =   1 << 13, // Mapped array of keys
-	SEQ             =   1 << 14, // Walker on a collection
-	NAMESPACE       =   1 << 15, //
-	ENV_STACK       =   1 << 16, // is a list of ENVIRONMENT
-	ENVIRONMENT     =   1 << 17, // is a map of nodes, mapped by SYMBOL
-	API             =   1 << 18, // is a map of FUNCTION, mapped by args (ARRAY)
-	FUNCTION        =   1 << 19, // Function pointer
-	LAMBDA          =   1 << 20, // Body of language to evaluate
-	VAR             =   1 << 21, // Values of global vars (bind)
+    DECIMAL         =   1 << 8,  // floating numeric values
+    STRING          =   1 << 9,  // String
+    LIST            =   1 << 10, // reversed array (growing from head)
+    ARRAY           =   1 << 11, // ARRAY
+    MAP             =   1 << 12, // Mapped array of KEYVAL
+    SET             =   1 << 13, // Mapped array of keys
+    SEQ             =   1 << 14, // Walker on a collection
+    NAMESPACE       =   1 << 15, // Interning place for global symbols
+    ENV_STACK       =   1 << 16, // is a list of ENVIRONMENT
+    ENVIRONMENT     =   1 << 17, // is a map of nodes, mapped by SYMBOL
+    API             =   1 << 18, // is a map of FUNCTION, mapped by args (ARRAY)
+    FUNCTION        =   1 << 19, // Function pointer
+    LAMBDA          =   1 << 20, // Body of language to evaluate
+    VAR             =   1 << 21, // Values of global vars (bind)
 //	REF             =   1 << 22, // CSP managed values
 //	FUTURE          =   1 << 23, // Asynchronously managed values
-	READER          =   1 << 24, // Reader for a syntax
-	KEYVAL          =   1 << 25, // Binding of key / values for MAP
-	INVALID         =        26,  // Self explaining... used not to go too far... :D
+//  AGENT           =   1 << 24  // Agent management through messages
+    READER          =   1 << 24, // Reader for a syntax
+    KEYVAL          =   1 << 25, // Binding of key / values for MAP
+    INVALID         =        26,  // Self explaining... used not to go too far... :D
 
-	NUMBER          =   INTEGER | DECIMAL,
+    NUMBER          =   INTEGER | DECIMAL,
 
-	SEQUABLE        =   STRING |        // Walk on string's characters
-					    LIST |          // Walk on list's nodes
-					    ARRAY |         // Walk on array's nodes
-					    MAP |           // Walk on map's keyvals. [key value]
-					    SEQ |           // returns itself's ref
-					    NAMESPACE |     // Walk on namespace's symbols
-					    ENV_STACK       // Walk on binding's environments
-					    ENVIRONMENT |   // Walk on environment's bindings as keyvals [symbol value]
-					    API |           // Walk on function's implementations as keyval [args function]
-					    LAMBDA          // Walk on body's Nodes
+    SEQUABLE        =   STRING |        // Walk on string's characters
+                        LIST |          // Walk on list's nodes
+                        ARRAY |         // Walk on array's nodes
+                        MAP |           // Walk on map's keyvals. [key value]
+                        SEQ |           // returns itself's ref
+                        NAMESPACE |     // Walk on namespace's symbols
+                        ENV_STACK       // Walk on binding's environments
+                        ENVIRONMENT |   // Walk on environment's bindings as keyvals [symbol value]
+                        API |           // Walk on function's implementations as keyval [args function]
+                        LAMBDA,          // Walk on body's Nodes
 
-	INDEXED         =   STRING |        // Get char at position
-						ARRAY |         // Get Node at postion
-						KEYVAL          // 0 = key, 1 = val (kewyval is a tuple of 2)
+    INDEXED         =   STRING |        // Get char at position
+                        ARRAY |         // Get Node at postion
+                        KEYVAL,          // 0 = key, 1 = val (kewyval is a tuple of 2)
 
-
+    MAPPED          =   MAP |
+                        SET |
+                        NAMESPACE |
+                        ENVIRONMENT |
+                        API,
 } NodeType;  // WIP
 
 /*
-	String representation of types
+    String representation of types
 */
 // extern char *str_types[];
 
 /*
-	Define in case of allocation debugging
+    Define in case of allocation debugging
 */
 #define DEBUG_ALLOC
 
 /*
-	Used type definitions
+    Used type definitions
 */
 #define Integer long
 #define Decimal double
@@ -110,97 +115,97 @@ typedef enum
 struct  Node; // forward
 
 /*
-	Environment
+    Environment
 */
 typedef struct Env
 {
-	struct Node     *previous; // Environment
-	struct Node     *map;
+    struct Node     *previous; // Environment
+    struct Node     *map;
 } Env;
 
 /*
-	Collection : Array, List, Map and Set
+    Collection : Array, List, Map and Set
 */
 typedef struct
 {
-	bool            mutable;
-	long            size;
-	long            max;
-	struct Node     **nodes;
+    bool            mutable;
+    long            size;
+    long            max;
+    struct Node     **nodes;
 } Collection;
 
 typedef struct
 {
-	long            index;
-	struct Node     *coll;
+    long            index;
+    struct Node     *coll;
 } Seq;
 
 /*
-	Key/Values binding
+    Key/Values binding
 */
 typedef struct
 {
-	struct Node     *key;
-	struct Node     *value;
+    struct Node     *key;
+    struct Node     *value;
 } KeyValue;
 
 /*
-	Symbol
+    Symbol
 */
 typedef struct
 {
-	struct Node     *ns;
-	struct Node     *name;
+    struct Node     *ns;
+    struct Node     *name;
 } Symbol;
 
 /*
-	Reader
+    Reader
 */
 typedef struct
 {
-	FILE            *handle;
+    FILE            *handle;
 } Reader;
 
 /*
-	Compiled functions
+    Compiled functions
 */
 typedef struct
 {
-	bool                is_macro;
-	bool                is_special;
-	struct Node         *closure; // MAP
-	struct Node         *args;    // LIST
-	union
-	{
+    bool                is_macro;
+    bool                is_special;
+    struct Node         *closure; // MAP
+    struct Node         *args;    // LIST
+    union
+    {
         struct Node     *(*func) (struct Node *args, ...);
-		struct Node     *body;
-	} func;
+        struct Node     *body;
+    } func;
 } Function;
 
 /*
-	Struct of a base node
+    Struct of a base node
 */
 typedef struct Node
 {
-	NodeType        type;
-	long            occurences;
+    NodeType        type;
+    long            occurences;
 #ifdef DEBUG_ALLOC
-	struct Node     *previous_node;
-	struct Node     *next_node;
+    struct Node     *previous_node;
+    struct Node     *next_node;
 #endif
-	union
-	{
-		Integer     integer;
-		Decimal     decimal;
-		String      string;
-		Symbol      *symbol;
-		Collection  *coll;
-		KeyValue    *keyval;
-		Function    *function;
-		Env         *env;
-		struct Node *atom;
-		Reader      *reader;
-	} val;
+    union
+    {
+        Integer     integer;
+        Decimal     decimal;
+        String      string;
+        Symbol      *symbol;
+        Collection  *coll;
+        KeyValue    *keyval;
+        Function    *function;
+        Env         *env;
+        struct Node *atom;
+        Reader      *reader;
+    } val;
 } Node;
 
 // global values

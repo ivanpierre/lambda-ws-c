@@ -28,10 +28,10 @@ laguage). THE AST only give access to basis computational concepts all languages
 In the AST point of view, the two following pieces of code here are the same.
 
 ```
-	10 IF A& = 0 THEN PRINT "COUCOU" ELSE PRINT "CACA"
+    10 IF A& = 0 THEN PRINT "COUCOU" ELSE PRINT "CACA"
 ```
 ```
-	(if (zerop a) 
+    (if (zerop a) 
       (println "coucou")
       (println "caca"))
 ```

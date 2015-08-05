@@ -24,7 +24,7 @@
 is the same as
 
 ```
-	((fn [a b] ; fn do the evaluation of args, so the [a b] is accessible while
+    ((fn [a b] ; fn do the evaluation of args, so the [a b] is accessible while
         body)  ; evaluating va and a, so b is bind to a bind to the evaluation of va.
        va a)
 ```

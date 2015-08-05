@@ -1,9 +1,9 @@
 /****
-	Atoms for references, var, futures
+    Atoms for references, var, futures
 
-	Lambda Calculus Workshop
-	C version
-	Ivan Pierre <ivan@kilroysoft.ch> 2015
+    Lambda Calculus Workshop
+    C version
+    Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #include <stdio.h>

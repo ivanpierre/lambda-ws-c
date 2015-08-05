@@ -1,4 +1,64 @@
 # Implementation
+## Main types
+```clj
+/*
+    type of nodes
+*/
+typedef enum
+{
+    NIL_NODE        =   1,       // Constant nil value
+    TRUE_NODE       =   1 << 2,  // Constant true value
+    FALSE_NODE      =   1 << 3,  // Constant false value
+    SYMBOL          =   1 << 4,  // Symbol that can be binded in ENVIRONMENT
+    KEYWORD         =   1 << 5,  // Constant symbol :key evaluate to itself
+    INTEGER         =   1 << 6,  // Integer numeric values
+//	FRACTION        =   1 << 7,  // Fractional numeric values
+    DECIMAL         =   1 << 8,  // floating numeric values
+    STRING          =   1 << 9,  // String
+    LIST            =   1 << 10, // reversed array (growing from head)
+    ARRAY           =   1 << 11, // ARRAY
+    MAP             =   1 << 12, // Mapped array of KEYVAL
+    SET             =   1 << 13, // Mapped array of keys
+    SEQ             =   1 << 14, // Walker on a collection
+    NAMESPACE       =   1 << 15, // Interning place for global symbols
+    ENV_STACK       =   1 << 16, // is a list of ENVIRONMENT
+    ENVIRONMENT     =   1 << 17, // is a map of nodes, mapped by SYMBOL
+    API             =   1 << 18, // is a map of FUNCTION, mapped by args (ARRAY)
+    FUNCTION        =   1 << 19, // Function pointer
+    LAMBDA          =   1 << 20, // Body of language to evaluate
+    VAR             =   1 << 21, // Values of global vars (bind)
+//	REF             =   1 << 22, // CSP managed values
+//	FUTURE          =   1 << 23, // Asynchronously managed values
+//  AGENT           =   1 << 24  // Agent management through messages
+    READER          =   1 << 24, // Reader for a syntax
+    KEYVAL          =   1 << 25, // Binding of key / values for MAP
+    INVALID         =        26,  // Self explaining... used not to go too far... :D
+
+    NUMBER          =   INTEGER | DECIMAL,
+
+    SEQUABLE        =   STRING |        // Walk on string's characters
+                        LIST |          // Walk on list's nodes
+                        ARRAY |         // Walk on array's nodes
+                        MAP |           // Walk on map's keyvals. [key value]
+                        SEQ |           // returns itself's ref
+                        NAMESPACE |     // Walk on namespace's symbols
+                        ENV_STACK       // Walk on binding's environments
+                        ENVIRONMENT |   // Walk on environment's bindings as keyvals [symbol value]
+                        API |           // Walk on function's implementations as keyval [args function]
+                        LAMBDA,          // Walk on body's Nodes
+
+    INDEXED         =   STRING |        // Get char at position
+                        ARRAY |         // Get Node at postion
+                        KEYVAL,          // 0 = key, 1 = val (kewyval is a tuple of 2)
+                        
+    MAPPED          =   MAP |
+                        SET |
+                        NAMESPACE |
+                        ENVIRONMENT |
+                        API,
+} NodeType;  // WIP
+
+```
 ## Boxing `nodes.c`, `nodes.h`
 Every types of AST element have it's own structure. This structure is an implementation detail and can change as 
 project evolves. These types are treated, based on the language definition AND on objects needed to the language 
