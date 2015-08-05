@@ -67,10 +67,10 @@ typedef enum
     VAR             =   1 << 21, // Values of global vars (bind)
 //	REF             =   1 << 22, // CSP managed values
 //	FUTURE          =   1 << 23, // Asynchronously managed values
-//  AGENT           =   1 << 24  // Agent management through messages
-    READER          =   1 << 24, // Reader for a syntax
-    KEYVAL          =   1 << 25, // Binding of key / values for MAP
-    INVALID         =        26,  // Self explaining... used not to go too far... :D
+//  AGENT           =   1 << 24,  // Agent management through messages
+    READER          =   1 << 25, // Reader for a syntax
+    KEYVAL          =   1 << 26, // Binding of key / values for MAP
+    INVALID         =        27,  // Self explaining... used not to go too far... :D
 
     NUMBER          =   INTEGER | DECIMAL,
 
@@ -80,20 +80,20 @@ typedef enum
                         MAP |           // Walk on map's keyvals. [key value]
                         SEQ |           // returns itself's ref
                         NAMESPACE |     // Walk on namespace's symbols
-                        ENV_STACK       // Walk on binding's environments
+                        ENV_STACK |     // Walk on binding's environments
                         ENVIRONMENT |   // Walk on environment's bindings as keyvals [symbol value]
                         API |           // Walk on function's implementations as keyval [args function]
-                        LAMBDA,          // Walk on body's Nodes
+                        LAMBDA,         // Walk on body's Nodes
 
     INDEXED         =   STRING |        // Get char at position
                         ARRAY |         // Get Node at postion
-                        KEYVAL,          // 0 = key, 1 = val (kewyval is a tuple of 2)
+                        KEYVAL,         // 0 = key, 1 = val (kewyval is a tuple of 2)
 
     MAPPED          =   MAP |
                         SET |
                         NAMESPACE |
                         ENVIRONMENT |
-                        API,
+                        API
 } NodeType;  // WIP
 
 /*
@@ -188,7 +188,7 @@ typedef struct
 typedef struct Node
 {
     NodeType        type;
-    long            occurences;
+    long            occurrences;
 #ifdef DEBUG_ALLOC
     struct Node     *previous_node;
     struct Node     *next_node;

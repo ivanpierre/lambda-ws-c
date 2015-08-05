@@ -93,7 +93,7 @@ static bool unlinkable(Node *node)
 Node *link_node(Node *node)
 {
     if(!unlinkable(node))
-        node->occurences++;
+        node->occurrences++;
     return node;
 }
 
@@ -105,9 +105,9 @@ Node *unlink_node(Node *node)
 {
     if(!unlinkable(node))
     {
-        if(node->occurences)
-            node->occurences--;
-        if(!node->occurences)
+        if(node->occurrences)
+            node->occurrences--;
+        if(!node->occurrences)
             free_node(node);
     }
     return NULL;
@@ -120,7 +120,7 @@ Node *unlink_node(Node *node)
 static Node *init_node(Node *node, NodeType type)
 {
     node->type = type;
-    node->occurences = 0; // will be incremented on link
+    node->occurrences = 0; // will be incremented on link
 #ifdef DEBUG_ALLOC
     if(!last_node)
     {
@@ -303,7 +303,15 @@ Node *eval_node(Node *node, Node *env)
         case VAR :
 //		case REF :
         case READER :
+        case NUMBER :
+        case NAMESPACE :
+        case MAPPED :
+        case SEQUABLE :
+        case INDEXED :
             return node;
+
+        case INVALID :
+            break;
     }
     free(node);
     return NULL;
