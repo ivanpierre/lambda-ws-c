@@ -74,6 +74,8 @@ typedef enum
 
     NUMBER          =   INTEGER | DECIMAL,
 
+    NAMED           =   SYMBOL | KEYWORD,
+
     SEQUABLE        =   STRING |        // Walk on string's characters
                         LIST |          // Walk on list's nodes
                         ARRAY |         // Walk on array's nodes
@@ -86,14 +88,16 @@ typedef enum
                         LAMBDA,         // Walk on body's Nodes
 
     INDEXED         =   STRING |        // Get char at position
-                        ARRAY |         // Get Node at postion
-                        KEYVAL,         // 0 = key, 1 = val (kewyval is a tuple of 2)
+                        ARRAY,          // Get Node at postion
 
     MAPPED          =   MAP |
                         SET |
                         NAMESPACE |
                         ENVIRONMENT |
-                        API
+                        API,
+
+    CALLABLE        =   FUNCTION |
+                        LAMBDA
 } NodeType;  // WIP
 
 /*
@@ -163,11 +167,19 @@ typedef struct
 */
 typedef struct
 {
-    FILE            *handle;
+    int             (*getc)();
 } Reader;
 
 /*
-    Compiled functions
+    Writer
+*/
+typedef struct
+{
+    int             (*putc)();
+} Writer;
+
+/*
+    Functions
 */
 typedef struct
 {

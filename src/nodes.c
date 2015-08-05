@@ -308,6 +308,8 @@ Node *eval_node(Node *node, Node *env)
         case MAPPED :
         case SEQUABLE :
         case INDEXED :
+        case NAMED :
+        case CALLABLE :
             return node;
 
         case INVALID :

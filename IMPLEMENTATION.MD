@@ -67,34 +67,34 @@ management. Boxing is needed to manage data types as C doesn't do it for us...
 All instances of these types are nodes witch will be managed by the allocator.
 
 ```c
-/*
-    Struct of a base node
-*/
-typedef struct Node
-{
-    NodeType        type;
-    long            occurrences;
-#ifdef DEBUG_ALLOC
-    struct Node     *previous_node;
-    struct Node     *next_node;
-#endif
-    union
+    /*
+        Struct of a base node
+    */
+    typedef struct Node
     {
-        Integer     integer;
-        Decimal     decimal;
-        String      string;
-        Symbol      *symbol;
-        Collection  *coll;
-        KeyValue    *keyval;
-        Function    *function;
-        Env         *env;
-        struct Node *atom;
-        Reader      *reader;
-    } val;
+        NodeType        type;
+        long            occurrences;
+    #ifdef DEBUG_ALLOC
+        struct Node     *previous_node;
+        struct Node     *next_node;
+    #endif
+        union
+        {
+            Integer     integer;
+            Decimal     decimal;
+            String      string;
+            Symbol      *symbol;
+            Collection  *coll;
+            KeyValue    *keyval;
+            Function    *function;
+            Env         *env;
+            struct Node *atom;
+            Reader      *reader;
+        } val;
 } Node;
 
-
 ```
+
 - [`nodes.c`](src/nodes.c) : contain allocation and general node management.
 - [`nodes.h`](src/nodes.h) : gives all structures of nodes and all public management functions.
 

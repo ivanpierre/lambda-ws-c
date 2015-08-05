@@ -65,7 +65,7 @@ bool keywordp(Node *node)
 */
 String get_symbol_name(Node *s)
 {
-    ASSERT_TYPE(s, STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
+    ASSERT_TYPE(s, SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
     return strdup(s->val.string);
 }
 
@@ -74,7 +74,7 @@ String get_symbol_name(Node *s)
 */
 String get_formated_symbol(Node *s)
 {
-    ASSERT_TYPE(s, STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
+    ASSERT_TYPE(s, SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
     String formated = NULL;
     switch(s->type)
     {
