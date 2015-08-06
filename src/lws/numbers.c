@@ -43,23 +43,6 @@ bool integerp(Node *node)
 	return node && node->type == INTEGER;
 }
 
-/*
-	print integer
-*/
-Node *string_integer(Node *node)
-{
-	ASSERT_TYPE(node, INTEGER, "print_integer : Node is not an integer\n");
-
-	char *formated;
-	asprintf(&formated, "%ld", get_integer(node));
-
-	if(formated)
-		return new_string(formated);
-
-	free(formated);
-	return new_string_allocate("NaN");
-}
-
 ////// Decimals
 /*
 	Create a decimal
@@ -85,22 +68,5 @@ Decimal get_decimal(Node *node)
 bool decimalp(Node *node)
 {
 	return node && node->type & DECIMAL;
-}
-
-/*
-	print decimal
-*/
-Node *string_decimal(Node *node)
-{
-	char *formatted;
-	asprintf(&formatted, "%lf", get_decimal(node));
-
-	if(formatted)
-		return new_string(formatted);
-	else
-	{
-		free(formatted);
-		return new_string_allocate("NaN");
-	}
 }
 

@@ -187,9 +187,9 @@ Node *free_node(Node *node)
             node->val.atom = NULL;
             break;
 
-        case READER :
-            free_reader(node);
-            break;
+//      case READER :
+//          free_reader(node);
+//          break;
 
         case INTEGER :
 //      case FRACTION :
@@ -198,123 +198,6 @@ Node *free_node(Node *node)
             break;
     }
 
-    free(node);
-    return NULL;
-}
-
-/*
-    return string version of nodes according to type
-*/
-Node *string_node(Node *node)
-{
-    ASSERT(node, "string_node : NULL node");
-
-    switch(node->type)
-    {
-        case NIL_NODE :
-            return sprintf_string("nil");
-
-        case TRUE_NODE :
-            return sprintf_string("true");
-
-        case FALSE_NODE :
-            return sprintf_string("false");
-
-        case KEYWORD :
-        case SYMBOL :
-        case STRING :
-            return string_string(node);
-
-        case LIST :
-        case ARRAY :
-        case MAP :
-        case SET :
-        case ENV_STACK :
-        case ENVIRONMENT :
-            return string_coll(node);
-
-        case KEYVAL :
-            return string_keyval(node);
-
-        case FUNCTION :
-        case LAMBDA :
-            return string_function(node);
-
-        case VAR :
-//    	case REF :
-//    	case FUTURE :
-            return string_node(node->val.atom);
-
-        case READER :
-            return string_reader(node);
-
-        case INTEGER :
-            return string_integer(node);
-
-        case DECIMAL :
-            return string_decimal(node);
-
-        default :
-            break;
-    }
-
-    free(node);
-    return NULL;
-}
-
-/*
-    return evaluation of nodes according to type
-*/
-Node *eval_node(Node *node, Node *env)
-{
-    ASSERT(node, "eval_node : NULL node");
-
-    switch(node->type)
-    {
-        case SYMBOL :
-            return eval_symbol(node, env);
-
-        case LIST :
-        case SEQ :
-            return eval_list(node, env);
-
-        case ARRAY :
-        case MAP :
-        case SET :
-            return eval_coll(node, env);
-
-        case KEYVAL :
-            return eval_keyval(node, env);
-
-
-        case NIL_NODE :
-        case TRUE_NODE :
-        case FALSE_NODE :
-        case KEYWORD :
-        case INTEGER :
-//		case FRACTION :
-        case DECIMAL :
-        case STRING :
-        case ENV_STACK :
-        case ENVIRONMENT :
-        case API :
-        case FUNCTION :
-        case LAMBDA :
-        case VAR :
-//		case REF :
-        case READER :
-        case NUMBER :
-        case NAMESPACE :
-        case MAPPED :
-        case SEQUABLE :
-        case INDEXED :
-        case NAMED :
-        case CALLABLE :
-            return node;
-
-        case INVALID :
-            break;
-    }
     free(node);
     return NULL;
 }

@@ -12,6 +12,22 @@
 #include "nodes.h"
 
 /*
+    Access Collection from Node
+*/
+static Collection *coll(Node *node)
+{
+    return (Collection *)(node->val.compl);
+}
+
+/*
+    Access Keyval from Node
+*/
+static KeyValue *keyval(Node *node)
+{
+    return (KeyValue *)(node->val.compl);
+}
+
+/*
     Free coll
 */
 Node *free_coll(Node *node)
@@ -26,10 +42,10 @@ Node *free_coll(Node *node)
 
     for(long i = 0; i < size; i++)
     {
-        if(node->val.coll->nodes[i])
+        if(coll(node)->nodes[i])
         {
-            free_node(node->val.coll->nodes[i]);
-            node->val.coll->nodes[i] = NULL;
+            free_node(coll(node)->nodes[i]);
+            coll(node)->nodes[i] = NULL;
         }
     }
     return NULL;
@@ -40,51 +56,19 @@ Node *free_coll(Node *node)
 */
 long size_coll(Node *node)
 {
-    if(!(node && (node->type & (LIST | ARRAY | MAP | SET))))
+    if(!(node && (node->type & SEQUABLE)))
     {
         ERROR("size_coll : get size of bad type : %s", str_type(node->type));
         return -1;
     }
-    if(!node->val.coll)
+    if(node->type & NIL_NODE)
+        return 0;
+    if(!coll(node))
     {
         ERROR("size_coll : not allocated coll");
         return -1;
     }
-    return node->val.coll->size;
-}
-
-/*
-    Return array of string representation of element of coll
-*/
-static char **get_array(Node *node)
-{
-    long size = size_coll(node);
-    if(size <= 0)
-        return NULL;
-
-    char **str_res = malloc(size * sizeof(char *));
-
-    for(long i = 0; i < size; i++)
-    {
-        Node *curr = node->val.coll->nodes[i];
-        Node *str_node;
-        if(curr->type & KEYVAL && node->type & MAP)
-        {
-            // here we will peint he key / value pair
-            Node *key = string_node(curr->val.keyval->key);
-            Node *value = string_node(curr->val.keyval->value);
-            str_node = sprintf_string("%s %s", key->val.string, value->val.string);
-        }
-        else
-        {
-            // here we will print the node
-            Node *value = string_node(curr);
-            str_node = sprintf_string("%s", value->val.string);
-        }
-        str_res[i] = strdup(str_node->val.string);
-        unlink_node(str_node);
-    }
-    return str_res;
+    return coll(node)->size;
 }
 
 /*
@@ -99,74 +83,6 @@ static long list_size(long size, char **strings)
 }
 
 /*
-    Return string of all elements of coll in right order
-*/
-static String string_coll_elements(Node *node)
-{
-    long size = size_coll(node);
-    char **str_res = get_array(node);
-    if(!str_res)
-        return strdup("");
-
-    long str_size = list_size(size, str_res);
-    char *string_res = malloc(sizeof(char) * str_size);
-    string_res[0] = '\0';
-    for(long i = 0; i < size; i++)
-    {
-        strcat(string_res, str_res[i]);
-        if(i < size - 1)
-            strcat(string_res, " ");
-        free(str_res[i]); // free each allocated string node
-    }
-
-    free(str_res); // free string array
-    return string_res;
-}
-
-/*
-    Return string of all elements of coll in reverse order
-*/
-static String string_coll_elements_reverse(Node *node)
-{
-    long size = size_coll(node);
-    char **str_res = get_array(node);
-    if(!str_res)
-        return strdup("");
-
-    long str_size = list_size(size, str_res);
-    char *string_res = malloc(sizeof(char) * str_size);
-    string_res[0] = '\0';
-    for(long i = size - 1; i >= 0; i--)
-    {
-        strcat(string_res, str_res[i]);
-        if(i < size - 1)
-            strcat(string_res, " ");
-        free(str_res[i]); // free each allocated string
-    }
-
-    free(str_res); // free string array
-    return string_res;
-}
-
-/*
-    Return String representation a KEYVAL
-*/
-Node *string_keyval(Node *node)
-{
-    ASSERT(node, "string_keyval : null pointer");
-    ASSERT_TYPE(node, KEYVAL,
-                "string_keyval : error printing bad type : %s",
-                str_type(node->type));
-    Node *key = string_node(node->val.keyval->key);
-    Node *value = string_node(node->val.keyval->value);
-    Node *str_node = sprintf_string("[%s %s]", key->val.string, value->val.string);
-    unlink_node(key);
-    unlink_node(value);
-    ASSERT(str_node, "string_keyval : Error printing keyval");
-    return str_node;
-}
-
-/*
     Free keyval
 */
 Node *free_keyval(Node *node)
@@ -175,148 +91,93 @@ Node *free_keyval(Node *node)
                 "free_keyval : error unallocatig bad type : %s",
                 str_type(node->type));
 
-    free_node(node->val.keyval->key);
-    free_node(node->val.keyval->value);
+    free_node(keyval(node)->key);
+    free_node(keyval(node)->value);
     return NULL;
-}
-
-/*
-    get inner conttent of collection as a string
-*/
-String get_inner_content_coll(Node *coll)
-{
-    ASSERT(coll, "get_inner_content_coll : null pointer");
-    ASSERT_TYPE(coll, LIST | ARRAY | MAP | SET,
-                "get_inner_content_coll : error stringing bad type : %s",
-                str_type(coll->type));
-
-    // get back inner content
-    if(coll->type & LIST)
-        return string_coll_elements_reverse(coll);
-    else
-        return string_coll_elements(coll);
-}
-
-/*
-    Return String representation of coll
-*/
-Node *string_coll(Node *coll)
-{
-    // get back inner content
-    String inner_content = get_inner_content_coll(coll);
-    Node *res;
-    if(!inner_content)
-        ABORT("string_coll : Error getting inner content of collection");
-
-    switch(coll->type)
-    {
-        case LIST:
-            res = sprintf_string("(%s)", inner_content);
-            break;
-
-        case ARRAY:
-            res = sprintf_string("[%s]", inner_content);
-            break;
-
-        case SET:
-            res = sprintf_string("#{%s}", inner_content);
-            break;
-
-        case MAP:
-            res = sprintf_string("{%s}", inner_content);
-            break;
-
-        default :
-            free(inner_content);
-            ABORT("string_coll : bad type for collection %s", coll->type);
-    }
-    free(inner_content);
-    return res;
 }
 
 /*
     Get first element of coll or nil, nil gives nil
 */
-Node *first_coll(Node *coll)
+Node *first_coll(Node *node)
 {
-    ASSERT(coll, "first_coll : null pointer");
-    ASSERT_TYPE(coll, LIST | ARRAY | MAP | SET | NIL_NODE,
-                "first_coll : not a coll %s", str_type(coll->type));
-    if(coll->type & NIL_NODE ||
-       coll->val.coll->size == 0)
+    ASSERT(node, "first_coll : null pointer");
+    ASSERT_TYPE(node, SEQUABLE,
+                "first_coll : not a coll %s", str_type(node->type));
+    if(node->type & NIL_NODE ||
+       coll(node)->size == 0)
         return nil_node;
-    if(coll->type & LIST)
-        return link_node(coll->val.coll->nodes[coll->val.coll->size - 1]);
+    if(node->type & LIST)
+        return link_node(coll(node)->nodes[coll(node)->size - 1]);
     else
-        return link_node(coll->val.coll->nodes[0]);
+        return link_node(coll(node)->nodes[0]);
 }
 
 /*
     Get last element of coll or nil, nil gives nil
 */
-Node *last_coll(Node *coll)
+Node *last_coll(Node *node)
 {
-    ASSERT(coll, "last_coll : null pointer");
-    ASSERT_TYPE(coll, LIST | ARRAY | MAP | SET | NIL_NODE,
-                "last_coll : not a coll %s", str_type(coll->type));
-    if(coll->type & NIL_NODE ||
-       coll->val.coll->size == 0)
+    ASSERT(node, "last_coll : null pointer");
+    ASSERT_TYPE(node, SEQUABLE,
+                "last_coll : not a coll %s", str_type(node->type));
+    if(node->type & NIL_NODE ||
+       coll(node)->size == 0)
         return nil_node;
-    if(coll->type & LIST)
-        return link_node(coll->val.coll->nodes[0]);
+    if(node->type & LIST)
+        return link_node(coll(node)->nodes[0]);
     else
-        return link_node(coll->val.coll->nodes[coll->val.coll->size - 1]);
+        return link_node(coll(node)->nodes[coll(node)->size - 1]);
 }
 
 /*
     Get nth element of coll or nil, nil gives nil
 */
-Node *nth(Node *coll, long index)
+Node *nth(Node *node, long index)
 {
-    ASSERT(coll, "nth_coll : null pointer");
-    ASSERT_TYPE(coll, LIST | ARRAY | MAP | SET | NIL_NODE,
-                "nth_coll : not a coll %s", str_type(coll->type));
-    ASSERT(index < coll->val.coll->size || index < 0,
+    ASSERT(node, "nth_coll : null pointer");
+    ASSERT_TYPE(node, LIST | ARRAY | MAP | SET | NIL_NODE,
+                "nth_coll : not a coll %s", str_type(node->type));
+    ASSERT(index < coll(node)->size || index < 0,
             "nth_coll : Index out of bound");
-    if(coll->type & NIL_NODE ||
-       coll->val.coll->size == 0)
+    if(node->type & NIL_NODE || coll(node)->size == 0)
         return nil_node;
-    if(coll->type & LIST)
-        return link_node(coll->val.coll->nodes[coll->val.coll->size - index - 1]);
+    if(node->type & LIST)
+        return link_node(coll(node)->nodes[coll(node)->size - index - 1]);
     else
-        return link_node(coll->val.coll->nodes[index]);
+        return link_node(coll(node)->nodes[index]);
 }
 
 /*
     Allocate nodes
 */
-Node *malloc_coll(Node *coll, long size)
+Node *malloc_coll(Node *node, long size)
 {
-    ASSERT(coll, "malloc_coll : null pointer");
-    ASSERT_TYPE(coll, LIST | ARRAY | MAP | SET,
+    ASSERT(node, "malloc_coll : null pointer");
+    ASSERT_TYPE(node, LIST | ARRAY | MAP | SET,
                 "alloc_coll : bad type %s",
-                str_type(coll->type));
-    ASSERT(size >= 0, "alloc_coll : Allocation cannot be negative %ld", size);
-    coll->val.coll->nodes = malloc(sizeof(Node *) * size);
-    ASSERT(coll->val.coll->nodes, "malloc_coll : Error alocating collection nodes");
-    coll->val.coll->max = size;
-    return coll;
+                str_type(node->type));
+    ASSERT(size >= 0, "malloc_coll : Allocation cannot be negative %ld", size);
+    coll(node)->nodes = malloc(sizeof(Node *) * size);
+    ASSERT(coll(node)->nodes, "malloc_coll : Error alocating collection nodes");
+    coll(node)->max = size;
+    return node;
 }
 
 /*
     Reallocate nodes
 */
-Node *realloc_coll(Node *coll, long size)
+Node *realloc_coll(Node *node, long size)
 {
-    ASSERT(coll, "realloc_coll : null pointer");
-    ASSERT_TYPE(coll, LIST | ARRAY | MAP | SET,
+    ASSERT(node, "realloc_coll : null pointer");
+    ASSERT_TYPE(node, LIST | ARRAY | MAP | SET,
                 "realloc_coll : bad type %s",
-                str_type(coll->type));
+                str_type(node->type));
     ASSERT(size >= 0, "realloc_coll : Allocation cannot be negative %ld", size);
-    coll->val.coll->nodes = realloc(coll, sizeof(Node *) * size);
-    ASSERT(coll->val.coll->nodes, "realloc_coll : Error alocating collection nodes");
-    coll->val.coll->max = size;
-    return coll;
+    coll(node)->nodes = realloc(coll, sizeof(Node *) * size);
+    ASSERT(coll(node)->nodes, "realloc_coll : Error alocating collection nodes");
+    coll(node)->max = size;
+    return node;
 }
 
 /*
@@ -325,16 +186,16 @@ Node *realloc_coll(Node *coll, long size)
 Node *new_empty_coll(NodeType type,  long alloc)
 {
     ASSERT(type & (LIST | ARRAY | MAP | SET), "new_empty_coll : bad type %s", str_type(type));
-    Node *coll = new_node(type);
-    ASSERT(coll, "new_empty_coll : Error alocating collection node");
-    if(malloc_coll(coll, alloc))
+    Node *node2 = new_node(type);
+    ASSERT(node2, "new_empty_coll : Error alocating collection node");
+    if(malloc_coll(node2, alloc))
     {
-        coll->val.coll->max = coll->val.coll->size = 0;
-        unlink_node(coll);
+        coll(node2)->max = coll(node2)->size = 0;
+        unlink_node(node2);
         return NULL;
     }
-    coll->val.coll->size = 0;
-    return coll;
+    coll(node2)->size = 0;
+    return node2;
 }
 
 /*

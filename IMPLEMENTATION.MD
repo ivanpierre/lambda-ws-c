@@ -29,12 +29,13 @@ typedef enum
     VAR             =   1 << 21, // Values of global vars (bind)
 //	REF             =   1 << 22, // CSP managed values
 //	FUTURE          =   1 << 23, // Asynchronously managed values
-//  AGENT           =   1 << 24  // Agent management through messages
-    READER          =   1 << 24, // Reader for a syntax
+//  AGENT           =   1 << 24,  // Agent management through messages
     KEYVAL          =   1 << 25, // Binding of key / values for MAP
     INVALID         =        26,  // Self explaining... used not to go too far... :D
 
     NUMBER          =   INTEGER | DECIMAL,
+
+    NAMED           =   SYMBOL | KEYWORD,
 
     SEQUABLE        =   STRING |        // Walk on string's characters
                         LIST |          // Walk on list's nodes
@@ -42,23 +43,26 @@ typedef enum
                         MAP |           // Walk on map's keyvals. [key value]
                         SEQ |           // returns itself's ref
                         NAMESPACE |     // Walk on namespace's symbols
-                        ENV_STACK       // Walk on binding's environments
+                        ENV_STACK |     // Walk on binding's environments
                         ENVIRONMENT |   // Walk on environment's bindings as keyvals [symbol value]
                         API |           // Walk on function's implementations as keyval [args function]
-                        LAMBDA,          // Walk on body's Nodes
+                        LAMBDA,         // Walk on body's Nodes
 
     INDEXED         =   STRING |        // Get char at position
-                        ARRAY |         // Get Node at postion
-                        KEYVAL,          // 0 = key, 1 = val (kewyval is a tuple of 2)
-                        
+                        ARRAY,          // Get Node at postion
+
     MAPPED          =   MAP |
                         SET |
                         NAMESPACE |
                         ENVIRONMENT |
                         API,
-} NodeType;  // WIP
 
+    CALLABLE        =   FUNCTION |
+                        LAMBDA
+                        
+} NodeType;  // WIP
 ```
+
 ## Boxing `nodes.c`, `nodes.h`
 Every types of AST element have it's own structure. This structure is an implementation detail and can change as 
 project evolves. These types are treated, based on the language definition AND on objects needed to the language 

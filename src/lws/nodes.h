@@ -68,9 +68,8 @@ typedef enum
 //	REF             =   1 << 22, // CSP managed values
 //	FUTURE          =   1 << 23, // Asynchronously managed values
 //  AGENT           =   1 << 24,  // Agent management through messages
-    READER          =   1 << 25, // Reader for a syntax
-    KEYVAL          =   1 << 26, // Binding of key / values for MAP
-    INVALID         =        27,  // Self explaining... used not to go too far... :D
+    KEYVAL          =   1 << 25, // Binding of key / values for MAP
+    INVALID         =        26,  // Self explaining... used not to go too far... :D
 
     NUMBER          =   INTEGER | DECIMAL,
 
@@ -98,6 +97,7 @@ typedef enum
 
     CALLABLE        =   FUNCTION |
                         LAMBDA
+
 } NodeType;  // WIP
 
 /*
@@ -209,14 +209,7 @@ typedef struct Node
     {
         Integer     integer;
         Decimal     decimal;
-        String      string;
-        Symbol      *symbol;
-        Collection  *coll;
-        KeyValue    *keyval;
-        Function    *function;
-        Env         *env;
-        struct Node *atom;
-        Reader      *reader;
+        void        *compl;
     } val;
 } Node;
 
@@ -233,19 +226,16 @@ Node        *link_node(Node *node);
 Node        *unlink_node(Node *node);
 Node        *new_node(NodeType type);
 Node        *free_node(Node *node);
-Node        *string_node(Node *node);
 
 // Integer
 Node        *new_integer(Integer value);
 Integer     get_integer(Node *node);
 bool        integerp(Node *node);
-Node        *string_integer(Node *node); // internal
 
 // Decimal
 Node        *new_decimal(Decimal value);
 Decimal     get_decimal(Node *node);
 bool        decimalp(Node *node);
-Node        *string_decimal(Node *node); // internal
 
 // Strings
 Node        *new_string(char *value);
@@ -255,7 +245,6 @@ bool        stringp(Node *node);
 String      get_string(Node *string);
 String      get_formated_string(Node *string);
 Node        *free_string(Node *string); // internal
-Node        *string_string(Node *string); // internal
 Node        *eval_symbol(Node *node, Node *env);
 
 // symbols, keywords
@@ -266,19 +255,15 @@ bool        keywordp(Node *node);
 String      get_symbol_name(Node *s);
 String      get_symbol_formatted_name(Node *s);
 Node        *free_symbol(Node *string); // internal
-Node        *string_symbol(Node *string); // internal
 
 // Function
 Node        *free_function(Node *func); // internal
-Node        *string_function(Node *func); // internal
 
 // Lambda
 Node        *free_lambda(Node *node); // internal
-Node        *string_lambda(Node *node); // internal
 
 // Collections
 Node        *free_coll(Node *coll); // internal
-Node        *string_coll(Node *coll); // internal
 long        size_coll(Node *coll);
 Node        *first_coll(Node *coll);
 Node        *last_coll(Node *coll);
@@ -304,15 +289,12 @@ Node        *eval_keyval(Node *node, Node *env);
 
 // Keyval
 Node        *free_keyval(Node *node); // internal
-Node        *string_keyval(Node *node); // internal
 
 // Env
 Node        *free_env(Node *node); // internal
-Node        *string_env(Node *node); // internal
 
 // Reader
 Node        *free_reader(Node *node); // internal
-Node        *string_reader(Node *node); // internal
 
 // Atom
 Node        *deref_var(Node *node); // internal

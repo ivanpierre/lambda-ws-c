@@ -15,15 +15,25 @@
 #include "nodes.h"
 
 /*
+    Access String from Node
+*/
+static Symbol *named(Node *node)
+{
+    return (Symbol *)node->val.compl;
+}
+
+/*
     Create a linked string, don't allocate space for the string
 */
 static Node *new_symbol_base(Node *ns, String value, NodeType type)
 {
     ASSERT(value, "make_string_value : value is null");
-    Node *s = new_node(type);
-    if(!s) return s;
-    s->val.string = value;
-    return s; // create node does the link
+    Node *node = new_node(type);
+    if(!node)
+        return NULL;
+    named(node)->ns = ns;
+    named(node)->ns = ns;
+    return node; // create node does the link
 }
 
 /*
@@ -38,7 +48,7 @@ Node *new_symbol(Node *ns, char *value)
 /*
     Create a linked keyword, allocate space for the string
 */
-Node *new_keyword(Node * ns, char *value)
+Node *new_keyword(Node * ns, String value)
 {
     ASSERT(value, "make_keyword : value is null");
     return new_symbol_base(ns, strdup(value), KEYWORD); // make_string does the link
@@ -63,31 +73,9 @@ bool keywordp(Node *node)
 /*
     Return name of symbol...
 */
-String get_symbol_name(Node *s)
+String get_symbol_name(Node *node)
 {
-    ASSERT_TYPE(s, SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
-    return strdup(s->val.string);
-}
-
-/*
-    Return allocated string of symbol name according to type
-*/
-String get_formated_symbol(Node *s)
-{
-    ASSERT_TYPE(s, SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
-    String formated = NULL;
-    switch(s->type)
-    {
-        case KEYWORD :
-            asprintf(&formated, ":%s", (s->val.string));
-            break;
-        case SYMBOL :
-            asprintf(&formated, "%s", (s->val.string));
-            break;
-        default :
-            break;
-    }
-    ASSERT(formated, "get_formated_string : cannot format node");
-    return formated;
+    ASSERT_TYPE(node, SYMBOL|KEYWORD, "get_symbol : node is not a symbol or keyword");
+    return strdup(named(node));
 }
 

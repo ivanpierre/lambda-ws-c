@@ -15,6 +15,14 @@
 #include "nodes.h"
 
 /*
+    Access Collection from Node
+*/
+static String string(Node *node)
+{
+    return (String)(node->val.compl);
+}
+
+/*
     Create a linked string, don't allocate space for the string
 */
 static Node *new_string_base(String value)
@@ -69,23 +77,23 @@ bool stringp(Node *node)
 /*
     Return linked value of string...
 */
-String get_string(Node *s)
+String get_string(Node *node)
 {
-    ASSERT_TYPE(s, STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
-    return strdup(s->val.string);
+    ASSERT_TYPE(node, STRING, "get_string : node is not a string, symbol or keyword");
+    return strdup(string(node));
 }
 
 /*
     Return allocated string of string formatted according to type
 */
-String get_formated_string(Node *s)
+String get_formated_string(Node *node)
 {
-    ASSERT_TYPE(s, STRING|SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
+    ASSERT_TYPE(node, STRING, "get_string : node is not a string, symbol or keyword");
     String formated = NULL;
-    switch(s->type)
+    switch(node->type)
     {
         case STRING :
-            asprintf(&formated, "\"%s\"", (s->val.string));
+            asprintf(&formated, "\"%s\"", (string(node)));
             break;
         default :
             break;
@@ -96,26 +104,15 @@ String get_formated_string(Node *s)
 
 
 /*
-    Return allocated string node of string formatted according to type
-*/
-Node *string_string(Node *node)
-{
-    ASSERT_TYPE(node, STRING|SYMBOL|KEYWORD, "string_string : node is not a string, symbol or keyword");
-    String formated = get_formated_string(node);
-    ASSERT(formated, "string_string : cannot format node");
-    return new_string(formated); // formated allocated
-}
-
-/*
     Unalloc string
 */
 Node *free_string(Node *node)
 {
-    ASSERT_TYPE(node, STRING|SYMBOL|KEYWORD, "free_string : node is not a string");
-    if(node->val.string)
+    ASSERT_TYPE(node, STRING, "free_string : node is not a string");
+    if(string(node))
     {
-        free(node->val.string);
-        node->val.string = NULL;
+        free(string(node));
+        string(node) = NULL;
     }
     return node;
 }

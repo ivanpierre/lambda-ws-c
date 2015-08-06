@@ -1,5 +1,6 @@
 /****
-    main entry point0
+    test entry point0
+
     Lambda Calculus Workshop
     C version
     Ivan Pierre <ivan@kilroysoft.ch> 2015
