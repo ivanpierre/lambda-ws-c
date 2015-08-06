@@ -1,10 +1,15 @@
 #BLOG (just what happens)
+##06 aug 2015
+
+- Split source into AST library and language implementation. 
+- Simplifying Node definition.
+
 ##04 aug 2015
 
 - Separate STRING et SYMBOL, new [symbol.c`](symbol.c) for keywords and symbols.
 - Adding evaluation functions.
 - Adding NAMESPACE.
-- ATOM is deprecated split into VAR, REF, FUTURE... [`atom.c`](src/atom.c) get the foll management
+- ATOM is deprecated split into VAR, REF, FUTURE... [`atom.c`](src/atom.c) get the management.
 - Changed function definition, functions will be a map of FUNCTION mapped by argument list characteristics.
 - LAMBDA and FUNCTION share the same structure Function.
 - The type for a function collection with the same name is API.
@@ -33,13 +38,13 @@ so the body is evaluated with the fn arguments. And fn evaluation is made with t
 linked to the new local environment.
 
 ##03 aug 2015
-- [ ] Clarify and precise implementation details.
-- [ ] Finalizing previous enhancements. 
-- [ ] Functions definition, creation calling.
-- [ ] Environments creation and management based on MAP.
-- [ ] Reader functions and dispatch functions.
-- [ ] TDD functions
-- [ ] Begin to test extensively all this stuff.
+- Clarify and precise implementation details.
+- Finalizing previous enhancements. 
+- Functions definition, creation calling.
+- Environments creation and management based on MAP.
+- Reader functions and dispatch functions.
+- TDD functions
+- Begin to test extensively all this stuff.
 - Change and precise implementation documentation.
 - String representation for types.
 - Implementation as Strings for SYMBOL, KEYWORD, STRING.

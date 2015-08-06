@@ -87,6 +87,7 @@ a better memory management, but you lose the indexing, map could be a list, but 
 
 So it's a question of data definition efficiency and somewhat taste. :D
 
+
 ## And now what ?
 For any question or issue you can write to me on twitter @ivanpierre. It's currently a WIP.
 
