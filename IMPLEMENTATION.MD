@@ -92,13 +92,13 @@ All instances of these types are nodes witch will be managed by the allocator.
 
 ```
 
-- [`nodes.c`](src/nodes.c) : contain allocation and general node management.
-- [`nodes.h`](src/nodes.h) : gives all structures of nodes and all public management functions.
+- [`nodes.c`](src/lws/nodes.c) : contain allocation and general node management.
+- [`nodes.h`](src/lws/nodes.h) : gives all structures of nodes and all public management functions.
 
 Ordering of nodes as keys is defined by the comparison function. witch is different from the equality function.
 For example 0 is equal to 0.0, but they can both be keys for maps or sets.
 
-## Collections [`collections.c`](src/collections.c)
+## Collections [`collections.c`](src/lws/collections.c)
 All collections are stored in an array. With 
 
 - `size`, giving the prensent number of valid nodes of the collection and 
@@ -162,14 +162,14 @@ typedef struct
 
 ```
 
-## Textual values [`strings.c`](src/strings.c)
+## Textual values [`strings.c`](src/lws/strings.c)
 These are all stored as strings without decoration say :key is stored as the string 'key' as symbol key and 
 string "key". But they are not equals, order is first string order and second type order.
 
 ### STRING
 Hosts the name of symbols,
 
-## Named values [`named.c`](src/named.c)
+## Named values [`named.c`](src/lws/named.c)
 These are representation of named values as symbol or keyword
 
 ### SYMBOL
@@ -178,7 +178,7 @@ To define symbolic names, function names, argument names.
 ### KEYWORD
 To define symbolic constant names. Keywords evaluate to themselves.
 
-## Functions [`function.c`](src/function.c) and [`env.c`](src/env.c)
+## Functions [`function.c`](src/lws/function.c) and [`env.c`](src/lws/env.c)
 They keep track of their arity and their eventual closures. They can have a macro-expansion capability (only at 
 read/compile time), and an evaluation of args capability.
 
@@ -225,7 +225,7 @@ Calling a function will stack local arguments as a new local stack. Enter in a l
 adding bindings. Function creation inner in a local block will keep it's syntactical local environment. Output from 
 these blocks will unstack environment.
 
-## Numeric values [`numbers.c`](src/numbers.c)
+## Numeric values [`numbers.c`](src/lws/numbers.c)
 There is no automatic type enhancement on overflow, but cast to DECIMAL will be done on binary operations with a 
 FLOAT value.
 
@@ -247,7 +247,7 @@ Manage floating point values. Implemented as doubles.
 
 ## Other elements
 
-### Global [`global.c`](src/global.c)
+### Global [`global.c`](src/clojure/global.c)
 Here will be stored the core functions of the LWC language. 
 
 This will manage :
@@ -257,7 +257,7 @@ This will manage :
 - Basic macros... well no...
 - These function will be accessible by the language
 
-### Reader [`reader.c`](src/reader.c)
+### Reader [`reader.c`](src/clojure/reader.c)
 The reader will read in the current reader file handler to transform character strings into AST structure. This will 
 recognize symbols, numbers. Complementary syntax will be managed by a functional indirection through an array linking
 character with specific reader function. For example '(' character with list reader or '[' with array reader.

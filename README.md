@@ -7,10 +7,12 @@ You can see the github https://github.com/FunctionalRomandie/LambdaCalculusWorks
 
 - [Goals](GOALS.MD)
 - [Implementation](IMPLEMENTATION.MD)
+-- [Library](LWS.MD)
+-- [Clojure](CLOJURE.MD)
+-- [Basic](BASIC.MD)
+-- [Java](JAVA.MD)
 - [Garbage collection](GARBAGE.MD)
 - Code generation (TBD)
-
-
 - [Project requirements](REQUIREMENTS)
 
 You can see the [blog](BLOG.MD) to see advance... ;)

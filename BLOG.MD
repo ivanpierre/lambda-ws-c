@@ -6,10 +6,10 @@
 
 ##04 aug 2015
 
-- Separate STRING et SYMBOL, new [symbol.c`](symbol.c) for keywords and symbols.
+- Separate STRING et SYMBOL, new [symbol.c`](src/lws/namned.c) for keywords and symbols.
 - Adding evaluation functions.
 - Adding NAMESPACE.
-- ATOM is deprecated split into VAR, REF, FUTURE... [`atom.c`](src/atom.c) get the management.
+- ATOM is deprecated split into VAR, REF, FUTURE... [`atom.c`](src/lws/atom.c) get the management.
 - Changed function definition, functions will be a map of FUNCTION mapped by argument list characteristics.
 - LAMBDA and FUNCTION share the same structure Function.
 - The type for a function collection with the same name is API.
