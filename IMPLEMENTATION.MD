@@ -140,6 +140,9 @@ Sets are maps where keys and values are the same. So it's an array of nodes ordi
 ### SEQ
 
 ```.c
+/*
+    Walker on a collection act as a list
+*/
     typedef struct
     {
         long            index;
@@ -174,6 +177,9 @@ These are representation of named values as symbol or keyword
 
 ### SYMBOL
 To define symbolic names, function names, argument names.
+
+### VAR
+
 
 ### KEYWORD
 To define symbolic constant names. Keywords evaluate to themselves.
@@ -236,8 +242,6 @@ Manage integer values. Implemented as longs
 Manage floating point values. Implemented as doubles.
 
 ## Values management [`atom.c`](src/lws/atom.c)
-
-### VAR
 
 ### REF
 
