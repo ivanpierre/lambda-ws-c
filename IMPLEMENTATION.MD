@@ -1,6 +1,6 @@
 # Implementation
 ## Main types
-```c
+```.c
 /*
     type of nodes
 */
@@ -70,7 +70,7 @@ management. Boxing is needed to manage data types as C doesn't do it for us...
 
 All instances of these types are nodes witch will be managed by the allocator.
 
-```c
+```.c
     /*
         Struct of a base node
     */
@@ -104,7 +104,7 @@ All collections are stored in an array. With
 - `size`, giving the prensent number of valid nodes of the collection and 
 - `max`, giving the number of allocated nodes.
 
-```c
+```.c
     /*
         Collection : Array, List, Map and Set
     */
@@ -139,7 +139,7 @@ Sets are maps where keys and values are the same. So it's an array of nodes ordi
 
 ### SEQ
 
-```c
+```.c
     typedef struct
     {
         long            index;
@@ -150,15 +150,15 @@ Sets are maps where keys and values are the same. So it's an array of nodes ordi
 ### KEYVAL
 Association of keys and values. The are printed as key, values pair as an array if they are not in a map.
 
-```c
-/*
-    Key/Values binding
-*/
-typedef struct
-{
-    struct Node     *key;
-    struct Node     *value;
-} KeyValue;
+```.c
+    /*
+        Key/Values binding
+    */
+    typedef struct
+    {
+        struct Node     *key;
+        struct Node     *value;
+    } KeyValue;
 
 ```
 
@@ -187,7 +187,7 @@ read/compile time), and an evaluation of args capability.
 - `closure` the optional closure environment of the function.
 - `args` array of arguments in case of vararg an '&' symbol is the penultimate.
 
-```c
+```.c
     /*
         Functions
     */
