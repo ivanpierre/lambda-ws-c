@@ -154,13 +154,13 @@ typedef struct
 } KeyValue;
 
 /*
-    Symbol
+    Named : symbols and kerywords
 */
 typedef struct
 {
     struct Node     *ns;
     struct Node     *name;
-} Symbol;
+} Named;
 
 /*
     Reader
@@ -207,9 +207,9 @@ typedef struct Node
 #endif
     union
     {
-        Integer     integer;
-        Decimal     decimal;
-        void        *compl;
+        Integer     integer;        // Integer as long
+        Decimal     decimal;        // Floats as double
+        void        *compl;         // all structs
     } val;
 } Node;
 

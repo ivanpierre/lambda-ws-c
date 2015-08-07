@@ -93,7 +93,7 @@ For any question or issue you can write to me on twitter @ivanpierre. It's curre
 
 But as I have to manage all the data types to begin to put just a function call with a symbol in environment, I 
 finish to have a complete functional language. Well this was the goal, as programming a functional language with a 
-functional language is ways to easy ;)
+functional language is ways too easy ;)
 
 Well, it will be when all the data types will be implemented.
 
