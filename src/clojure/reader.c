@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include "nodes.h"
 
+make clean
+
+
 /*
     Unalloc reader
 */

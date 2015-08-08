@@ -17,9 +17,9 @@
 /*
     Access Collection from Node
 */
-static String string(Node *node)
+static void *string(Node *node)
 {
-    return (String)(node->val.compl);
+    return node->val.compl;
 }
 
 /*
@@ -28,10 +28,11 @@ static String string(Node *node)
 static Node *new_string_base(String value)
 {
     ASSERT(value, "make_string_value : value is null");
-    Node *s = new_node(STRING);
-    if(!s) return s;
-    s->val.string = value;
-    return s; // create node does the link
+    Node *node = new_node(STRING);
+    if(!node)
+        return node;
+    node->val.compl = value;
+    return node; // new_node does the link
 }
 
 /*
@@ -40,7 +41,7 @@ static Node *new_string_base(String value)
 Node *new_string(char *value)
 {
     ASSERT(value, "make_string : value is null");
-    return new_string_base(value); // make_string does the link
+    return new_string_base(value); // new_string_base does the link
 }
 
 /*
@@ -63,7 +64,7 @@ Node *sprintf_string(char *fmt, ...)
     asprintf(&formated, fmt, args);
     if(!formated)
         return new_string_allocate("Cannot format string");
-    return new_string_allocate(formated);
+    return new_string(formated);
 }
 
 /*
@@ -77,7 +78,7 @@ bool stringp(Node *node)
 /*
     Return linked value of string...
 */
-String get_string(Node *node)
+static String get_string(Node *node)
 {
     ASSERT_TYPE(node, STRING, "get_string : node is not a string, symbol or keyword");
     return strdup(string(node));
@@ -86,7 +87,7 @@ String get_string(Node *node)
 /*
     Return allocated string of string formatted according to type
 */
-String get_formated_string(Node *node)
+static String get_formated_string(Node *node)
 {
     ASSERT_TYPE(node, STRING, "get_string : node is not a string, symbol or keyword");
     String formated = NULL;
@@ -102,7 +103,6 @@ String get_formated_string(Node *node)
     return formated;
 }
 
-
 /*
     Unalloc string
 */
@@ -112,7 +112,7 @@ Node *free_string(Node *node)
     if(string(node))
     {
         free(string(node));
-        string(node) = NULL;
+        node->val.compl = NULL;
     }
     return node;
 }

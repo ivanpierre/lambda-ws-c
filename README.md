@@ -30,10 +30,10 @@ language). THE AST only give access to basis computational concepts all language
 For the AST point of view, the two following pieces of code here are quite the same :
 
 ```bas
-    10 IF A& = 0 THEN PRINT "COUCOU" ELSE PRINT "CACA"
+    10 If a = 0 Then Print "coucou" Else Print "caca"
 ```
 ```.clj
-    (if (zerop a) 
+    (if (zero? a) 
       (println "coucou")
       (println "caca"))
 ```
@@ -41,11 +41,11 @@ For the AST point of view, the two following pieces of code here are quite the s
 But that is not the case for the followings :
 
 ```.bas
-    10 SUM = 0
-    20 FOR I = 0 to 1000 - 1
-    30 SUM = SUM + I
-    40 NEXT I
-    50 PRINT SUM
+    10 sum = 0
+    20 For i = 0 To 1000 - 1
+    30 sum = sum + i
+    40 Next i
+    50 Print sum
 ```
 ```.clj
     (prinln (reduce + (range 1000)))

@@ -12,6 +12,16 @@
 #include "nodes.h"
 
 /*
+    Environment. There is only uninterned (local) symbol, so we can
+    only keep the symbol name
+*/
+typedef struct Env
+{
+    struct Node     *previous; // Environment
+    struct Node     *map; // map [String Value]
+} Env;
+
+/*
     Access Env from Node
 */
 static Env *env(Node *node)

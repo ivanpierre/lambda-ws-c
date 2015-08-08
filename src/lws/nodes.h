@@ -67,9 +67,11 @@ typedef enum
     VAR             =   1 << 21, // Values of global vars (bind)
 //	REF             =   1 << 22, // CSP managed values
 //	FUTURE          =   1 << 23, // Asynchronously managed values
-//  AGENT           =   1 << 24,  // Agent management through messages
-    KEYVAL          =   1 << 25, // Binding of key / values for MAP
-    INVALID         =        26,  // Self explaining... used not to go too far... :D
+//  AGENT           =   1 << 24, // Agent management through messages
+    READER          =   1 << 25, // Reader implemented in language
+    WRITER          =   1 << 26, // Writer implemented in language
+    KEYVAL          =   1 << 27, // Binding of key / values for MAP
+    INVALID         =        28, // Self explaining... used not to go too far... :D
 
     NUMBER          =   INTEGER | DECIMAL,
 
@@ -119,16 +121,6 @@ typedef enum
 struct  Node; // forward
 
 /*
-    Environment. There is only uninterned (local) symbol, so we can
-    only keep the symbol name
-*/
-typedef struct Env
-{
-    struct Node     *previous; // Environment
-    struct Node     *map; // map [String Value]
-} Env;
-
-/*
     Collection : Array, List, Map and Set
 */
 typedef struct
@@ -147,15 +139,6 @@ typedef struct
     long            index;
     struct Node     *coll;
 } Seq;
-
-/*
-    Key/Values binding
-*/
-typedef struct
-{
-    struct Node     *key;
-    struct Node     *value;
-} KeyValue;
 
 /*
     Named : symbols and kerywords
@@ -256,8 +239,10 @@ Node        *new_symbol(Node *ns, char *value);
 Node        *new_keyword(Node *ns, char *value);
 bool        symbolp(Node *node);
 bool        keywordp(Node *node);
-String      get_symbol_name(Node *s);
-String      get_symbol_formatted_name(Node *s);
+Node        *get_named_name(Node *s);
+Node        *get_named_formatted_name(Node *s);
+Node        *get_named_name_node(Node *node);
+Node        *get_named_ns_node(Node *node);
 Node        *free_symbol(Node *string); // internal
 
 // Function

@@ -20,14 +20,6 @@ static Collection *coll(Node *node)
 }
 
 /*
-    Access Keyval from Node
-*/
-static KeyValue *keyval(Node *node)
-{
-    return (KeyValue *)(node->val.compl);
-}
-
-/*
     Free coll
 */
 Node *free_coll(Node *node)
@@ -80,20 +72,6 @@ static long list_size(long size, char **strings)
     for(long i = 0; i < size; i++)
         res += strlen(strings[i]) + 1; // counting space
     return res + 1; // for \0
-}
-
-/*
-    Free keyval
-*/
-Node *free_keyval(Node *node)
-{
-    ASSERT_TYPE(node, KEYVAL,
-                "free_keyval : error unallocatig bad type : %s",
-                str_type(node->type));
-
-    free_node(keyval(node)->key);
-    free_node(keyval(node)->value);
-    return NULL;
 }
 
 /*

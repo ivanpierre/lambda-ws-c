@@ -140,9 +140,9 @@ Sets are maps where keys and values are the same. So it's an array of nodes ordi
 ### SEQ
 
 ```.c
-/*
-    Walker on a collection act as a list
-*/
+    /*
+        Walker on a collection act as a list
+    */
     typedef struct
     {
         long            index;

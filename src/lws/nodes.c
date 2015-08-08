@@ -53,7 +53,8 @@ static char            *str_types[] =
                                 "array",
                                 "map",
                                 "set",
-                                "seq",
+                                "sequence",
+                                "namespace"
                                 "env_stack",
                                 "environment",
                                 "api",
@@ -62,13 +63,15 @@ static char            *str_types[] =
                                 "var",
                                 "ref",
                                 "future",
+                                "agent"
                                 "reader",
                                 "keyval",
                                 "<invalid type>"
                             };
 
-
-
+/*
+   get type name
+*/
 String str_type(NodeType type)
 {
     int i = 0;
@@ -183,8 +186,8 @@ Node *free_node(Node *node)
 //      case REF
 //      case FUTURE
         case VAR :
-            free_node(node->val.atom);
-            node->val.atom = NULL;
+            free_node(node->val.compl);
+            node->val.compl = NULL;
             break;
 
 //      case READER :

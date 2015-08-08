@@ -17,9 +17,9 @@
 /*
     Access String from Node
 */
-static Symbol *named(Node *node)
+static Named *named(Node *node)
 {
-    return (Symbol *)node->val.compl;
+    return (Named *)node->val.compl;
 }
 
 /*
@@ -32,7 +32,7 @@ static Node *new_symbol_base(Node *ns, String value, NodeType type)
     if(!node)
         return NULL;
     named(node)->ns = ns;
-    named(node)->ns = ns;
+    named(node)->name = new_string_allocate(value); // allocate place for the string
     return node; // create node does the link
 }
 
@@ -73,9 +73,36 @@ bool keywordp(Node *node)
 /*
     Return name of symbol...
 */
-String get_symbol_name(Node *node)
+Node *string_symbol(Node *node)
 {
-    ASSERT_TYPE(node, SYMBOL|KEYWORD, "get_symbol : node is not a symbol or keyword");
-    return strdup(named(node));
+    ASSERT_TYPE(node, SYMBOL|KEYWORD, "string_symbol : node is not a symbol or keyword");
+    return link_node(named(node)->name); // alloc node
+}
+
+/*
+    Return ns of symbol...
+*/
+Node *string_symbol_formated(Node *node)
+{
+    ASSERT_TYPE(node, SYMBOL|KEYWORD, "string_symbol_formated : node is not a symbol or keyword");
+    return link_node(named(node)->ns); // alloc node
+}
+
+/*
+    Return name of symbol...
+*/
+Node *get_symbol_name(Node *node)
+{
+    ASSERT_TYPE(node, SYMBOL|KEYWORD, "get_symbol_name : node is not a symbol or keyword");
+    return link_node(named(node)->name); // alloc node
+}
+
+/*
+    Return name of symbol...
+*/
+Node *get_named_ns(Node *node)
+{
+    ASSERT_TYPE(node, SYMBOL|KEYWORD, "get_symbol_ns : node is not a symbol or keyword");
+    return link_node(named(node)->ns); // alloc node
 }
 
