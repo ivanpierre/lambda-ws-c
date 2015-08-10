@@ -55,7 +55,7 @@ Node *keyval_free(Node *node)
 
     free_node(keyval_get_key(node));
     free_node(keyval_get_value(node));
-    return NULL;
+    return node;
 }
 
 /*

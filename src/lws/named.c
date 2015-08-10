@@ -13,51 +13,61 @@
 #include <stdarg.h>
 #include <string.h>
 #include "nodes.h"
+#include "named.h"
 
 /*
-    Access String from Node
+    Named : symbols and kerywords
 */
-static Named *named(Node *node)
+typedef struct
 {
-    return (Named *)node->val.compl;
-}
+    struct Node     *ns;
+    struct Node     *name;
+} Named;
+
+/*
+    Access named data
+*/
+#define NAMED(nopde) ((Named *)node->val.compl)
 
 /*
     Create a linked string, don't allocate space for the string
 */
-static Node *new_symbol_base(Node *ns, String value, NodeType type)
+static Node *named_base(Node *ns, Node *name, NodeType type)
 {
-    ASSERT(value, "make_string_value : value is null");
+    ASSERT(ns, "namespace is null");
+    ASSERT(name, "name is null");
+
     Node *node = new_node(type);
+
     if(!node)
         return NULL;
-    named(node)->ns = ns;
-    named(node)->name = new_string_allocate(value); // allocate place for the string
+
+    NAMED(node)->ns = ns;
+    NAMED(node)->name = name; // allocate place for the string
+
     return node; // create node does the link
 }
 
 /*
     Create a linked symbol, allocate space for the string
 */
-Node *new_symbol(Node *ns, char *value)
+Node *symbol(Node *ns, Node *name)
 {
-    ASSERT(value, "make_symbol : value is null");
-    return new_symbol_base(ns, strdup(value), SYMBOL); // make_string does the link
+    return named_base(ns, name, SYMBOL); // make_string does the link
 }
 
 /*
     Create a linked keyword, allocate space for the string
 */
-Node *new_keyword(Node * ns, String value)
+Node *keyword(Node *ns, Node *name)
 {
-    ASSERT(value, "make_keyword : value is null");
-    return new_symbol_base(ns, strdup(value), KEYWORD); // make_string does the link
+    return named_base(ns, name, KEYWORD); // make_string does the link
 }
 
 /*
     test if node is a symbol
 */
-bool symbolp(Node *node)
+bool symbol_QM_(Node *node)
 {
     return node && node->type & SYMBOL;
 }
@@ -65,44 +75,39 @@ bool symbolp(Node *node)
 /*
     test if node is a keyword
 */
-bool keywordp(Node *node)
+bool keyword_QM_(Node *node)
 {
     return node && node->type & KEYWORD;
 }
 
 /*
-    Return name of symbol...
+    Return name of named
 */
-Node *string_symbol(Node *node)
+Node *named_get_name(Node *node)
 {
-    ASSERT_TYPE(node, SYMBOL|KEYWORD, "string_symbol : node is not a symbol or keyword");
-    return link_node(named(node)->name); // alloc node
+    ASSERT_TYPE(node, SYMBOL|KEYWORD, "node is neither a symbol nor keyword");
+    return link_node(NAMED(node)->name); // alloc node
 }
 
 /*
-    Return ns of symbol...
+    Return ns of name
 */
-Node *string_symbol_formated(Node *node)
+Node *named_get_ns(Node *node)
 {
-    ASSERT_TYPE(node, SYMBOL|KEYWORD, "string_symbol_formated : node is not a symbol or keyword");
-    return link_node(named(node)->ns); // alloc node
+    ASSERT_TYPE(node, SYMBOL|KEYWORD, "node is neither a symbol nor keyword");
+    return link_node(NAMED(node)->ns); // alloc node
 }
 
 /*
-    Return name of symbol...
+    Unalloc named elements : ns and name
 */
-Node *get_symbol_name(Node *node)
+Node *named_free(Node *node)
 {
-    ASSERT_TYPE(node, SYMBOL|KEYWORD, "get_symbol_name : node is not a symbol or keyword");
-    return link_node(named(node)->name); // alloc node
-}
+    ASSERT_TYPE(node, NAMED,
+                "error unallocatig bad type : %s",
+                str_type(node->type));
 
-/*
-    Return name of symbol...
-*/
-Node *get_named_ns(Node *node)
-{
-    ASSERT_TYPE(node, SYMBOL|KEYWORD, "get_symbol_ns : node is not a symbol or keyword");
-    return link_node(named(node)->ns); // alloc node
+    free_node(named_get_ns(node));
+    free_node(named_get_name(node));
+    return node;
 }
-

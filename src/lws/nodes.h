@@ -141,15 +141,6 @@ typedef struct
 } Seq;
 
 /*
-    Named : symbols and kerywords
-*/
-typedef struct
-{
-    struct Node     *ns;
-    struct Node     *name;
-} Named;
-
-/*
     Reader
 */
 typedef struct
@@ -223,18 +214,6 @@ bool        integerp(Node *node);
 Node        *new_decimal(Decimal value);
 Decimal     get_decimal(Node *node);
 bool        decimalp(Node *node);
-
-// symbols, keywords
-Node        *new_symbol(Node *ns, char *value);
-Node        *new_keyword(Node *ns, char *value);
-bool        symbolp(Node *node);
-bool        keywordp(Node *node);
-Node        *get_named_name(Node *s);
-Node        *get_named_formatted_name(Node *s);
-Node        *get_named_name_node(Node *node);
-Node        *get_named_ns_node(Node *node);
-Node        *free_symbol(Node *string); // internal
-Node        *eval_symbol(Node *node, Node *env);
 
 // Function
 Node        *free_function(Node *func); // internal

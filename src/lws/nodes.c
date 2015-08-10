@@ -151,6 +151,7 @@ static Node *init_node(Node *node, NodeType type)
 
 Node *keyval_free(Node *node);
 Node *string_free(Node *string);
+Node *named_free(Node *node);
 
 /*
     Free all nodes according to type
@@ -168,16 +169,21 @@ Node *free_node(Node *node)
 
         case KEYWORD :
         case SYMBOL :
+            node = named_free(node);
+            break;
+
         case STRING :
             node = string_free(node);
+            break;
+
+        case ENV_STACK :
+        case ENVIRONMENT :
             break;
 
         case LIST :
         case ARRAY :
         case MAP :
         case SET :
-        case ENV_STACK :
-        case ENVIRONMENT :
             node = free_coll(node);
             break;
 
