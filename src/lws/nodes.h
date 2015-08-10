@@ -17,25 +17,30 @@
     Errors and assertions
 */
 extern struct Node *error_node;
-void ERROR(const char *file, int line, const char func[], char *fmt, ...);
+void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
+
+#define ERROR(fmt, ...) \
+    { \
+        ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+    }
 
 #define ABORT(fmt, ...) \
     { \
-        ERROR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+        ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
         return NULL; \
     }
 
 #define ASSERT(cond, fmt, ...) \
     if(!(cond)) \
     { \
-        ERROR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+        ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
         return NULL; \
     }
 
 #define ASSERT_TYPE(node, typ, fmt, ...) \
     if(!(node && (node->type & (typ)))) \
     { \
-        ERROR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+        ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
         return NULL; \
     }
 
@@ -76,6 +81,12 @@ typedef enum
     NUMBER          =   INTEGER | DECIMAL,
 
     NAMED           =   SYMBOL | KEYWORD,
+
+    COLLECTION      =   STRING |        // Walk on string's characters
+                        LIST |          // Walk on list's nodes
+                        ARRAY |         // Walk on array's nodes
+                        MAP |           // Walk on map's keyvals. [key value]
+                        SEQ,            // returns itself's ref
 
     SEQUABLE        =   STRING |        // Walk on string's characters
                         LIST |          // Walk on list's nodes
@@ -196,6 +207,17 @@ extern Node *nil_node;
 extern Node *true_node;
 extern Node *false_node;
 
+/*
+    Main functions pointers FREE, EVAL, PRINT
+*/
+extern Node *(*free_ptr)(Node *node);
+extern Node *(*eval_ptr)(Node *node, Node *env);
+extern Node *(*print_ptr)(Node *node);
+
+Node *FREE(Node *node);
+Node *EVAL(Node *node, Node *env);
+Node *PRINT(Node *node);
+
 // public function for types
 String      str_type(NodeType type);
 
@@ -203,7 +225,6 @@ String      str_type(NodeType type);
 Node        *link_node(Node *node);
 Node        *unlink_node(Node *node);
 Node        *new_node(NodeType type);
-Node        *free_node(Node *node);
 
 // Integer
 Node        *new_integer(Integer value);

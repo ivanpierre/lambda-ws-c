@@ -36,7 +36,7 @@ Node *free_coll(Node *node)
     {
         if(coll(node)->nodes[i])
         {
-            free_node(coll(node)->nodes[i]);
+            FREE(coll(node)->nodes[i]);
             coll(node)->nodes[i] = NULL;
         }
     }

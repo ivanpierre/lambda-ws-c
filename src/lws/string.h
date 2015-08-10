@@ -17,6 +17,6 @@ bool        string_QM_(Node *node);
 /*
     Access string from Node
 */
-#define STRING(node) (node->val.compl)
+#define STRING(node) ((String)(node ? node->val.compl : ""))
 
 #endif

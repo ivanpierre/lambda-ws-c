@@ -107,7 +107,7 @@ Node *named_free(Node *node)
                 "error unallocatig bad type : %s",
                 str_type(node->type));
 
-    free_node(named_get_ns(node));
-    free_node(named_get_name(node));
+    FREE(named_get_ns(node));
+    FREE(named_get_name(node));
     return node;
 }

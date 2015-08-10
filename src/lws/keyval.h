@@ -9,8 +9,8 @@
 #ifndef KEYVAL_H
 #define KEYVAL_H
 
-Node        *keyval_get_key(Node *node);
-Node        *keyval_get_val(Node *node);
-Node        *keyval(Node *key, Node *value);
+Node *keyval_key(Node *node);
+Node *keyval_value(Node *node);
+Node *keyval(Node *key, Node *value);
 
 #endif

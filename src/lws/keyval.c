@@ -27,7 +27,7 @@ typedef struct
 /*
     Get the key of keyval
 */
-Node *keyval_get_key(Node *node)
+Node *keyval_key(Node *node)
 {
     Node *res = link_node(KEYVAL(node)->key);
     unlink_node(node);
@@ -37,7 +37,7 @@ Node *keyval_get_key(Node *node)
 /*
     Get the value of keyval
 */
-Node *keyval_get_value(Node *node)
+Node *keyval_value(Node *node)
 {
     Node *res = link_node(KEYVAL(node)->value);
     unlink_node(node);
@@ -53,8 +53,8 @@ Node *keyval_free(Node *node)
                 "error unallocatig bad type : %s",
                 str_type(node->type));
 
-    free_node(keyval_get_key(node));
-    free_node(keyval_get_value(node));
+    FREE(keyval_key(node));
+    FREE(keyval_value(node));
     return node;
 }
 

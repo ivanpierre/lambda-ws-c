@@ -27,8 +27,8 @@ Node *false_node = NULL;
 // Error signal
 Node *error_node = NULL;
 
-// Error function
-void ERROR(const char *file, int line, const char func[], char *fmt, ...)
+// Error* function
+void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
 {
     char buffer[255];
     va_list args;
@@ -114,7 +114,7 @@ Node *unlink_node(Node *node)
         if(node->occurrences)
             node->occurrences--;
         if(!node->occurrences)
-            free_node(node);
+            FREE(node);
     }
     return NULL;
 }
@@ -156,7 +156,7 @@ Node *named_free(Node *node);
 /*
     Free all nodes according to type
 */
-Node *free_node(Node *node)
+static Node *free_node(Node *node)
 {
     ASSERT(node, "free_node : NULL node");
 
@@ -203,7 +203,7 @@ Node *free_node(Node *node)
 //      case REF
 //      case FUTURE
         case VAR :
-            node = free_node(node->val.compl);
+            node = FREE(node->val.compl);
             break;
 
 //      case READER :
@@ -219,6 +219,19 @@ Node *free_node(Node *node)
 
     unlink_node(node); // we can now free the main node
     return NULL;
+}
+
+/*
+    def pointer for free
+*/
+Node *(*free_ptr)(Node *node) = &free_node;
+
+/*
+    FREE unalloc node using pointer
+*/
+Node *FREE(Node *node)
+{
+    return (*free_ptr)(node);
 }
 
 /*
