@@ -61,7 +61,7 @@ Node *keyval_free(Node *node)
 /*
     New keyval
 */
-Node *keyval_new(Node *key, Node *value)
+Node *keyval(Node *key, Node *value)
 {
 	Node *node = new_node(KEYVAL); // Create linked node
 

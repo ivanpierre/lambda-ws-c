@@ -10,12 +10,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "nodes.h"
+#include "env.h"
 
 /*
     Environment. There is only uninterned (local) symbol, so we can
     only keep the symbol name
 */
-typedef struct Env
+typedef struct
 {
     struct Node     *previous; // Environment
     struct Node     *map; // map [String Value]
@@ -24,22 +25,52 @@ typedef struct Env
 /*
     Access Env from Node
 */
-static Env *env(Node *node)
+#define ENV(node) (node ? ((Env *)(node->val.compl)) : NULL)
+
+/*
+    Get environment map
+*/
+Node *env_map(Node *node)
 {
-    return (Env *)(node->val.compl);
+    ASSERT(node, "null environment");
+    ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
+    return link_node(ENV(node)->map);
+}
+
+/*
+    Get environment previous map
+*/
+Node *env_previous(Node *node)
+{
+    ASSERT(node, "null environment");
+    ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
+    return link_node(ENV(node)->previous);
 }
 
 /*
     Unalloc environment bindings
 */
-Node *free_env(Node *node)
+Node *env_free(Node *node)
 {
-    ASSERT(node, "free_env : null environment");
-    ASSERT_TYPE(node, ENVIRONMENT, "free_env : Bad type %s", str_type(node->type));
-    if(env(node)->map)
-    {
-        env(node)->map = free_coll(env(node)->map);
-    }
-    return NULL;
+    ASSERT(node, "null environment");
+    ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
+    ENV(node)->map = FREE(ENV(node)->map);
+    unlink_node(ENV(node)->previous);
+    return node;
+}
+
+/*
+    New environment
+*/
+Node *env(Node *previous, Node *map)
+{
+	Node *node = new_node(ENVIRONMENT); // Create linked node
+
+	if(!node)
+		ABORT("cannor create new environment");
+
+	ENV(node)->previous = previous; // don't link
+	ENV(node)->map = map;
+	return node; // Node is already linked
 }
 

@@ -12,6 +12,7 @@
 #include "nodes.h"
 #include "keyval.h"
 #include "string.h"
+#include "env.h"
 
 /*
     Return String representation a KEYVAL
@@ -83,8 +84,13 @@ static long list_size(long size, char *arr[])
 /*
     Return string of all elements of coll in right order
 */
-static String string_coll_elements(Node *node)
+static String get_inner_content_coll(Node *node)
 {
+    ASSERT(node, "null pointer");
+    ASSERT_TYPE(node, COLLECTION,
+                "error stringing bad type : %s",
+                str_type(node->type));
+
     bool rev = node->type & LIST; // LIST is growing from head
     long size = size_coll(node);
     char **str_res = get_array(node);
@@ -109,20 +115,6 @@ static String string_coll_elements(Node *node)
 }
 
 /*
-    get inner conttent of collection as a string
-*/
-static String get_inner_content_coll(Node *coll)
-{
-    ASSERT(coll, "get_inner_content_coll : null pointer");
-    ASSERT_TYPE(coll, LIST | ARRAY | MAP | SET,
-                "get_inner_content_coll : error stringing bad type : %s",
-                str_type(coll->type));
-
-    // get back inner content
-    return string_coll_elements(coll);
-}
-
-/*
     Return String representation of coll
 */
 static Node *string_coll(Node *coll)
@@ -131,7 +123,7 @@ static Node *string_coll(Node *coll)
     String inner_content = get_inner_content_coll(coll);
     Node *res;
     if(!inner_content)
-        ABORT("string_coll : Error getting inner content of collection");
+        ABORT("Error getting inner content of collection");
 
     switch(coll->type)
     {
@@ -165,14 +157,16 @@ static Node *string_coll(Node *coll)
 */
 static Node *string_env(Node *node)
 {
-    ASSERT(node, "string_env : null environment");
-    ASSERT_TYPE(node, ENVIRONMENT, "string_env : Bad type %s", str_type(node->type));
-    if(node->val.env->map)
+    ASSERT(node, "null environment");
+    ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
+    Node *map = env_map(node);
+    if(map)
     {
-        Node *map = string(node->val.env->map);
+        Node *map_str = PRINT(map);
         Node *res = string_sprintf("<%s map=%s>",
                                     str_type(ENVIRONMENT),
-                                    map->val.string);
+                                    STRING(map_str));
+        unlink_node(map_str);
         unlink_node(map);
         return res;
     }
