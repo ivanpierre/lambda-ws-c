@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "nodes.h"
-
+#include "string.h"
 /*
     double linked list of nodes
 */
@@ -28,11 +28,14 @@ Node *false_node = NULL;
 Node *error_node = NULL;
 
 // Error function
-void ERROR( char *fmt, ...)
+void ERROR(const char *file, int line, const char func[], char *fmt, ...)
 {
+    char buffer[255];
     va_list args;
     va_start(args, fmt);
-    error_node = sprintf_string(fmt, args);
+    sprintf(buffer, "%s(%d) %s() : %s", file, line, func, fmt);
+    error_node = string_sprintf(buffer, args);
+    fprintf(stderr, "%s", STRING(error_node));
 }
 
 /*
@@ -147,6 +150,7 @@ static Node *init_node(Node *node, NodeType type)
 */
 
 Node *keyval_free(Node *node);
+Node *string_free(Node *string);
 
 /*
     Free all nodes according to type
@@ -165,8 +169,7 @@ Node *free_node(Node *node)
         case KEYWORD :
         case SYMBOL :
         case STRING :
-            free_string(node);
-            node->val.compl = NULL;
+            node = string_free(node);
             break;
 
         case LIST :
@@ -175,8 +178,7 @@ Node *free_node(Node *node)
         case SET :
         case ENV_STACK :
         case ENVIRONMENT :
-            free_coll(node);
-            node->val.compl = NULL;
+            node = free_coll(node);
             break;
 
 //    	case SEQ :
@@ -184,21 +186,18 @@ Node *free_node(Node *node)
 //    	    break;
 
         case KEYVAL :
-            keyval_free(node);
-            node->val.compl = NULL;
+            node = keyval_free(node);
             break;
 
         case FUNCTION :
         case LAMBDA :
-            free_function(node);
-            node->val.compl = NULL;
+            node = free_function(node);
             break;
 
 //      case REF
 //      case FUTURE
         case VAR :
-            free_node(node->val.compl);
-            node->val.compl = NULL;
+            node = free_node(node->val.compl);
             break;
 
 //      case READER :

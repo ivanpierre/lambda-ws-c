@@ -29,7 +29,9 @@ typedef struct
 */
 Node *keyval_get_key(Node *node)
 {
-    return KEYVAL(node)->key;
+    Node *res = link_node(KEYVAL(node)->key);
+    unlink_node(node);
+    return res;
 }
 
 /*
@@ -37,7 +39,9 @@ Node *keyval_get_key(Node *node)
 */
 Node *keyval_get_value(Node *node)
 {
-    return KEYVAL(node)->value;
+    Node *res = link_node(KEYVAL(node)->value);
+    unlink_node(node);
+    return res;
 }
 
 /*
@@ -46,7 +50,7 @@ Node *keyval_get_value(Node *node)
 Node *keyval_free(Node *node)
 {
     ASSERT_TYPE(node, KEYVAL,
-                "free_keyval : error unallocatig bad type : %s",
+                "error unallocatig bad type : %s",
                 str_type(node->type));
 
     free_node(keyval_get_key(node));
@@ -63,9 +67,7 @@ Node *keyval_new(Node *key, Node *value)
 
 	if(!node)
 	{
-    	unlink_node(key); // Free unused arges, not linked
-	    unlink_node(key);
-		ABORT("keyval_new : Cannor create new keyval");
+		ABORT("cannor create new keyval");
 	}
 
 	KEYVAL(node)->key = key; // don't unlink, it's massed tokeyval

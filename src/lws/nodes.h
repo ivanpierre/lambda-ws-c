@@ -17,25 +17,25 @@
     Errors and assertions
 */
 extern struct Node *error_node;
-void ERROR(char *fmt, ...);
+void ERROR(const char *file, int line, const char func[], char *fmt, ...);
 
 #define ABORT(fmt, ...) \
     { \
-        ERROR(fmt, ##__VA_ARGS__); \
+        ERROR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
         return NULL; \
     }
 
 #define ASSERT(cond, fmt, ...) \
     if(!(cond)) \
     { \
-        ERROR(fmt, ##__VA_ARGS__); \
+        ERROR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
         return NULL; \
     }
 
 #define ASSERT_TYPE(node, typ, fmt, ...) \
     if(!(node && (node->type & (typ)))) \
     { \
-        ERROR(fmt, ##__VA_ARGS__); \
+        ERROR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
         return NULL; \
     }
 
@@ -224,16 +224,6 @@ Node        *new_decimal(Decimal value);
 Decimal     get_decimal(Node *node);
 bool        decimalp(Node *node);
 
-// Strings
-Node        *new_string(char *value);
-Node        *new_string_allocate(char *value);
-Node        *sprintf_string(char *fmt, ...);
-bool        stringp(Node *node);
-// String      get_string(Node *string);
-// String      get_formated_string(Node *string);
-Node        *free_string(Node *string); // internal
-Node        *eval_symbol(Node *node, Node *env);
-
 // symbols, keywords
 Node        *new_symbol(Node *ns, char *value);
 Node        *new_keyword(Node *ns, char *value);
@@ -244,6 +234,7 @@ Node        *get_named_formatted_name(Node *s);
 Node        *get_named_name_node(Node *node);
 Node        *get_named_ns_node(Node *node);
 Node        *free_symbol(Node *string); // internal
+Node        *eval_symbol(Node *node, Node *env);
 
 // Function
 Node        *free_function(Node *func); // internal
