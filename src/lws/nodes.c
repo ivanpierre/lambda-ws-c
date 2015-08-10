@@ -273,4 +273,33 @@ bool init_node_list()
 #endif
     return TRUE;
 }
+/*
+     Compoose functions on an initial value
+     All initial and intermediate values should be allocated linked Nodes*.
+     At every state, the previous state is unlinked.
+     Last value can be anything and should be considered as allocated
+     Function list should finish with a NULL, else.... :D
+*/
+void *thread_node(void *init, ...)
+{
+    void        *state = link_node(init);
+    void        *(*func)(Node *arg) = NULL;
+    va_list     funp;
 
+    va_start(funp, init);
+    while((func = va_arg(funp, void *(*)(Node *arg))))
+    {
+        void *new_state = (*func)((Node *)state);
+        unlink_node((Node *)state);
+        state = new_state;
+    }
+    return state;
+}
+
+/*
+    Standard string getter for node function to element
+*/
+String get_string(Node *node, Node *(*func)(Node *))
+{
+    return thread_node(node, func, &PRINT, &STRING, NULL);
+}

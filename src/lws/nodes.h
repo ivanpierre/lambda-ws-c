@@ -225,6 +225,8 @@ String      str_type(NodeType type);
 Node        *link_node(Node *node);
 Node        *unlink_node(Node *node);
 Node        *new_node(NodeType type);
+void        *thread_node(void *init, ...);
+
 
 // Integer
 Node        *new_integer(Integer value);

@@ -1,11 +1,17 @@
 #BLOG (just what happens)
-##06 aug 2015
+##10 aug 2015
+- Reformat all names of structure source.e, each one manage a structure.
+- A header should be created for public access functions
+- PRINT, EVAL, FREE, READ will be managed through a function pointer, so it can be enhanced a an upper
+level. Specific functions will be forwarded hardcoded way and not through header. We should only use
+PRINT(node), EVAL(node), and not the function specific to the structures.
+- At language level all specific functions will be overloaded if needed... 
 
+##06 aug 2015
 - Split source into AST library and language implementation. 
 - Simplifying Node definition.
 
 ##04 aug 2015
-
 - Separate STRING et SYMBOL, new [symbol.c`](src/lws/namned.c) for keywords and symbols.
 - Adding evaluation functions.
 - Adding NAMESPACE.

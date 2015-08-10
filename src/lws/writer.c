@@ -22,22 +22,18 @@ static Node *string_keyval(Node *node, bool map)
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, KEYVAL, "error printing bad type : %s",
                 str_type(node->type));
-    Node *str_node;
-    Node *key = keyval_key(node);
-    Node *value = keyval_value(node);
-    Node *key_str = PRINT(key);
-    Node *value_str = PRINT(value);
+    Node *res;
+    String k = get_string(node, &keyval_key);
+    String v = get_string(node, &keyval_value);
     if(map)
-        str_node = string_sprintf("%s %s", STRING(key_str), STRING(value_str));
+        res = string_sprintf("%s %s", k, v);
     else
-        str_node = string_sprintf("[%s %s]", STRING(key_str), STRING(value_str));
-    unlink_node(value_str);
-    unlink_node(key_str);
-    unlink_node(value);
-    unlink_node(key);
+        res = string_sprintf("[%s %s]", k, v);
+    free(v);
+    free(k);
     unlink_node(node);
     ASSERT(str_node, "Error printing keyval");
-    return str_node;
+    return res;
 }
 
 /*
