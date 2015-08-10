@@ -142,6 +142,13 @@ static Node *init_node(Node *node, NodeType type)
 }
 
 /*
+       Extern definition of free functions
+       These should be used nowhere else that here
+*/
+
+Node *keyval_free(Node *node);
+
+/*
     Free all nodes according to type
 */
 Node *free_node(Node *node)
@@ -159,6 +166,7 @@ Node *free_node(Node *node)
         case SYMBOL :
         case STRING :
             free_string(node);
+            node->val.compl = NULL;
             break;
 
         case LIST :
@@ -168,6 +176,7 @@ Node *free_node(Node *node)
         case ENV_STACK :
         case ENVIRONMENT :
             free_coll(node);
+            node->val.compl = NULL;
             break;
 
 //    	case SEQ :
@@ -175,12 +184,14 @@ Node *free_node(Node *node)
 //    	    break;
 
         case KEYVAL :
-            free_keyval(node);
+            keyval_free(node);
+            node->val.compl = NULL;
             break;
 
         case FUNCTION :
         case LAMBDA :
             free_function(node);
+            node->val.compl = NULL;
             break;
 
 //      case REF
@@ -201,7 +212,7 @@ Node *free_node(Node *node)
             break;
     }
 
-    free(node);
+    unlink_node(node); // we can now free the main node
     return NULL;
 }
 

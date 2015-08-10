@@ -229,8 +229,8 @@ Node        *new_string(char *value);
 Node        *new_string_allocate(char *value);
 Node        *sprintf_string(char *fmt, ...);
 bool        stringp(Node *node);
-String      get_string(Node *string);
-String      get_formated_string(Node *string);
+// String      get_string(Node *string);
+// String      get_formated_string(Node *string);
 Node        *free_string(Node *string); // internal
 Node        *eval_symbol(Node *node, Node *env);
 
@@ -275,9 +275,6 @@ Node        *new_empty_coll(NodeType type, long alloc);
 Node        *eval_coll(Node *node, Node *env);
 Node        *eval_list(Node *node, Node *env);
 Node        *eval_keyval(Node *node, Node *env);
-
-// Keyval
-Node        *free_keyval(Node *node); // internal
 
 // Env
 Node        *free_env(Node *node); // internal

@@ -1,27 +1,23 @@
-################################################################
-# Clojure-like makefile
-# very simplified Makefile working with minimal makefile version
+###
+#    Makefile for clojure-like executable
+#
+#    Lambda Calculus Workshop
+#    C version
+#    Ivan Pierre <ivan@kilroysoft.ch> 2015
+###
 
-clojure : main.o global.o reader.o writer.o
-	cc --o clojure main.o global.o reader.o writer.o -L../lws -llws
+sources := $(wildcard *.c)
+objects := $(patsubst %.c,%.o,$(sources))
 
-global.h : ../lws/nodes.h
-	touch global.h
+vpath %.h ../lws
 
-main.o : main.c global.h
-	cc -c -fPIC main.c
+CFLAGS = -fPIC -I. -I../lws
+LDFLAGS = -o
+LDLIBS = -L../lws -llws
+CC = cc
 
-global.o : global.c global.h
-	cc -c -fPIC global.c
-
-reader.o : reader.c ../lws/nodes.h
-	cc -c -fPIC reader.c
-
-writer.o : writer.c ../lws/nodes.h
-	cc -c -fPIC string.c
-
-# .o : .c .h
-# 	cc -c .c
+clojure : $(objects)
+	$(CC) $(lflags) $@ $(objects) $(libflags)
 
 clean:
 	rm -f *.o lcw

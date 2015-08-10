@@ -7,7 +7,7 @@
 */
 
 #include <stdio.h>
-#include "nodes.h"
+#include "global.h"
 
 /*
     Return String representation a KEYVAL
@@ -18,8 +18,8 @@ static Node *string_keyval(Node *node)
     ASSERT_TYPE(node, KEYVAL,
                 "string_keyval : error printing bad type : %s",
                 str_type(node->type));
-    Node *key = string_node(node->val.keyval->key);
-    Node *value = string_node(node->val.keyval->value);
+    Node *key = string(node->val.keyval->key);
+    Node *value = string(node->val.keyval->value);
     Node *str_node = sprintf_string("[%s %s]", key->val.string, value->val.string);
     unlink_node(key);
     unlink_node(value);
@@ -45,14 +45,14 @@ static char **get_array(Node *node)
         if(curr->type & KEYVAL && node->type & MAP)
         {
             // here we will peint he key / value pair
-            Node *key = string_node(curr->val.keyval->key);
+            Node *key = string(curr->val.keyval->key);
             Node *value = string_node(curr->val.keyval->value);
             str_node = sprintf_string("%s %s", key->val.string, value->val.string);
         }
         else
         {
             // here we will print the node
-            Node *value = string_node(curr);
+            Node *value = string(curr);
             str_node = sprintf_string("%s", value->val.string);
         }
         str_res[i] = strdup(str_node->val.string);
@@ -175,7 +175,7 @@ static Node *string_env(Node *node)
     ASSERT_TYPE(node, ENVIRONMENT, "string_env : Bad type %s", str_type(node->type));
     if(node->val.env->map)
     {
-        Node *map = string_node(node->val.env->map);
+        Node *map = string(node->val.env->map);
         Node *res = sprintf_string("<%s map=%s>",
                                     str_type(ENVIRONMENT),
                                     map->val.string);
@@ -193,9 +193,9 @@ static Node *string_function(Node *node)
 {
     ASSERT(node, "string_function : null environment");
     ASSERT_TYPE(node, FUNCTION, "string_function : Bad type %s", str_type(node->type));
-    Node *map = string_node(node->val.function->closure);
-    Node *args = string_node(node->val.function->args);
-//	Node *body = string_node(node->val.function->func.body);
+    Node *map = string(node->val.function->closure);
+    Node *args = string(node->val.function->args);
+//	Node *body = string(node->val.function->func.body);
     Node *res = sprintf_string("<%s macro=%s special=%s args=%s closure=%s>",
                                 node->type,
                                 node->val.function->is_macro ? "yes" : "no",
@@ -276,7 +276,7 @@ static Node *string_string(Node *node)
 /*
     return string version of nodes according to type
 */
-Node *string_node(Node *node)
+Node *string(Node *node)
 {
     ASSERT(node, "string_node : NULL node");
 
@@ -314,7 +314,7 @@ Node *string_node(Node *node)
         case VAR :
 //    	case REF :
 //    	case FUTURE :
-            return string_node(node->val.atom);
+            return string(node->val.atom);
 
         case READER :
             return string_reader(node);

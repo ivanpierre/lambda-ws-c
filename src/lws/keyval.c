@@ -7,8 +7,8 @@
 */
 
 #include <stdio.h>
-#include <string.h>
 #include "nodes.h"
+#include "keyval.h"
 
 /*
     Key/Values binding
@@ -17,27 +17,59 @@ typedef struct
 {
     struct Node     *key;
     struct Node     *value;
-} KeyValue;
+} KeyVal;
 
 /*
     Access Keyval from Node
 */
-static KeyValue *keyval(Node *node)
+#define KEYVAL(node) ((KeyVal *)(node->val.compl))
+
+/*
+    Get the key of keyval
+*/
+Node *keyval_get_key(Node *node)
 {
-    return (KeyValue *)(node->val.compl);
+    return KEYVAL(node)->key;
+}
+
+/*
+    Get the value of keyval
+*/
+Node *keyval_get_value(Node *node)
+{
+    return KEYVAL(node)->value;
 }
 
 /*
     Free keyval
 */
-Node *free_keyval(Node *node)
+Node *keyval_free(Node *node)
 {
     ASSERT_TYPE(node, KEYVAL,
                 "free_keyval : error unallocatig bad type : %s",
                 str_type(node->type));
 
-    free_node(keyval(node)->key);
-    free_node(keyval(node)->value);
+    free_node(keyval_get_key(node));
+    free_node(keyval_get_value(node));
     return NULL;
 }
 
+/*
+    New keyval
+*/
+Node *keyval_new(Node *key, Node *value)
+{
+	Node *node = new_node(KEYVAL); // Create linked node
+
+	if(!node)
+	{
+    	unlink_node(key); // Free unused arges, not linked
+	    unlink_node(key);
+		ABORT("keyval_new : Cannor create new keyval");
+	}
+
+	KEYVAL(node)->key = key; // don't unlink, it's massed tokeyval
+	KEYVAL(node)->value = value;
+
+	return node; // Node is already linked
+}
