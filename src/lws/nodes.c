@@ -27,6 +27,8 @@ Node *false_node = NULL;
 // Error signal
 Node *error_node = NULL;
 
+static Node *FREE(Node *node);
+
 // Error* function
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
 {
@@ -35,7 +37,7 @@ void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
     va_start(args, fmt);
     sprintf(buffer, "%s(%d) %s() : %s", file, line, func, fmt);
     error_node = string_sprintf(buffer, args);
-    fprintf(stderr, "%s", STRING(error_node));
+    fprintf(stderr, "%s", GET_STRING(error_node));
 }
 
 /*
@@ -210,9 +212,9 @@ static Node *free_node(Node *node)
             node = FREE(node->val.compl);
             break;
 
-//      case READER :
-//          free_reader(node);
-//          break;
+        case READER :
+            reader_free(node);
+            break;
 
 //      case FRACTION :
 //            fraction_free(node->val.compl)
@@ -245,7 +247,7 @@ static Node *FREE(Node *node)
     Create a node
     Constructor, return linked
 */
-Node *new_node(NodeType type_of_node)
+Node *node(NodeType type_of_node)
 {
     Node *new = malloc(sizeof(Node));
     ASSERT(new, "create_node : Error : allocation of node of type %s", str_type(type_of_node));
@@ -308,5 +310,5 @@ void *thread_node(void *init, ...)
 */
 String get_string(Node *node, Node *(*func)(Node *))
 {
-    return thread_node(node, func, &PRINT, &STRING, NULL);
+    return thread_node(node, func, &PRINT, &GET_STRING, NULL);
 }

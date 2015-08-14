@@ -202,9 +202,14 @@ extern Node *(*free_ptr)(Node *node);
 extern Node *(*eval_ptr)(Node *node, Node *env);
 extern Node *(*print_ptr)(Node *node);
 
-Node *FREE(Node *node);
+// Node *FREE(Node *node); // called by unlink_node
 Node *EVAL(Node *node, Node *env);
 Node *PRINT(Node *node);
+
+/*
+    Access string version from Node element
+*/
+String get_string(Node *node, Node *(*func)(Node *));
 
 // public function for types
 String      str_type(NodeType type);
@@ -227,44 +232,19 @@ Decimal     get_decimal(Node *node);
 bool        decimalp(Node *node);
 
 // Function
-Node        *free_function(Node *func); // internal
+Node        *function_free(Node *func); // internal
 
 // Lambda
-Node        *free_lambda(Node *node); // internal
-
-// Collections
-Node        *free_coll(Node *coll); // internal
-long        size_coll(Node *coll);
-Node        *first_coll(Node *coll);
-Node        *last_coll(Node *coll);
-Node        *take_coll(Node *coll);
-Node        *malloc_clone_coll(Node *coll, long diff);
-Node        *malloc_coll(Node *coll, long diff);
-Node        *realloc_coll(Node *coll, long diff);
-Node        *assoc(Node *map, Node *keyval);
-Node        *dissoc(Node *map, Node *keyval);
-Node        *nth(Node *coll, long index);
-Node        *push(Node *coll, Node *elem);
-Node        *pop(Node *coll);
-Node        *sort(Node coll);
-long        pos_coll(Node *coll, Node *search);
-Node        *reduce_coll(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *coll);
-Node        *filter_coll(Node *(*fn)(Node *node), Node *coll);
-Node        *map_coll(Node *(*fn)(Node *node), Node *coll);
-Node        *map2_coll(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
-Node        *new_empty_coll(NodeType type, long alloc);
-Node        *eval_coll(Node *node, Node *env);
-Node        *eval_list(Node *node, Node *env);
-Node        *eval_keyval(Node *node, Node *env);
+Node        *lambda_free(Node *node); // internal
 
 // Env
-Node        *free_env(Node *node); // internal
+Node        *env_free(Node *node); // internal
 
 // Reader
-Node        *free_reader(Node *node); // internal
+Node        *reader_free(Node *node); // internal
 
 // Atom
-Node        *deref_var(Node *node); // internal
+Node        *var_deref(Node *node); // internal
 
 // DEBUG_ALLOC functions
 bool        init_node_list();

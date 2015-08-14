@@ -18,9 +18,11 @@
 /*
     Gives back the string content
 */
-String STRING(node)
+String GET_STRING(Node *node)
 {
-    return (String)(node ?
+    ASSERT_TYPE(node, STRING, "get szring grom non string");
+    ASSERT(node, "null value")
+    return (String)(node->val.compl ?
                 strdup(node->val.compl) :
                 strdup("(null)"));
 }
@@ -37,10 +39,10 @@ static Node *string_base(String value)
     if(!node)
         return NULL;
 
-    STRING(node) = value;
+    node->val.compl = value;
     return node; // new_node did the link
 }
-}
+
 
 /*
     Create a linked string, allocate space for the string
@@ -91,7 +93,7 @@ Node *string_free(Node *node)
 {
     ASSERT_TYPE(node, STRING, "node is not a string");
 
-    String str = STRING(node);
+    String str = GET_STRING(node);
     if(str)
     {
         free(str);

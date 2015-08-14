@@ -14,8 +14,11 @@ Node        *string(char *value);
 Node        *string_allocate(char *value);
 Node        *string_sprintf(char *fmt, ...);
 bool        string_QM_(Node *node);
+
 /*
     Access string from Node
 */
+String GET_STRING(Node *node);
+
 
 #endif

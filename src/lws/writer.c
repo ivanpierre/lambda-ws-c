@@ -113,7 +113,7 @@ static String get_inner_content_coll(Node *node)
 /*
     Return String representation of coll
 */
-static Node *string_coll(Node *coll)
+static Node *collection_string(Node *coll)
 {
     // get back inner content
     String inner_content = get_inner_content_coll(coll);
@@ -151,7 +151,7 @@ static Node *string_coll(Node *coll)
     String representation of environment
     returns linked allocated String
 */
-static Node *string_env(Node *node)
+static Node *env_string(Node *node)
 {
     ASSERT(node, "null environment");
     ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
@@ -173,7 +173,7 @@ static Node *string_env(Node *node)
     String representation for functions
     returns linked allocated String
 */
-static Node *string_function(Node *node)
+static Node *function_string(Node *node)
 {
     ASSERT(node, "string_function : null environment");
     ASSERT_TYPE(node, FUNCTION, "string_function : Bad type %s", str_type(node->type));
@@ -193,7 +193,7 @@ static Node *string_function(Node *node)
 /*
     Return allocated string of symbol name according to type
 */
-static String get_formated_symbol(Node *s)
+static String symbol_string_formated(Node *s)
 {
     ASSERT_TYPE(s, SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
     String formated = NULL;
@@ -215,7 +215,7 @@ static String get_formated_symbol(Node *s)
 /*
 	print integer
 */
-static Node *string_integer(Node *node)
+static Node *integer_string(Node *node)
 {
 	ASSERT_TYPE(node, INTEGER, "print_integer : Node is not an integer\n");
 
@@ -232,7 +232,7 @@ static Node *string_integer(Node *node)
 /*
 	print decimal
 */
-static Node *string_decimal(Node *node)
+static Node *decimal_string(Node *node)
 {
 	char *formatted;
 	asprintf(&formatted, "%lf", get_decimal(node));
@@ -249,9 +249,9 @@ static Node *string_decimal(Node *node)
 /*
     Return allocated string node of string formatted according to type
 */
-static Node *string_string(Node *node)
+static Node *string_string_formated(Node *node)
 {
-    ASSERT_TYPE(node, STRING|SYMBOL|KEYWORD, "string_string : node is not a string, symbol or keyword");
+    ASSERT_TYPE(node, STRING, "string_string : node is not a string");
     String formated = get_formated_string(node);
     ASSERT(formated, "string_string : cannot format node");
     return new_string(formated); // formated allocated
@@ -260,7 +260,7 @@ static Node *string_string(Node *node)
 /*
     return string version of nodes according to type
 */
-Node *string(Node *node)
+Node *print_node(Node *node)
 {
     ASSERT(node, "string_node : NULL node");
 
@@ -315,5 +315,18 @@ Node *string(Node *node)
 
     free(node);
     return NULL;
+}
+
+/*
+    def pointer for print
+*/
+Node *(*print_ptr)(Node *node) = &print_node;
+
+/*
+    PRINT node using pointer
+*/
+static Node *PRINT(Node *node)
+{
+    return (*print_ptr)(node);
 }
 

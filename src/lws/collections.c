@@ -10,11 +10,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "nodes.h"
+#include "collection.h"
 
 /*
     Access Collection from Node
 */
-static Collection *coll(Node *node)
+static Collection *GET_COLLECTION(Node *node)
 {
     return (Collection *)(node->val.compl);
 }
@@ -24,22 +25,16 @@ static Collection *coll(Node *node)
 */
 Node *collection_free(Node *node)
 {
-    ASSERT_TYPE(node, LIST | ARRAY | MAP | SET,
-                "free_coll : error unallocatig bad type : %s",
-                str_type(node->type));
+    ASSERT_TYPE(node, COLLECTION, "free_coll : error unallocatig bad type : %s", str_type(node->type));
 
-    long size = collection_count(node);
+    long size = collection_size(node);
     if(size <= 0)
         return NULL;
 
     for(long i = 0; i < size; i++)
-    {
-        if(coll(node)->nodes[i])
-        {
-            unlink_node(coll(node)->nodes[i]);
-            coll(node)->nodes[i] = NULL;
-        }
-    }
+        if(GET_COLLECTION(node)->nodes[i])
+            unlink_node(GET_COLLECTION(node)->nodes[i]);
+
     return NULL;
 }
 
@@ -75,21 +70,19 @@ static long list_size(long size, char **strings)
 Node *collection_first(Node *node)
 {
     ASSERT(node, "null pointer");
-    ASSERT_TYPE(node, ,
-                "not a coll %s", str_type(node->type));
-    if(node->type & NIL_NODE ||
-       coll(node)->size == 0)
+    ASSERT_TYPE(node, COLLECTION, "not a coll %s", str_type(node->type));
+    if(node->type & NIL_NODE || GET_COLLECTION(node)->size == 0)
         return nil_node;
     if(node->type & LIST)
-        return link_node(coll(node)->nodes[coll(node)->size - 1]);
+        return link_node(GET_COLLECTION(node)->nodes[GET_COLLECTION(node)->size - 1]);
     else
-        return link_node(coll(node)->nodes[0]);
+        return link_node(GET_COLLECTION(node)->nodes[0]);
 }
 
 /*
     Get last element of coll or nil, nil gives nil
 */
-Node *collection_last_coll(Node *node)
+Node *collection_last(Node *node)
 {
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, COLLECTION,
@@ -146,7 +139,7 @@ Node *collection_realloc(Node *node, long size)
                 "bad type %s",
                 str_type(node->type));
     ASSERT(size >= 0, "reallocation cannot be negative %ld", size);
-    GET_COLLECTION(node)->nodes = realloc(coll, sizeof(Node *) * size);
+    GET_COLLECTION(node)->nodes = realloc(GET_COLLECTION(node)->nodes, sizeof(Node *) * size);
     ASSERT(GET_COLLECTION(node)->nodes, "realloc_coll : Error alocating collection nodes");
     GET_COLLECTION(node)->max = size;
     return node;
@@ -171,16 +164,17 @@ Node *collection(NodeType type,  long alloc)
 }
 
 /*
-Node        *reduce_coll(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *coll);
-Node        *filter_coll(Node *(*fn)(Node *node), Node *coll);
-Node        *map_coll(Node *(*fn)(Node *node), Node *coll);
-Node        *map2_coll(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
-Node        *alloc_clone_coll(Node *coll, long diff);
-Node        *assoc_coll(Node *map, Node *keyval);
-Node        *dissoc_coll(Node *map, Node *keyval);
-Node        *push(Node *coll, Node *elem);
-Node        *pop(Node *coll);
-Node        *sort(Node coll);
-Node        *new_keyval(Node *key, Node *value);
-long        pos_coll(Node *coll, Node *search);
+Node        *collection_reduce(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *coll);
+Node        *collection_filter(Node *(*fn)(Node *node), Node *coll);
+Node        *collection_map(Node *(*fn)(Node *node), Node *coll);
+Node        *collection_map2(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
+Node        *collection_alloc_clone(Node *coll, long size);
+Node        *collection_assoc(Node *map, Node *keyval);
+Node        *collection_dissoc(Node *map, Node *keyval);
+Node        *collection_push(Node *coll, Node *elem);
+Node        *collection_pop(Node *coll);
+Node        *collection_sort(Node coll);
+Node        *keyval_new(Node *key, Node *value);
+long        collection_get(Node *coll, Node *search);
+long        collection_get_def(Node *coll, Node *search, Node *default);
 */
