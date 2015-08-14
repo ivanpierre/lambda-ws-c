@@ -152,6 +152,10 @@ static Node *init_node(Node *node, NodeType type)
 Node *keyval_free(Node *node);
 Node *string_free(Node *string);
 Node *named_free(Node *node);
+Node *function_free(Node *node);
+Node *collection_free(Node *node);
+// Node *fraction_free(Node *node);
+// Node *env_free(Node *node);
 
 /*
     Free all nodes according to type
@@ -184,7 +188,7 @@ static Node *free_node(Node *node)
         case ARRAY :
         case MAP :
         case SET :
-            node = free_coll(node);
+            node = collection_free(node);
             break;
 
 //    	case SEQ :
@@ -197,7 +201,7 @@ static Node *free_node(Node *node)
 
         case FUNCTION :
         case LAMBDA :
-            node = free_function(node);
+            node = function_free(node);
             break;
 
 //      case REF
@@ -210,8 +214,11 @@ static Node *free_node(Node *node)
 //          free_reader(node);
 //          break;
 
-        case INTEGER :
 //      case FRACTION :
+//            fraction_free(node->val.compl)
+//          break;
+
+        case INTEGER :
         case DECIMAL :
         default :
             break;
@@ -229,7 +236,7 @@ Node *(*free_ptr)(Node *node) = &free_node;
 /*
     FREE unalloc node using pointer
 */
-Node *FREE(Node *node)
+static Node *FREE(Node *node)
 {
     return (*free_ptr)(node);
 }

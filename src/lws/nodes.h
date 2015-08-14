@@ -82,10 +82,14 @@ typedef enum
 
     NAMED           =   SYMBOL | KEYWORD,
 
-    COLLECTION      =   STRING |        // Walk on string's characters
-                        LIST |          // Walk on list's nodes
+    ITERABLE        =   LIST |
+                        ARRAY |
+                        SEQ,
+
+    COLLECTION      =   LIST |          // Walk on list's nodes
                         ARRAY |         // Walk on array's nodes
                         MAP |           // Walk on map's keyvals. [key value]
+                        SET |           // Walk on
                         SEQ,            // returns itself's ref
 
     SEQUABLE        =   STRING |        // Walk on string's characters
@@ -166,22 +170,6 @@ typedef struct
 {
     int             (*putc)();
 } Writer;
-
-/*
-    Functions
-*/
-typedef struct
-{
-    bool                is_macro;
-    bool                is_special;
-    struct Node         *closure; // MAP
-    struct Node         *args;    // LIST
-    union
-    {
-        struct Node     *(*func) (struct Node *args, ...);
-        struct Node     *body;
-    } func;
-} Function;
 
 /*
     Struct of a base node

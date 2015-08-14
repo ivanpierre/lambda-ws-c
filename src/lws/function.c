@@ -9,30 +9,70 @@
 #include <stdio.h>
 #include <string.h>
 #include "nodes.h"
+#include "function.h"
+
+/*
+    Functions
+*/
+typedef struct
+{
+    bool                is_macro;
+    bool                is_special;
+    Node                *closure; // as a previous Env
+    Node                *args;    // seq of symbols to create local Env
+                                  // for function call manage variadic arguments
+                                  // and to coerce types
+    union
+    {
+        Node            *(*func) (Node *args, Node *values);
+        Node            *body;
+    } func;
+} Function;
 
 /*
     Access Env from Node
 */
-static Function *function(Node *node)
+static Function *GET_FUNCTION(Node *node)
 {
-    return (Function *)(node->val.compl);
+    return (Function *)node ? (node->val.compl) : NULL;
+}
+
+Node *function_is_macro(Node *node)
+{
+    return GET_FUNCTION(node)->is_macro ? true_node : false_node;
+}
+
+Node *function_is_special(Node *node)
+{
+    return GET_FUNCTION(node)->is_special ? true_node : false_node;
+}
+
+Node *function_clojure(Node *node)
+{
+    Node *res = GET_FUNCTION(node)->closure;
+    if(!res)
+        return nil_node;
+    return link_node(res);
+}
+
+Node *function_args(Node *node)
+{
+    Node *res = GET_FUNCTION(node)->args;
+    if(!res)
+        return nil_node;
+    return link_node(res);
 }
 
 /*
     Unalloc function
 */
-Node *free_function(Node *node)
+Node *function_free(Node *node)
 {
     ASSERT(node, "free_function : null environment");
     ASSERT_TYPE(node, FUNCTION, "free_function : Bad type %s", str_type(node->type));
-    if(function(node)->args)
-        function(node)->args = FREE(function(node)->args);
-    return NULL;
-    if(function(node)->closure)
-        function(node)->closure = FREE(function(node)->closure);
-    return NULL;
-    if(node->type & LAMBDA && function(node)->func.body)
-        function(node)->func.body = FREE(function(node)->func.body);
-    return NULL;
+    unlink_node(GET_FUNCTION(node)->args);
+    unlink_node(GET_FUNCTION(node)->closure);
+    unlink_node(GET_FUNCTION(node)->func.body);
+    return node;
 }
 

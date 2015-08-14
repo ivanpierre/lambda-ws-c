@@ -16,6 +16,16 @@
 #include "string.h"
 
 /*
+    Gives back the string content
+*/
+String STRING(node)
+{
+    return (String)(node ?
+                strdup(node->val.compl) :
+                strdup("(null)"));
+}
+
+/*
     Create a linked string, don't allocate space for the string
 */
 static Node *string_base(String value)
@@ -29,6 +39,7 @@ static Node *string_base(String value)
 
     STRING(node) = value;
     return node; // new_node did the link
+}
 }
 
 /*
