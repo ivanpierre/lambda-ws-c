@@ -249,7 +249,7 @@ static Node *decimal_string(Node *node)
 /*
     Return allocated string node of string formatted according to type
 */
-static Node *string_string_formated(Node *node)
+static Node *string_formated(Node *node)
 {
     ASSERT_TYPE(node, STRING, "string_string : node is not a string");
     String formated = get_formated_string(node);
@@ -260,7 +260,7 @@ static Node *string_string_formated(Node *node)
 /*
     return string version of nodes according to type
 */
-Node *print_node(Node *node)
+Node *print_node(Node *node, bool readable)
 {
     ASSERT(node, "string_node : NULL node");
 
@@ -277,8 +277,13 @@ Node *print_node(Node *node)
 
         case KEYWORD :
         case SYMBOL :
+            return named_string(node);
+
         case STRING :
-            return string_string(node);
+            if(readable)
+                return string_formated(node);
+            else
+                return node;
 
         case LIST :
         case ARRAY :
@@ -296,9 +301,9 @@ Node *print_node(Node *node)
             return string_function(node);
 
         case VAR :
+            return var_string(node);
 //    	case REF :
 //    	case FUTURE :
-            return string(node->val.atom);
 
         case READER :
             return string_reader(node);
@@ -323,10 +328,18 @@ Node *print_node(Node *node)
 Node *(*print_ptr)(Node *node) = &print_node;
 
 /*
-    PRINT node using pointer
+    PRINT node using pointer readable
 */
 static Node *PRINT(Node *node)
 {
-    return (*print_ptr)(node);
+    return (*print_ptr)(node, false);
+}
+
+/*
+    PR node using pointer, non readable
+*/
+static Node *PR(Node *node)
+{
+    return (*print_ptr)(node, true);
 }
 

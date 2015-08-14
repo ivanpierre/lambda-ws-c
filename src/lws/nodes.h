@@ -205,6 +205,7 @@ extern Node *(*print_ptr)(Node *node);
 // Node *FREE(Node *node); // called by unlink_node
 Node *EVAL(Node *node, Node *env);
 Node *PRINT(Node *node);
+Node *PR(Node *node);
 
 /*
     Access string version from Node element
@@ -217,19 +218,19 @@ String      str_type(NodeType type);
 // public function for nodes
 Node        *link_node(Node *node);
 Node        *unlink_node(Node *node);
-Node        *new_node(NodeType type);
+Node        *node(NodeType type);
 void        *thread_node(void *init, ...);
 
 
 // Integer
-Node        *new_integer(Integer value);
+Node        *integer(Integer value);
 Integer     get_integer(Node *node);
-bool        integerp(Node *node);
+bool        integer_Q_(Node *node);
 
 // Decimal
-Node        *new_decimal(Decimal value);
+Node        *decimal(Decimal value);
 Decimal     get_decimal(Node *node);
-bool        decimalp(Node *node);
+bool        decimal_Q_(Node *node);
 
 // Function
 Node        *function_free(Node *func); // internal

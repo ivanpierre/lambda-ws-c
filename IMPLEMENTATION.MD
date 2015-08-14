@@ -1,268 +1,67 @@
 # Implementation
-## Main types
-```.c
-/*
-    type of nodes
-*/
-typedef enum
-{
-    NIL_NODE        =   1,       // Constant nil value
-    TRUE_NODE       =   1 << 2,  // Constant true value
-    FALSE_NODE      =   1 << 3,  // Constant false value
-    SYMBOL          =   1 << 4,  // Symbol that can be binded in ENVIRONMENT
-    KEYWORD         =   1 << 5,  // Constant symbol :key evaluate to itself
-    INTEGER         =   1 << 6,  // Integer numeric values
-//	FRACTION        =   1 << 7,  // Fractional numeric values
-    DECIMAL         =   1 << 8,  // floating numeric values
-    STRING          =   1 << 9,  // String
-    LIST            =   1 << 10, // reversed array (growing from head)
-    ARRAY           =   1 << 11, // ARRAY
-    MAP             =   1 << 12, // Mapped array of KEYVAL
-    SET             =   1 << 13, // Mapped array of keys
-    SEQ             =   1 << 14, // Walker on a collection
-    NAMESPACE       =   1 << 15, // Interning place for global symbols
-    ENV_STACK       =   1 << 16, // is a list of ENVIRONMENT
-    ENVIRONMENT     =   1 << 17, // is a map of nodes, mapped by SYMBOL
-    API             =   1 << 18, // is a map of FUNCTION, mapped by args (ARRAY)
-    FUNCTION        =   1 << 19, // Function pointer
-    LAMBDA          =   1 << 20, // Body of language to evaluate
-    VAR             =   1 << 21, // Values of global vars (bind)
-//	REF             =   1 << 22, // CSP managed values
-//	FUTURE          =   1 << 23, // Asynchronously managed values
-//  AGENT           =   1 << 24,  // Agent management through messages
-    KEYVAL          =   1 << 25, // Binding of key / values for MAP
-    INVALID         =        26,  // Self explaining... used not to go too far... :D
 
-    NUMBER          =   INTEGER | DECIMAL,
+Here are the main parts of the implementation. A library and three interpreters for various languages.
 
-    NAMED           =   SYMBOL | KEYWORD,
+## [Library](LWS.MD)
 
-    SEQUABLE        =   STRING |        // Walk on string's characters
-                        LIST |          // Walk on list's nodes
-                        ARRAY |         // Walk on array's nodes
-                        MAP |           // Walk on map's keyvals. [key value]
-                        SEQ |           // returns itself's ref
-                        NAMESPACE |     // Walk on namespace's symbols
-                        ENV_STACK |     // Walk on binding's environments
-                        ENVIRONMENT |   // Walk on environment's bindings as keyvals [symbol value]
-                        API |           // Walk on function's implementations as keyval [args function]
-                        LAMBDA,         // Walk on body's Nodes
+The library manages the main AST elements, with all the basic manipulation functions.
 
-    INDEXED         =   STRING |        // Get char at position
-                        ARRAY,          // Get Node at postion
+### Element of the library
 
-    MAPPED          =   MAP |
-                        SET |
-                        NAMESPACE |
-                        ENVIRONMENT |
-                        API,
+The `READ` `PRINT`, `PR`, `EVAL`, `FREE` functions that depends on the AST call a function pointer, so every language can
+extend the AST list at will. If the paradigm can be reused, the AST can be passed to the library.
 
-    CALLABLE        =   FUNCTION |
-                        LAMBDA
-                        
-} NodeType;  // WIP
-```
+Every AST has it's own header to be able to call public functions. Normally, language implementation should deal only
+with Nodes that are the AST elements. There should be enough functions not to use implementation details.
 
-## Boxing `nodes.c`, `nodes.h`
-Every types of AST element have it's own structure. This structure is an implementation detail and can change as 
-project evolves. These types are treated, based on the language definition AND on objects needed to the language 
-management. Boxing is needed to manage data types as C doesn't do it for us...
+### Garbage collection
 
-All instances of these types are nodes witch will be managed by the allocator.
+AST element constructors already link the Nodes in the garbage collector. But every instance of a created node that
+references this one should be linked too. It can be linked to another node and in this case, stay as is. Or consumed in
+some function, in case if should be unlinked. At the end of every process there should only stay in the garbage
+collector the nodes that are bound to the namespaces. Even the working objects of the language are bound here.
 
-```.c
-    /*
-        Struct of a base node
-    */
-    typedef struct Node
-    {
-        NodeType        type;
-        long            occurrences;
-    #ifdef DEBUG_ALLOC
-        struct Node     *previous_node;
-        struct Node     *next_node;
-    #endif
-        union
-        {
-            Integer     integer;        // Integer as long
-            Decimal     decimal;        // Floats as double
-            void        *compl;         // all structs
-        } val;
-    } Node;
+### Namespaces
 
-```
+The current namespace and the namespace map are bound in the core namespace, and any namespace is always linked to
+the core namespace. so at any time, core functions and variables are accessible.
 
-- [`nodes.c`](src/lws/nodes.c) : contain allocation and general node management.
-- [`nodes.h`](src/lws/nodes.h) : gives all structures of nodes and all public management functions.
+### Language management
 
-Ordering of nodes as keys is defined by the comparison function. witch is different from the equality function.
-For example 0 is equal to 0.0, but they can both be keys for maps or sets.
+Language should exclusively use Nodes without any knowledge of something else that the API. Any optimisation should
+only be enhanced in the AST level, if a more efficient function is needed, it's here that it should be made.
 
-## Collections [`collections.c`](src/lws/collections.c)
-All collections are stored in an array. With 
+### Enhancements of the library
 
-- `size`, giving the prensent number of valid nodes of the collection and 
-- `max`, giving the number of allocated nodes.
+Some elements should not be changed. If they are specific variant should be managed in the library level, if it's not
+possible a new AST can be created in a way that they does not interfere with the existing library.
 
-```.c
-    /*
-        Collection : Array, List, Map and Set
-    */
-    typedef struct
-    {
-        bool            mutable;
-        long            size;
-        long            max;
-        struct Node     **nodes;
-    } Collection;
-```
+### Unmodifiable elements
 
-LIST and ARRAY are ordinated node's sequences. List goes backward growing to the head and arrays upward
-growing to the tail. Other collections are ordinated by the key order.
+- Structure of the AST.
+- Their functions, creators, garbage collection and memory management.
+- The global state variables that control its work.
+- Library errors
 
-LIST and ARRAY are equals if they share the same structure and the equal values for elements.
+### What's can be rewritten
 
-### LIST 
-This is linked list data type. We need it to implement function calls and definitions.
+- Readers.
+- Writers, that's obvios it should comply with the language syntax.
+- Evaluators, it will manage the way the AST element will be used and the way they will perform actions. But normally a
+lot of basic functions like calculations, C function calls and even internal evaluation process should remain mostly
+unchanged. Mutability for example will be configurable from out of the library. Static typing for example will nee some
+more work.
 
-This contains a first element witch is a node and a next element witch should be a LIST or NULL (for list ending). 
-This should ensure that all lists are lists and not conses to enable management of lists as arrays.
+## [Clojure](CLOJURE.MD)
 
-### ARRAY
-Not needed now, but in fact all collections are arrays.
+It will not be Clojure per se, as it would need a grat deal of AST enhancements... and multithreading... but, well, just
+make the basic element of a list with a Clojure syntax should enable to use most of the Clojure library.
 
-### MAP
-Is needed to define data dictionary and environment for functions and lets. Nodes of a map are KEYVALs.
+## [Basic](BASIC.MD)
 
-### SET
-Sets are maps where keys and values are the same. So it's an array of nodes ordinated by nodes order as keys.
+The spaghetti goto mess should be an interesting point, just to see if the REPL can be a BASIC like with line numbers.
+With a save and load function.
 
-### SEQ
+## [Java](JAVA.MD)
 
-```.c
-    /*
-        Walker on a collection act as a list
-    */
-    typedef struct
-    {
-        long            index;
-        struct Node     *coll;
-    } Seq;
-```
-
-### KEYVAL
-Association of keys and values. The are printed as key, values pair as an array if they are not in a map.
-
-```.c
-    /*
-        Key/Values binding
-    */
-    typedef struct
-    {
-        struct Node     *key;
-        struct Node     *value;
-    } KeyValue;
-
-```
-
-## Textual values [`strings.c`](src/lws/strings.c)
-These are all stored as strings without decoration say :key is stored as the string 'key' as symbol key and 
-string "key". But they are not equals, order is first string order and second type order.
-
-### STRING
-Hosts the name of symbols,
-
-## Named values [`named.c`](src/lws/named.c)
-These are representation of named values as symbol or keyword
-
-### SYMBOL
-To define symbolic names, function names, argument names.
-
-### VAR
-
-
-### KEYWORD
-To define symbolic constant names. Keywords evaluate to themselves.
-
-## Functions [`function.c`](src/lws/function.c) and [`env.c`](src/lws/env.c)
-They keep track of their arity and their eventual closures. They can have a macro-expansion capability (only at 
-read/compile time), and an evaluation of args capability.
-
-- `is_macro` defines if the function is for macro expansion.
-- `is special` defines if argument are evaluated before execution.
-- `closure` the optional closure environment of the function.
-- `args` array of arguments in case of vararg an '&' symbol is the penultimate.
-
-```.c
-    /*
-        Functions
-    */
-    typedef struct
-    {
-        bool                is_macro;
-        bool                is_special;
-        struct Node         *closure; // MAP
-        struct Node         *args;    // LIST
-        union
-        {
-            struct Node     *(*func) (struct Node *args, ...);
-            struct Node     *body;
-        } func;
-    } Function;
-```
-
-### FUNCTION 
-To define a call to C functions. These are varargs functions where the function arguments should match the args data.
-
-### LAMBDA
-To define LWC functions that should be evaluated under the arguments. Interpreted function.
-These are not defined now in the current language definition, but will be used in REPL creation.
-
-### API
-
-### ENV_STACK
-
-### ENVIRONMENT 
-Global environment is a mapped collection of symbols with values. If dynamic binding is enabled a dynamic 
-environment will stack over it. So there will be two stack, one global on witch every local environment will 
-grow, and a local one. Implementation details are still in reflexion...
-
-Calling a function will stack local arguments as a new local stack. Enter in a let block will stack new environment and 
-adding bindings. Function creation inner in a local block will keep it's syntactical local environment. Output from 
-these blocks will unstack environment.
-
-## Numeric values [`numbers.c`](src/lws/numbers.c)
-There is no automatic type enhancement on overflow, but cast to DECIMAL will be done on binary operations with a 
-FLOAT value.
-
-### INTEGER
-Manage integer values. Implemented as longs
-
-### DECIMAL
-Manage floating point values. Implemented as doubles.
-
-## Values management [`atom.c`](src/lws/atom.c)
-
-### REF
-
-### FUTURE
-
-### AGENT
-
-## Other elements
-
-### Global [`global.c`](src/clojure/global.c)
-Here will be stored the core functions of the LWC language. 
-
-This will manage :
-
-- Interaction function with data structure and manage the dispatching to correct functions.
-- Special functions witch doesn't evaluate arguments
-- Basic macros... well no...
-- These function will be accessible by the language
-
-### Reader [`reader.c`](src/clojure/reader.c)
-The reader will read in the current reader file handler to transform character strings into AST structure. This will 
-recognize symbols, numbers. Complementary syntax will be managed by a functional indirection through an array linking
-character with specific reader function. For example '(' character with list reader or '[' with array reader.
-
+Here it will be more complicated : class management, static typing, imperative programming, say mutable state...
