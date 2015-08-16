@@ -12,10 +12,10 @@
 // symbols, keywords
 Node        *symbol(Node *ns, Node *name);
 Node        *keyword(Node *ns, Node *name);
-bool        symbol_QM_p(Node *node);
-bool        keyword_QM_(Node *node);
-Node        *named_get_name(Node *node);
-Node        *named_get_ns(Node *node);
+Node        *symbol_Q_(Node *node);
+Node        *keyword_Q_(Node *node);
+Node        *named_name(Node *node);
+Node        *named_ns(Node *node);
 Node        *symbol_eval(Node *node, Node *env);
 
 #endif

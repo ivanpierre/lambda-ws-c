@@ -36,8 +36,10 @@ static Node *named_base(Node *ns, Node *name, NodeType type)
 {
     ASSERT(ns, "namespace is null");
     ASSERT(name, "name is null");
+    ASSERT_TYPE(ns, SYMBOL | STRING | NAMESPACE, "namespace bad type");
+    ASSERT_TYPE(name, SYMBOL | STRING, "name bad type");
 
-    Node *node = new_node(type);
+    Node *node = NEW(type);
 
     if(!node)
         return NULL;
@@ -67,23 +69,23 @@ Node *keyword(Node *ns, Node *name)
 /*
     test if node is a symbol
 */
-bool symbol_QM_(Node *node)
+Node *symbol_Q_(Node *node)
 {
-    return node && node->type & SYMBOL;
+    return (node && node->type & SYMBOL) ? true : false;
 }
 
 /*
     test if node is a keyword
 */
-bool keyword_QM_(Node *node)
+Node *keyword_Q_(Node *node)
 {
-    return node && node->type & KEYWORD;
+    return (node && node->type & KEYWORD) ? true : false;
 }
 
 /*
     Return name of named
 */
-Node *named_get_name(Node *node)
+Node *named_name(Node *node)
 {
     ASSERT_TYPE(node, SYMBOL|KEYWORD, "node is neither a symbol nor keyword");
     return link_node(NAMED(node)->name); // alloc node
@@ -92,7 +94,7 @@ Node *named_get_name(Node *node)
 /*
     Return ns of name
 */
-Node *named_get_ns(Node *node)
+Node *named_ns(Node *node)
 {
     ASSERT_TYPE(node, SYMBOL|KEYWORD, "node is neither a symbol nor keyword");
     return link_node(NAMED(node)->ns); // alloc node
@@ -107,7 +109,7 @@ Node *named_free(Node *node)
                 "error unallocatig bad type : %s",
                 str_type(node->type));
 
-    FREE(named_get_ns(node));
-    FREE(named_get_name(node));
+    unlink_node(named_ns(node));
+    unlink_node(named_name(node));
     return node;
 }

@@ -34,13 +34,13 @@ static Node *string_base(String value)
 {
     ASSERT(value, "value is null");
 
-    Node *node = new_node(STRING);
+    Node *node = NEW(STRING);
 
     if(!node)
         return NULL;
 
     node->val.compl = value;
-    return node; // new_node did the link
+    return node; // node did the link
 }
 
 
@@ -81,9 +81,9 @@ Node *string_sprintf(char *fmt, ...)
 /*
     test if node is a string
 */
-bool string_QM_(Node *node)
+Node *string_Q_(Node *node)
 {
-    return node && node->type & STRING;
+    return (node && node->type & STRING) ? true : false;
 }
 
 /*

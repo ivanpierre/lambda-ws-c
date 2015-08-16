@@ -34,9 +34,9 @@ Node *eval_node(Node *node, Node *env)
             return eval_keyval(node, env);
 
 
-        case NIL_NODE :
-        case TRUE_NODE :
-        case FALSE_NODE :
+        case NIL :
+        case TRUE :
+        case FALSE :
         case KEYWORD :
         case INTEGER :
 //		case FRACTION :

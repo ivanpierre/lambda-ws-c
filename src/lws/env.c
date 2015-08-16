@@ -7,8 +7,6 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "nodes.h"
 #include "env.h"
 
@@ -54,7 +52,7 @@ Node *env_free(Node *node)
 {
     ASSERT(node, "null environment");
     ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
-    ENV(node)->map = FREE(ENV(node)->map);
+    ENV(node)->map = unlink_node(ENV(node)->map);
     unlink_node(ENV(node)->previous);
     return node;
 }
@@ -64,7 +62,7 @@ Node *env_free(Node *node)
 */
 Node *env(Node *previous, Node *map)
 {
-	Node *node = new_node(ENVIRONMENT); // Create linked node
+	Node *node = NEW(ENVIRONMENT); // Create linked node
 
 	if(!node)
 		ABORT("cannor create new environment");

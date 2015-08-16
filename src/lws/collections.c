@@ -13,6 +13,17 @@
 #include "collection.h"
 
 /*
+    Collection : Array, List, Map and Set
+*/
+typedef struct
+{
+    struct Node     *mutable;
+    long            size;
+    long            max;
+    struct Node     **nodes;
+} Collection;
+
+/*
     Access Collection from Node
 */
 static Collection *GET_COLLECTION(Node *node)
@@ -41,14 +52,14 @@ Node *collection_free(Node *node)
 /*
     Size of coll
 */
-long collection_count(Node *node)
+long collection_size(Node *node)
 {
-    if(!(node && (node->type & (COLLECTION | NIL_NODE))))
+    if(!(node && (node->type & (COLLECTION | NIL))))
     {
         ERROR("get size of bad type : %s", str_type(node->type));
         return -1;
     }
-    if(node->type & NIL_NODE)
+    if(node->type & NIL)
         return 0;
     return GET_COLLECTION(node)->size;
 }
@@ -71,8 +82,8 @@ Node *collection_first(Node *node)
 {
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, COLLECTION, "not a coll %s", str_type(node->type));
-    if(node->type & NIL_NODE || GET_COLLECTION(node)->size == 0)
-        return nil_node;
+    if(node->type & NIL || GET_COLLECTION(node)->size == 0)
+        return nil;
     if(node->type & LIST)
         return link_node(GET_COLLECTION(node)->nodes[GET_COLLECTION(node)->size - 1]);
     else
@@ -87,8 +98,8 @@ Node *collection_last(Node *node)
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, COLLECTION,
                 "not a coll %s", str_type(node->type));
-    if(node->type & NIL_NODE || GET_COLLECTION(node)->size == 0)
-        return nil_node;
+    if(node->type & NIL || GET_COLLECTION(node)->size == 0)
+        return nil;
     if(node->type & LIST)
         return link_node(GET_COLLECTION(node)->nodes[0]);
     else
@@ -101,12 +112,12 @@ Node *collection_last(Node *node)
 Node *collection_nth(Node *node, long index)
 {
     ASSERT(node, "null pointer");
-    ASSERT_TYPE(node, COLLECTION | NIL_NODE,
+    ASSERT_TYPE(node, COLLECTION | NIL,
                 "not a coll %s", str_type(node->type));
-    ASSERT(node->type & NIL_NODE || index < GET_COLLECTION(node)->size || index >= 0,
+    ASSERT(node->type & NIL || index < GET_COLLECTION(node)->size || index >= 0,
             "Index out of bound");
-    if(node->type & NIL_NODE || GET_COLLECTION(node)->size == 0)
-        return nil_node;
+    if(node->type & NIL || GET_COLLECTION(node)->size == 0)
+        return nil;
     if(node->type & LIST)
         return link_node(GET_COLLECTION(node)->nodes[GET_COLLECTION(node)->size - index - 1]);
     else
@@ -119,7 +130,7 @@ Node *collection_nth(Node *node, long index)
 Node *collection_malloc(Node *node, long size)
 {
     ASSERT(node, "null pointer");
-    if(node->type & NIL_NODE)
+    if(node->type & NIL)
         return collection(LIST, size);
     ASSERT_TYPE(node, COLLECTION, "bad type %s", str_type(node->type));
     ASSERT(size >= 0, "Allocation cannot be negative %ld", size);
@@ -151,7 +162,7 @@ Node *collection_realloc(Node *node, long size)
 Node *collection(NodeType type,  long alloc)
 {
     ASSERT(type & COLLECTION, "bad type %s", str_type(type));
-    Node *node = new_node(type);
+    Node *node = NEW(type);
     ASSERT(node, "Error alocating collection node");
     if(collection_malloc(node, alloc))
     {
@@ -160,7 +171,7 @@ Node *collection(NodeType type,  long alloc)
         return NULL;
     }
     GET_COLLECTION(node)->size = 0;
-    return node; // linked by new_node
+    return node; // linked by node
 }
 
 /*

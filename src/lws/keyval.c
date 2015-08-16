@@ -53,8 +53,8 @@ Node *keyval_free(Node *node)
                 "error unallocatig bad type : %s",
                 str_type(node->type));
 
-    FREE(keyval_key(node));
-    FREE(keyval_value(node));
+    unlink_node(keyval_key(node));
+    unlink_node(keyval_value(node));
     return node;
 }
 
@@ -63,14 +63,14 @@ Node *keyval_free(Node *node)
 */
 Node *keyval(Node *key, Node *value)
 {
-	Node *node = new_node(KEYVAL); // Create linked node
+	Node *node = NEW(KEYVAL); // Create linked node
 
 	if(!node)
 	{
 		ABORT("cannor create new keyval");
 	}
 
-	KEYVAL(node)->key = key; // don't unlink, it's massed tokeyval
+	KEYVAL(node)->key = key; // don't unlink, it's assigned to keyval
 	KEYVAL(node)->value = value;
 
 	return node; // Node is already linked

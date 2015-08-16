@@ -1,5 +1,5 @@
 /****
-	Integer
+	Number
 
 	Lambda Calculus Workshop
 	C version
@@ -15,9 +15,9 @@
 /*
 	Create an integer
 */
-Node *new_integer(Integer value)
+Node *integer(Integer value)
 {
-	Node *node = new_node(INTEGER);
+	Node *node = NEW(INTEGER);
 
 	if(!node)
 		return NULL;
@@ -30,7 +30,7 @@ Node *new_integer(Integer value)
 /*
 	Return value of integer
 */
-Integer get_integer(Node *node)
+Integer number_integer(Node *node)
 {
 	return node->val.integer;
 }
@@ -38,18 +38,18 @@ Integer get_integer(Node *node)
 /*
 	test if node is an integer
 */
-bool integerp(Node *node)
+Node *integer_Q_(Node *node)
 {
-	return node && node->type == INTEGER;
+	return (node && node->type & INTEGER) ? true : false;
 }
 
 ////// Decimals
 /*
 	Create a decimal
 */
-Node *new_decimal(Decimal value)
+Node *decimal(Decimal value)
 {
-	Node *node = new_node(INTEGER);
+	Node *node = NEW(INTEGER);
 	node->val.decimal = value;
 	return link_node(node);
 }
@@ -57,7 +57,7 @@ Node *new_decimal(Decimal value)
 /*
 	Return value of integer
 */
-Decimal get_decimal(Node *node)
+Decimal number_decimal(Node *node)
 {
 	return node->val.decimal;
 }
@@ -65,8 +65,8 @@ Decimal get_decimal(Node *node)
 /*
 	test if node is a decimal
 */
-bool decimalp(Node *node)
+Node *decimal_Q_(Node *node)
 {
-	return node && node->type & DECIMAL;
+	return (node && node->type & DECIMAL) ? true : false;
 }
 

@@ -9,9 +9,8 @@
 #ifndef NODES_H
 #define NODES_H
 
-#define bool int
-#define FALSE 0
-#define TRUE (!FALSE)
+#define BOOL_FALSE 0
+#define BOOL_TRUE (!BOOL_FALSE)
 
 /*
     Errors and assertions
@@ -49,9 +48,9 @@ void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
 */
 typedef enum
 {
-    NIL_NODE        =   1,       // Constant nil value
-    TRUE_NODE       =   1 << 2,  // Constant true value
-    FALSE_NODE      =   1 << 3,  // Constant false value
+    NIL             =   1,       // Constant nil value
+    TRUE            =   1 << 2,  // Constant true value
+    FALSE           =   1 << 3,  // Constant false value
     SYMBOL          =   1 << 4,  // Symbol that can be binded in ENVIRONMENT
     KEYWORD         =   1 << 5,  // Constant symbol :key evaluate to itself
     INTEGER         =   1 << 6,  // Integer numeric values
@@ -130,46 +129,11 @@ typedef enum
 /*
     Used type definitions
 */
+#define bool    int
 #define Integer long
 #define Decimal double
 #define String  char *
 struct  Node; // forward
-
-/*
-    Collection : Array, List, Map and Set
-*/
-typedef struct
-{
-    bool            mutable;
-    long            size;
-    long            max;
-    struct Node     **nodes;
-} Collection;
-
-/*
-    Walker on a collection act as a list
-*/
-typedef struct
-{
-    long            index;
-    struct Node     *coll;
-} Seq;
-
-/*
-    Reader
-*/
-typedef struct
-{
-    int             (*getc)();
-} Reader;
-
-/*
-    Writer
-*/
-typedef struct
-{
-    int             (*putc)();
-} Writer;
 
 /*
     Struct of a base node
@@ -186,31 +150,22 @@ typedef struct Node
     {
         Integer     integer;        // Integer as long
         Decimal     decimal;        // Floats as double
-        void        *compl;         // all structs
+        void        *compl;         // all node details
     } val;
 } Node;
 
 // global values
-extern Node *nil_node;
-extern Node *true_node;
-extern Node *false_node;
+extern Node *nil;
+extern Node *true;
+extern Node *false;
 
 /*
     Main functions pointers FREE, EVAL, PRINT
 */
-extern Node *(*free_ptr)(Node *node);
 extern Node *(*eval_ptr)(Node *node, Node *env);
-extern Node *(*print_ptr)(Node *node);
 
 // Node *FREE(Node *node); // called by unlink_node
 Node *EVAL(Node *node, Node *env);
-Node *PRINT(Node *node);
-Node *PR(Node *node);
-
-/*
-    Access string version from Node element
-*/
-String get_string(Node *node, Node *(*func)(Node *));
 
 // public function for types
 String      str_type(NodeType type);
@@ -218,31 +173,13 @@ String      str_type(NodeType type);
 // public function for nodes
 Node        *link_node(Node *node);
 Node        *unlink_node(Node *node);
-Node        *node(NodeType type);
+bool        FALSE_Q_(Node *node);
+bool        TRUE_Q_(Node *node);
+Node        *NEW(NodeType type);
 void        *thread_node(void *init, ...);
+String      GET_ELEM_STRING(Node *node, Node *(*func)(Node *));
+const Node  *NEW_CONST(NodeType type_of_node);
 
-
-// Integer
-Node        *integer(Integer value);
-Integer     get_integer(Node *node);
-bool        integer_Q_(Node *node);
-
-// Decimal
-Node        *decimal(Decimal value);
-Decimal     get_decimal(Node *node);
-bool        decimal_Q_(Node *node);
-
-// Function
-Node        *function_free(Node *func); // internal
-
-// Lambda
-Node        *lambda_free(Node *node); // internal
-
-// Env
-Node        *env_free(Node *node); // internal
-
-// Reader
-Node        *reader_free(Node *node); // internal
 
 // Atom
 Node        *var_deref(Node *node); // internal

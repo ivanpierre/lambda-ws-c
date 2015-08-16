@@ -15,6 +15,9 @@ Node *function_is_special(Node *node);
 Node *function_set_special(Node *node, Node *macro); // nil, false, or else
 Node *function_clojure(Node *node);
 Node *function_args(Node *node);
+Node *function_body(Node *node);
+void *function_func(Node *node);
+Node *function_closure(Node *node);
 Node *function_apply(Node *node, Node *args, Node *env); // sequable
 
 #endif

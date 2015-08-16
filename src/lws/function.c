@@ -16,8 +16,8 @@
 */
 typedef struct
 {
-    bool                is_macro;
-    bool                is_special;
+    Node                *is_macro;
+    Node                *is_special;
     Node                *closure; // as a previous Env
     Node                *args;    // seq of symbols to create local Env
                                   // for function call manage variadic arguments
@@ -39,19 +39,19 @@ static Function *GET_FUNCTION(Node *node)
 
 Node *function_is_macro(Node *node)
 {
-    return GET_FUNCTION(node)->is_macro ? true_node : false_node;
+    return GET_FUNCTION(node)->is_macro ? true : false;
 }
 
 Node *function_is_special(Node *node)
 {
-    return GET_FUNCTION(node)->is_special ? true_node : false_node;
+    return GET_FUNCTION(node)->is_special ? true : false;
 }
 
-Node *function_clojure(Node *node)
+Node *function_closure(Node *node)
 {
     Node *res = GET_FUNCTION(node)->closure;
     if(!res)
-        return nil_node;
+        return nil;
     return link_node(res);
 }
 
@@ -59,8 +59,24 @@ Node *function_args(Node *node)
 {
     Node *res = GET_FUNCTION(node)->args;
     if(!res)
-        return nil_node;
+        return nil;
     return link_node(res);
+}
+
+Node *function_body(Node *node)
+{
+    Node *res = GET_FUNCTION(node)->func.body;
+    if(!res)
+        return nil;
+    return link_node(res);
+}
+
+void *func(Node *node)
+{
+    void *res = GET_FUNCTION(node)->func.func;
+    if(!res)
+        return nil;
+    return res;
 }
 
 /*

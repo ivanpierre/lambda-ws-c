@@ -13,6 +13,20 @@
 #include "keyval.h"
 #include "string.h"
 #include "env.h"
+#include "collection.h"
+#include "function.h"
+#include "named.h"
+#include "writer.h"
+#include "number.h"
+#include "var.h"
+
+/*
+    Writer
+*/
+typedef struct
+{
+    int             (*putc)();
+} Writer;
 
 /*
     Return String representation a KEYVAL
@@ -23,8 +37,8 @@ static Node *string_keyval(Node *node, bool map)
     ASSERT_TYPE(node, KEYVAL, "error printing bad type : %s",
                 str_type(node->type));
     Node *res;
-    String k = get_string(node, &keyval_key);
-    String v = get_string(node, &keyval_value);
+    String k = GET_ELEM_STRING(node, &keyval_key);
+    String v = GET_ELEM_STRING(node, &keyval_value);
     if(map)
         res = string_sprintf("%s %s", k, v);
     else
@@ -32,7 +46,7 @@ static Node *string_keyval(Node *node, bool map)
     free(v);
     free(k);
     unlink_node(node);
-    ASSERT(str_node, "Error printing keyval");
+    ASSERT(res, "Error printing keyval");
     return res;
 }
 
@@ -45,7 +59,7 @@ static char **get_array(Node *node)
     ASSERT_TYPE(node, COLLECTION, "not a collection : %s",
                 str_type(node->type));
 
-    long size = size_coll(node);
+    long size = collection_size(node);
     if(size <= 0)
         return NULL;
 
@@ -54,7 +68,7 @@ static char **get_array(Node *node)
 
     for(long i = 0; i < size; i++)
     {
-        Node *curr = nth(node, i);
+        Node *curr = collection_nth(node, i);
 
         // here we will print the node
         Node *value;
@@ -62,7 +76,7 @@ static char **get_array(Node *node)
             value = string_keyval(curr, node->type & MAP);
         else
             value = PRINT(curr);
-        str_res[i] = strdup(STRING(value));
+        str_res[i] = strdup(GET_STRING(value));
         unlink_node(value);
         unlink_node(curr);
     }
@@ -80,7 +94,7 @@ static long list_size(long size, char *arr[])
 /*
     Return string of all elements of coll in right order
 */
-static String get_inner_content_coll(Node *node)
+static String collection_get_inner_content(Node *node)
 {
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, COLLECTION,
@@ -88,7 +102,7 @@ static String get_inner_content_coll(Node *node)
                 str_type(node->type));
 
     bool rev = node->type & LIST; // LIST is growing from head
-    long size = size_coll(node);
+    long size = collection_size(node);
     char **str_res = get_array(node);
     if(!str_res)
         return strdup("");
@@ -113,10 +127,10 @@ static String get_inner_content_coll(Node *node)
 /*
     Return String representation of coll
 */
-static Node *collection_string(Node *coll)
+static Node *string_collection(Node *coll)
 {
     // get back inner content
-    String inner_content = get_inner_content_coll(coll);
+    String inner_content = collection_get_inner_content(coll);
     Node *res;
     if(!inner_content)
         ABORT("Error getting inner content of collection");
@@ -148,10 +162,50 @@ static Node *collection_string(Node *coll)
 }
 
 /*
+    String representation of reader
+    returns linked allocated String
+*/
+Node *string_reader(Node *node)
+{
+    ASSERT(node, "string_reader : null environment");
+    ASSERT_TYPE(node, READER, "string_env : Bad type %s", str_type(node->type));
+    return string_sprintf("<%s FILE*=?>",
+//						   node->val.function->is_macro ? "yes" : "no",
+//						   node->val.function->is_special ? "yes" : "no",
+                           str_type(FUNCTION));
+}
+
+/*
+    String representation of var
+*/
+Node *string_var(Node *node)
+{
+    ASSERT(node, "null var");
+    ASSERT_TYPE(node, VAR, "Bad type %s", str_type(node->type));
+    String sym = GET_ELEM_STRING(node, &var_symbol);
+    Node *res = NULL;
+
+    if(FALSE_Q_(var_bound_Q_(node)))
+    {
+        res = string_sprintf("<%s symbol*=%s unbound>", sym);
+        free(sym);
+    }
+    else
+    {
+        String val = GET_ELEM_STRING(node, &var_value);
+        res = string_sprintf("<%s symbol*=%s value=%s>", sym);
+        free(val);
+        free(sym);
+    }
+
+    return res;
+}
+
+/*
     String representation of environment
     returns linked allocated String
 */
-static Node *env_string(Node *node)
+static Node *string_env(Node *node)
 {
     ASSERT(node, "null environment");
     ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
@@ -161,7 +215,7 @@ static Node *env_string(Node *node)
         Node *map_str = PRINT(map);
         Node *res = string_sprintf("<%s map=%s>",
                                     str_type(ENVIRONMENT),
-                                    STRING(map_str));
+                                    GET_STRING(map_str));
         unlink_node(map_str);
         unlink_node(map);
         return res;
@@ -173,76 +227,128 @@ static Node *env_string(Node *node)
     String representation for functions
     returns linked allocated String
 */
-static Node *function_string(Node *node)
+static Node *string_function(Node *node)
 {
-    ASSERT(node, "string_function : null environment");
-    ASSERT_TYPE(node, FUNCTION, "string_function : Bad type %s", str_type(node->type));
-    Node *map = string(node->val.function->closure);
-    Node *args = string(node->val.function->args);
-//	Node *body = string(node->val.function->func.body);
-    Node *res = string_sprintf("<%s macro=%s special=%s args=%s closure=%s>",
-                                node->type,
-                                node->val.function->is_macro ? "yes" : "no",
-                                node->val.function->is_special ? "yes" : "no",
-                                args->val.string,
-                                map->val.string);
-    unlink_node(map);
+    ASSERT(node, "null pointer");
+    ASSERT_TYPE(node, CALLABLE, "Bad type %s", str_type(node->type));
+    Node *res = NULL;
+    String closure = GET_ELEM_STRING(node, &function_closure);
+    String args = GET_ELEM_STRING(node, &function_args);
+
+    if(node->type & LAMBDA)
+    {
+        String body = GET_ELEM_STRING(node, &function_body);
+        res = string_sprintf("<%s macro=%s special=%s args=%s closure=%s body=%s>",
+                                str_type(node->type),
+                                TRUE_Q_(function_is_macro(node)) ? "yes" : "no",
+                                TRUE_Q_(function_is_special(node)) ? "yes" : "no",
+                                args, closure, body);
+        free(body);
+    }
+    else
+    {
+        res = string_sprintf("<%s macro=%s special=%s args=%s closure=%s>",
+                                str_type(node->type),
+                                TRUE_Q_(function_is_macro(node)) ? "yes" : "no",
+                                TRUE_Q_(function_is_special(node)) ? "yes" : "no",
+                                args, closure);
+    }
+
+    free(args);
+    free(closure);
+    unlink_node(node);
     return res;
 }
 
 /*
+    get interned name
+*/
+static String string_named_interned(Node *node)
+{
+    ASSERT_TYPE(node, NAMED, "node is not a symbol or keyword");
+    Node *name = named_name(node);
+    Node *ns = named_ns(node);
+
+    Node *complete = NULL;
+    if(FALSE_Q_(ns))
+    {
+        complete = name;
+    }
+    else
+    {
+        String ns_str = GET_STRING(ns);
+        String name_str = GET_STRING(name);
+        unlink_node(name);
+
+        complete = string_sprintf("%s/%s", ns_str, name_str);
+        free(ns_str);
+        free(name_str);
+    }
+    unlink_node(ns);
+
+    String compl_str = GET_STRING(complete);
+    unlink_node(complete);
+
+    return compl_str;
+}
+
+
+/*
     Return allocated string of symbol name according to type
 */
-static String symbol_string_formated(Node *s)
+static Node *string_named_formated(Node *node)
 {
-    ASSERT_TYPE(s, SYMBOL|KEYWORD, "get_string : node is not a string, symbol or keyword");
-    String formated = NULL;
-    switch(s->type)
+    Node *formated = NULL;
+    String compl_str = string_named_interned(node);
+    switch(node->type)
     {
         case KEYWORD :
-            asprintf(&formated, ":%s", (s->val.string));
+            formated = string_sprintf(":%s", compl_str);
             break;
         case SYMBOL :
-            asprintf(&formated, "%s", (s->val.string));
+            formated = string_sprintf("%s", compl_str);
             break;
-        default :
-            break;
+        default:
+            break;;
     }
-    ASSERT(formated, "get_formated_string : cannot format node");
+    free(compl_str);
+    unlink_node(node);
+
+    ASSERT(formated, "cannot format node");
     return formated;
 }
 
 /*
 	print integer
 */
-static Node *integer_string(Node *node)
+static Node *string_integer(Node *node)
 {
-	ASSERT_TYPE(node, INTEGER, "print_integer : Node is not an integer\n");
+	ASSERT_TYPE(node, INTEGER, "Node is not an integer\n");
 
 	char *formated;
-	asprintf(&formated, "%ld", get_integer(node));
+	asprintf(&formated, "%ld", number_integer(node));
 
 	if(formated)
-		return new_string(formated);
+		return string(formated);
 
 	free(formated);
-	return new_string_allocate("NaN");
+	return string_allocate("NaN");
 }
 
 /*
 	print decimal
 */
-static Node *decimal_string(Node *node)
+static Node *string_decimal(Node *node)
 {
 	char *formatted;
-	asprintf(&formatted, "%lf", get_decimal(node));
+	asprintf(&formatted, "%lf", number_decimal(node));
 
 	if(formatted)
-		return new_string(formatted);
+		return string(formatted);
 	else
 	{
 		free(formatted);
-		return new_string_allocate("NaN");
+		return string_allocate("NaN");
 	}
 }
 
@@ -251,10 +357,12 @@ static Node *decimal_string(Node *node)
 */
 static Node *string_formated(Node *node)
 {
-    ASSERT_TYPE(node, STRING, "string_string : node is not a string");
-    String formated = get_formated_string(node);
-    ASSERT(formated, "string_string : cannot format node");
-    return new_string(formated); // formated allocated
+    ASSERT_TYPE(node, STRING, "node is not a string");
+    String str = GET_STRING(node);
+    Node *formated = string_sprintf("\"%s\"",str);
+    free(str);
+    ASSERT(formated, "cannot format node");
+    return formated; // formated allocated
 }
 
 /*
@@ -263,83 +371,106 @@ static Node *string_formated(Node *node)
 Node *print_node(Node *node, bool readable)
 {
     ASSERT(node, "string_node : NULL node");
-
+    Node *res = NULL;
     switch(node->type)
     {
-        case NIL_NODE :
-            return string_sprintf("nil");
+        case NIL :
+            res = string_sprintf("nil");
+            break;
 
-        case TRUE_NODE :
-            return string_sprintf("true");
+        case TRUE :
+            res = string_sprintf("true");
+            break;
 
-        case FALSE_NODE :
-            return string_sprintf("false");
+        case FALSE :
+            res = string_sprintf("false");
+            break;
 
         case KEYWORD :
         case SYMBOL :
-            return named_string(node);
+            res = string_named_formated(node);
+            break;
 
         case STRING :
             if(readable)
-                return string_formated(node);
+            {
+                res = string_formated(node);
+                break;
+            }
             else
-                return node;
+            {
+                res = node;
+                break;
+            }
 
         case LIST :
         case ARRAY :
         case MAP :
         case SET :
-        case ENV_STACK :
+            res = string_collection(node);
+            break;
+
+
+//      case ENV_STACK :
+
         case ENVIRONMENT :
-            return string_coll(node);
+            res = string_env(node);
+            break;
 
         case KEYVAL :
-            return string_keyval(node, false);
+            res = string_keyval(node, BOOL_FALSE);
+            break;
 
         case FUNCTION :
         case LAMBDA :
-            return string_function(node);
+            res = string_function(node);
+            break;
 
         case VAR :
-            return var_string(node);
+            res = string_var(node);
+            break;
+
 //    	case REF :
 //    	case FUTURE :
 
         case READER :
-            return string_reader(node);
+            res = string_reader(node);
+            break;
 
         case INTEGER :
-            return string_integer(node);
+            res = string_integer(node);
+            break;
 
         case DECIMAL :
-            return string_decimal(node);
+            res = string_decimal(node);
+            break;
 
         default :
             break;
     }
 
-    free(node);
-    return NULL;
+    unlink_node(node);
+    return res;
 }
 
 /*
     def pointer for print
 */
-Node *(*print_ptr)(Node *node) = &print_node;
+Node *(*print_ptr)(Node *node, bool readable) = &print_node;
 
 /*
     PRINT node using pointer readable
 */
-static Node *PRINT(Node *node)
+Node *PRINT(Node *node)
 {
-    return (*print_ptr)(node, false);
+    return (*print_ptr)(node, BOOL_FALSE);
 }
 
 /*
     PR node using pointer, non readable
 */
-static Node *PR(Node *node)
+Node *PR(Node *node)
 {
-    return (*print_ptr)(node, true);
+    return (*print_ptr)(node, BOOL_TRUE);
 }
 

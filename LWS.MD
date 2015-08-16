@@ -7,9 +7,9 @@
 */
 typedef enum
 {
-    NIL_NODE        =   1,       // Constant nil value
-    TRUE_NODE       =   1 << 2,  // Constant true value
-    FALSE_NODE      =   1 << 3,  // Constant false value
+    NIL        =   1,       // Constant nil value
+    TRUE            =   1 << 2,  // Constant true value
+    FALSE           =   1 << 3,  // Constant false value
     SYMBOL          =   1 << 4,  // Symbol that can be binded in ENVIRONMENT
     KEYWORD         =   1 << 5,  // Constant symbol :key evaluate to itself
     INTEGER         =   1 << 6,  // Integer numeric values
