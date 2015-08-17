@@ -51,6 +51,7 @@ Node *var_free(Node *node)
     unlink_node(GET_VAR(node)->symbol);
     unlink_node(GET_VAR(node)->value);
     free(GET_VAR(node));
+    free(node);
     return NULL;
 }
 

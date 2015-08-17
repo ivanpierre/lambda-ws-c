@@ -99,7 +99,8 @@ Node *string_free(Node *node)
         free(str);
         str = NULL;
     }
-
+    free(node->val.compl);
+    free(node);
     return node;
 }
 

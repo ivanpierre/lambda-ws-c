@@ -46,6 +46,7 @@ Node *collection_free(Node *node)
         if(GET_COLLECTION(node)->nodes[i])
             unlink_node(GET_COLLECTION(node)->nodes[i]);
 
+    free(node);
     return NULL;
 }
 
@@ -54,7 +55,7 @@ Node *collection_free(Node *node)
 */
 long collection_size(Node *node)
 {
-    if(!(node && (node->type & (COLLECTION | NIL))))
+    if(!(node && (node->type & (SEQUABLE | NIL))))
     {
         ERROR("get size of bad type : %s", str_type(node->type));
         return -1;

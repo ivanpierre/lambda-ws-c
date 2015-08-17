@@ -70,3 +70,11 @@ Node *decimal_Q_(Node *node)
 	return (node && node->type & DECIMAL) ? true : false;
 }
 
+/*
+    unalloc number
+*/
+Node *number_free(Node *node)
+{
+    free(node);
+    return NULL;
+}

@@ -27,7 +27,10 @@ typedef struct
 /*
     Access named data
 */
-#define NAMED(nopde) ((Named *)node->val.compl)
+static Named *GET_NAMED(Node *node)
+{
+    return  (Named *)(node->val.compl);
+}
 
 /*
     Create a linked string, don't allocate space for the string
@@ -44,8 +47,8 @@ static Node *named_base(Node *ns, Node *name, NodeType type)
     if(!node)
         return NULL;
 
-    NAMED(node)->ns = ns;
-    NAMED(node)->name = name; // allocate place for the string
+    GET_NAMED(node)->ns = ns;
+    GET_NAMED(node)->name = name; // allocate place for the string
 
     return node; // create node does the link
 }
@@ -88,7 +91,7 @@ Node *keyword_Q_(Node *node)
 Node *named_name(Node *node)
 {
     ASSERT_TYPE(node, SYMBOL|KEYWORD, "node is neither a symbol nor keyword");
-    return link_node(NAMED(node)->name); // alloc node
+    return link_node(GET_NAMED(node)->name); // alloc node
 }
 
 /*
@@ -97,7 +100,7 @@ Node *named_name(Node *node)
 Node *named_ns(Node *node)
 {
     ASSERT_TYPE(node, SYMBOL|KEYWORD, "node is neither a symbol nor keyword");
-    return link_node(NAMED(node)->ns); // alloc node
+    return link_node(GET_NAMED(node)->ns); // alloc node
 }
 
 /*
@@ -111,5 +114,7 @@ Node *named_free(Node *node)
 
     unlink_node(named_ns(node));
     unlink_node(named_name(node));
+    free(node->val.compl);
+    free(node);
     return node;
 }

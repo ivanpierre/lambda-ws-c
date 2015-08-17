@@ -9,5 +9,9 @@
 #ifndef SEQ_H
 #define SEQ_H
 
+Node *seq(long index, Node *coll);
+long seq_size(Node *node);
+long seq_index(Node *node);
+Node *seq_coll(Node *node);
 
 #endif

@@ -61,21 +61,23 @@ typedef enum
     ARRAY           =   1 << 11, // ARRAY
     MAP             =   1 << 12, // Mapped array of KEYVAL
     SET             =   1 << 13, // Mapped array of keys
-    SEQ             =   1 << 14, // Walker on a collection
-    NAMESPACE       =   1 << 15, // Interning place for global symbols
-    ENV_STACK       =   1 << 16, // is a list of ENVIRONMENT
-    ENVIRONMENT     =   1 << 17, // is a map of nodes, mapped by SYMBOL
-    API             =   1 << 18, // is a map of FUNCTION, mapped by args (ARRAY)
-    FUNCTION        =   1 << 19, // Function pointer
-    LAMBDA          =   1 << 20, // Body of language to evaluate
-    VAR             =   1 << 21, // Values of global vars (bind)
-//	REF             =   1 << 22, // CSP managed values
-//	FUTURE          =   1 << 23, // Asynchronously managed values
-//  AGENT           =   1 << 24, // Agent management through messages
-    READER          =   1 << 25, // Reader implemented in language
-    WRITER          =   1 << 26, // Writer implemented in language
-    KEYVAL          =   1 << 27, // Binding of key / values for MAP
-    INVALID         =        28, // Self explaining... used not to go too far... :D
+    SEQ             =   1 << 14, // Walker on a sequence
+    CONS            =   1 << 15, // Walker on two SEQUABLES
+    LAZY            =   1 << 16, // Walker on a lazy sequence
+    NAMESPACE       =   1 << 17, // Interning place for global symbols
+    ENV_STACK       =   1 << 18, // is a list of ENVIRONMENT
+    ENVIRONMENT     =   1 << 19, // is a map of nodes, mapped by SYMBOL
+    API             =   1 << 20, // is a map of FUNCTION, mapped by args (ARRAY)
+    FUNCTION        =   1 << 21, // Function pointer
+    LAMBDA          =   1 << 22, // Body of language to evaluate
+    VAR             =   1 << 23, // Values of global vars (bind)
+//	REF             =   1 << 24, // CSP managed values
+//	FUTURE          =   1 << 25, // Asynchronously managed values
+//  AGENT           =   1 << 26, // Agent management through messages
+    READER          =   1 << 27, // Reader implemented in language
+    WRITER          =   1 << 28, // Writer implemented in language
+    KEYVAL          =   1 << 29, // Binding of key / values for MAP
+    INVALID         =        30, // Self explaining... used not to go too far... :D
 
     NUMBER          =   INTEGER | DECIMAL,
 
@@ -91,16 +93,13 @@ typedef enum
                         SET |           // Walk on
                         SEQ,            // returns itself's ref
 
-    SEQUABLE        =   STRING |        // Walk on string's characters
-                        LIST |          // Walk on list's nodes
+    SEQUABLE        =   LIST |          // Walk on list's nodes
                         ARRAY |         // Walk on array's nodes
                         MAP |           // Walk on map's keyvals. [key value]
+                        SET |           // returns itself's ref
                         SEQ |           // returns itself's ref
-                        NAMESPACE |     // Walk on namespace's symbols
-                        ENV_STACK |     // Walk on binding's environments
-                        ENVIRONMENT |   // Walk on environment's bindings as keyvals [symbol value]
                         API |           // Walk on function's implementations as keyval [args function]
-                        LAMBDA,         // Walk on body's Nodes
+                        NIL,            // = NIL
 
     INDEXED         =   STRING |        // Get char at position
                         ARRAY,          // Get Node at postion

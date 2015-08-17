@@ -7,7 +7,7 @@
 */
 
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 #include "nodes.h"
 #include "function.h"
 
@@ -89,6 +89,8 @@ Node *function_free(Node *node)
     unlink_node(GET_FUNCTION(node)->args);
     unlink_node(GET_FUNCTION(node)->closure);
     unlink_node(GET_FUNCTION(node)->func.body);
+    free(node->val.compl);
+    free(node);
     return node;
 }
 

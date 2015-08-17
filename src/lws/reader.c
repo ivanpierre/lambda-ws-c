@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "nodes.h"
 
 /*
@@ -24,8 +25,8 @@ Node *reader_free(Node *node)
 {
     ASSERT(node, "free_reader : null environment");
     ASSERT_TYPE(node, READER, "free_reader : Bad type %s", str_type(node->type));
-//	if(node->val.function->closure)
-//		node->val.function->closure = free_node(node->val.function->closure);
+    free(node->val.compl);
+    free(node);
     return NULL;
 }
 

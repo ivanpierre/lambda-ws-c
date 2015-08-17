@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "nodes.h"
 #include "env.h"
 
@@ -54,7 +55,9 @@ Node *env_free(Node *node)
     ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
     ENV(node)->map = unlink_node(ENV(node)->map);
     unlink_node(ENV(node)->previous);
-    return node;
+    free(node->val.compl);
+    free(node);
+    return NULL;
 }
 
 /*

@@ -199,7 +199,7 @@ bool FALSE_Q_(Node *node)
 /*
     Test truthey
 */
-bool TRUE_Q_(Node *node);
+bool TRUE_Q_(Node *node)
 {
     return !FALSE_Q_(node);
 }

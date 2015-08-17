@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "nodes.h"
 #include "keyval.h"
 
@@ -55,6 +56,8 @@ Node *keyval_free(Node *node)
 
     unlink_node(keyval_key(node));
     unlink_node(keyval_value(node));
+    free(node->val.compl);
+    free(node);
     return node;
 }
 

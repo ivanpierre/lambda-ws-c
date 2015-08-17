@@ -25,8 +25,85 @@
 */
 typedef struct
 {
-    int             (*putc)();
+    FILE            *file;
 } Writer;
+
+Node *curr = NULL;
+
+/*
+    Access Writer from Node
+*/
+static Writer *GET_WRITER(Node *node)
+{
+    return (Writer *)(node->val.compl);
+}
+
+/*
+    Constructor
+*/
+Node *writer(FILE *file)
+{
+    Node *new_writer = NEW(WRITER);
+    new_writer->val.compl = malloc(sizeof(Writer));
+    GET_WRITER(new_writer)->file = file;
+    return new_writer;
+}
+
+/*
+    Constructor avec fichier
+*/
+Node *writer_open_file(Node *name)
+{
+    char *filename = GET_STRING(name);
+    unlink_node(name);
+    FILE *handle = fopen(filename, "w");
+    ASSERT(handle, "cannot open file %s for write", filename);
+    free(filename);
+    return writer(handle);
+}
+
+/*
+    Create writer with a file
+*/
+FILE *writer_file(Node *node)
+{
+    return GET_WRITER(node)->file;
+}
+
+/*
+    Change current output
+*/
+Node *writer_curr(Node *node)
+{
+    if(curr != NULL)
+        curr = unlink_node(curr);
+    return curr = node;
+}
+
+/*
+    Write string to current output
+*/
+Node *writer_print(Node *node)
+{
+    String str = GET_STRING(node);
+    fprintf(writer_file(curr), "%s", str);
+    free(str);
+    unlink_node(node);
+    return NULL;
+}
+
+/*
+    Free writer and close file
+*/
+Node *writer_free(Node *node)
+{
+    // close the file, standard files will not be closed
+    fflush(writer_file(curr));
+    fclose(writer_file(curr));
+    free(GET_WRITER(node));
+    free(node);
+    return NULL;
+}
 
 /*
     Return String representation a KEYVAL
@@ -461,7 +538,7 @@ Node *(*print_ptr)(Node *node, bool readable) = &print_node;
 /*
     PRINT node using pointer readable
 */
-Node *PRINT(Node *node)
+Node *print(Node *node)
 {
     return (*print_ptr)(node, BOOL_FALSE);
 }
@@ -469,8 +546,28 @@ Node *PRINT(Node *node)
 /*
     PR node using pointer, non readable
 */
-Node *PR(Node *node)
+Node *pr(Node *node)
 {
     return (*print_ptr)(node, BOOL_TRUE);
+}
+
+/*
+    PRINT node using pointer readable
+*/
+Node *PRINT(Node *node)
+{
+    if(!curr)
+        writer_curr(writer(stdout));
+    return writer_print(print(node));
+}
+
+/*
+    PR node using pointer, non readable
+*/
+Node *PR(Node *node)
+{
+    if(!curr)
+        writer_curr(writer(stdout));
+    return writer_print(pr(node));
 }
 
