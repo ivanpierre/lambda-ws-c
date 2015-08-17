@@ -19,12 +19,8 @@ Node *integer(Integer value)
 {
 	fprintf(stdout, "Va faire %s\n", str_type(INTEGER));
 	Node *node = NEW(INTEGER);
-
-	if(!node)
-		return NULL;
-
+	ASSERT(node, "Error creating integer");
 	node->val.integer = value;
-
 	fprintf(stderr, "%s fait !\n______________\n", str_type(node->type));
 	return node; // already linked
 }
@@ -51,9 +47,12 @@ Node *integer_Q_(Node *node)
 */
 Node *decimal(Decimal value)
 {
+	fprintf(stdout, "Va faire %s\n", str_type(INTEGER));
 	Node *node = NEW(DECIMAL);
+	ASSERT(node, "Error creating integer");
 	node->val.decimal = value;
-	return link_node(node);
+	fprintf(stderr, "%s fait !\n______________\n", str_type(node->type));
+	return node;
 }
 
 /*

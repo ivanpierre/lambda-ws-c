@@ -13,7 +13,7 @@
 */
 int main(int argc, const char* argv[])
 {
-    test();
+    test_string();
     return 0;
 }
 

@@ -1,5 +1,13 @@
 #BLOG (just what happens)
 ##17 aug 2015
+- [X] Closing the writer and release ressources.
+- [X] Adding stdout and stderr.
+- [X] Decimal memory leak.
+- [X] String desallocated 2 times :(
+- [X] Closing writer keep old config...
+
+
+##17 aug 2015
 Ok, that was a little painful to manage all the different stuff. Now as it's a little stabilized, we proceed to the
 first exhaustive test on all the AST elements. Especially tracing memory leaks. As we have a stack printing function,
 it's possible to monitor activities. Some points to overview.

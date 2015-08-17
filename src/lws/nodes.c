@@ -9,8 +9,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 #include "nodes.h"
-#include "string.h"
+#include "strings.h"
 #include "free.h"
 #include "writer.h"
 
@@ -22,10 +23,12 @@ void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
 {
     char buffer[4000];
     va_list args;
-    sprintf(buffer, "%s(%d) %s() : %s", file, line, func, fmt);
-    // error_node = string_sprintf(buffer, args);
     va_start(args, fmt);
-    fprintf(stderr, buffer, args);
+    va_start(args, fmt);
+
+    strcpy(buffer, "%s(%d) %s() : ");
+    strcat(buffer, fmt);
+    fprintf(stderr, buffer, file, line, func, fmt, args);
 }
 
 /*

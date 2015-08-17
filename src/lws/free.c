@@ -10,7 +10,7 @@
 #include "nodes.h"
 #include "free.h"
 #include "writer.h"
-#include "string.h"
+#include "strings.h"
 
 /*
     double linked list of nodes
@@ -227,9 +227,11 @@ void print_stack_trace()
     while(walk)
     {
         fprintf(stderr, "%d) %s %ld\n", i++, str_type(walk->type), walk->occurrences);
+        fflush(stderr);
         walk = walk->next_node;
     }
 #endif
     fprintf(stderr, "-----------\n");
+    fflush(stderr);
 }
 

@@ -11,7 +11,7 @@
 #include "named.h"
 #include "collection.h"
 #include "keyval.h"
-#include "string.h"
+#include "strings.h"
 #include "writer.h"
 
 /*

@@ -13,18 +13,16 @@
 #include <stdarg.h>
 #include <string.h>
 #include "nodes.h"
-#include "string.h"
+#include "strings.h"
 
 /*
     Gives back the string content
 */
 String GET_STRING(Node *node)
 {
-    ASSERT_TYPE(node, STRING, "get szring grom non string");
     ASSERT(node, "null value")
-    return (String)(node->val.compl ?
-                strdup(node->val.compl) :
-                strdup("(null)"));
+    ASSERT_TYPE(node, STRING, "get szring grom non string");
+    return (String)(node->val.compl);
 }
 
 /*
@@ -72,9 +70,12 @@ Node *string_sprintf(char *fmt, ...)
     va_list args;
     va_start(args, fmt);
     String formated = NULL;
-    asprintf(&formated, fmt, args);
+    vasprintf(&formated, fmt, args);
     if(!formated)
         return string_allocate("cannot format string");
+
+    fprintf(stderr, "Formatt = %s'\n", fmt);
+    fprintf(stderr, "Formatted String = %s'\n", formated);
     return string(formated);
 }
 
@@ -92,15 +93,10 @@ Node *string_Q_(Node *node)
 Node *string_free(Node *node)
 {
     ASSERT_TYPE(node, STRING, "node is not a string");
-
-    String str = GET_STRING(node);
-    if(str)
-    {
-        free(str);
-        str = NULL;
-    }
-    free(node->val.compl);
+    if(node->val.compl)
+        free(node->val.compl);
+    node->val.compl = NULL;
     free(node);
-    return node;
+    return NULL;
 }
 

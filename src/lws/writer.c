@@ -11,7 +11,7 @@
 #include <string.h>
 #include "nodes.h"
 #include "keyval.h"
-#include "string.h"
+#include "strings.h"
 #include "env.h"
 #include "collection.h"
 #include "function.h"
@@ -19,6 +19,7 @@
 #include "writer.h"
 #include "number.h"
 #include "var.h"
+#include "free.h"
 
 /*
     Writer
@@ -64,6 +65,26 @@ Node *writer_open_file(Node *name)
 }
 
 /*
+    Constructor stdout
+*/
+Node *writer_stdout()
+{
+    FILE *handle = stdout;
+    ASSERT(handle, "cannot open stdout");
+    return writer(handle);
+}
+
+/*
+    Constructor stderr
+*/
+Node *writer_stderr()
+{
+    FILE *handle = stderr;
+    ASSERT(handle, "cannot open stderr");
+    return writer(handle);
+}
+
+/*
     Create writer with a file
 */
 FILE *writer_file(Node *node)
@@ -82,15 +103,38 @@ Node *writer_curr(Node *node)
 }
 
 /*
+    Change current output
+*/
+Node *writer_curr_close()
+{
+    if(curr != NULL)
+    {
+        unlink_node(curr);
+        curr = NULL;
+    }
+    return nil;
+}
+
+/*
     Write string to current output
 */
 Node *writer_print(Node *node)
 {
     String str = GET_STRING(node);
     fprintf(writer_file(curr), "%s", str);
-    free(str);
+    fflush(writer_file(curr));
     unlink_node(node);
-    return NULL;
+    return nil;
+}
+
+/*
+    Write newline to current output
+*/
+Node *writer_nl()
+{
+    fprintf(writer_file(curr), "\n");
+    fflush(writer_file(curr));
+    return nil;
 }
 
 /*
@@ -99,11 +143,12 @@ Node *writer_print(Node *node)
 Node *writer_free(Node *node)
 {
     // close the file, standard files will not be closed
+    fprintf(stderr, "Closing writer %ld\n", WRITER);
     fflush(writer_file(curr));
     fclose(writer_file(curr));
     free(GET_WRITER(node));
     free(node);
-    return NULL;
+    return nil;
 }
 
 /*
@@ -401,7 +446,7 @@ static Node *string_named_formated(Node *node)
 */
 static Node *string_integer(Node *node)
 {
-	ASSERT_TYPE(node, INTEGER, "Node is not an integer\n");
+	ASSERT_TYPE(node, INTEGER, "Node is not an integer");
 
 	char *formated;
 	asprintf(&formated, "%ld", number_integer(node));
@@ -418,16 +463,16 @@ static Node *string_integer(Node *node)
 */
 static Node *string_decimal(Node *node)
 {
+	ASSERT_TYPE(node, DECIMAL, "Node is not an decimal");
+
 	char *formatted;
 	asprintf(&formatted, "%lf", number_decimal(node));
 
 	if(formatted)
 		return string(formatted);
-	else
-	{
-		free(formatted);
-		return string_allocate("NaN");
-	}
+
+    free(formatted);
+    return string_allocate("NaN");
 }
 
 /*
@@ -435,10 +480,10 @@ static Node *string_decimal(Node *node)
 */
 static Node *string_formated(Node *node)
 {
+    fprintf(stderr, "string_formatted = '%s'", node->val.compl);
     ASSERT_TYPE(node, STRING, "node is not a string");
     String str = GET_STRING(node);
     Node *formated = string_sprintf("\"%s\"",str);
-    free(str);
     ASSERT(formated, "cannot format node");
     return formated; // formated allocated
 }
@@ -473,11 +518,14 @@ Node *print_node(Node *node, bool readable)
             if(readable)
             {
                 res = string_formated(node);
+                print_stack_trace();
                 break;
             }
             else
             {
-                res = node;
+                // res will be node and node will be unlinked...
+                res = link_node(node);
+
                 break;
             }
 
@@ -559,7 +607,8 @@ Node *PRINT(Node *node)
 {
     if(!curr)
         writer_curr(writer(stdout));
-    return writer_print(print(node));
+    writer_print(print(node));
+    return nil;
 }
 
 /*
@@ -569,6 +618,31 @@ Node *PR(Node *node)
 {
     if(!curr)
         writer_curr(writer(stdout));
-    return writer_print(pr(node));
+    writer_print(pr(node));
+    return nil;
+}
+
+/*
+    PRINT node using pointer readable
+*/
+Node *PRINTLN(Node *node)
+{
+    if(!curr)
+        writer_curr(writer(stdout));
+    writer_print(print(node));
+    writer_nl();
+    return nil;
+}
+
+/*
+    PR node using pointer, non readable
+*/
+Node *PRN(Node *node)
+{
+    if(!curr)
+        writer_curr(writer(stdout));
+    writer_print(pr(node));
+    writer_nl();
+    return nil;
 }
 
