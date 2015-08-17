@@ -18,6 +18,8 @@
 extern struct Node *error_node;
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
 
+
+
 #define ERROR(fmt, ...) \
     { \
         ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
@@ -46,74 +48,82 @@ void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
 /*
     type of nodes
 */
-typedef enum
+#define NodeType    long        // on 8 bytes, 64 bits
+extern const NodeType    NIL;
+extern const NodeType    TRUE;
+extern const NodeType    FALSE;
+extern const NodeType    SYMBOL;
+extern const NodeType    KEYWORD;
+extern const NodeType    INTEGER;
+//extern const NodeType	FRACTION;
+extern const NodeType    DECIMAL;
+extern const NodeType    STRING;
+extern const NodeType    LIST;
+extern const NodeType    ARRAY;
+extern const NodeType    MAP;
+extern const NodeType    SET;
+extern const NodeType    SEQ;
+extern const NodeType    CONS;
+extern const NodeType    LAZY;
+extern const NodeType    NAMESPACE;
+extern const NodeType    ENV_STACK;
+extern const NodeType    ENVIRONMENT;
+extern const NodeType    API;
+extern const NodeType    FUNCTION;
+extern const NodeType    LAMBDA;
+extern const NodeType    VAR;
+//extern const NodeType	REF;
+//extern const NodeType	FUTURE;
+//extern const NodeType  AGENT;
+extern const NodeType    READER;
+extern const NodeType    WRITER;
+extern const NodeType    KEYVAL;
+extern const NodeType    INVALID;
+extern const NodeType    NUMBER;
+extern const NodeType    NAMED;
+extern const NodeType    ITERABLE;
+extern const NodeType    COLLECTION;
+extern const NodeType    SEQUABLE;
+extern const NodeType    INDEXED;
+extern const NodeType    MAPPED;
+extern const NodeType    CALLABLE;
+
+/*
+    type of nodes
+*/
+enum TYPE
 {
-    NIL             =   1,       // Constant nil value
-    TRUE            =   1 << 2,  // Constant true value
-    FALSE           =   1 << 3,  // Constant false value
-    SYMBOL          =   1 << 4,  // Symbol that can be binded in ENVIRONMENT
-    KEYWORD         =   1 << 5,  // Constant symbol :key evaluate to itself
-    INTEGER         =   1 << 6,  // Integer numeric values
-//	FRACTION        =   1 << 7,  // Fractional numeric values
-    DECIMAL         =   1 << 8,  // floating numeric values
-    STRING          =   1 << 9,  // String
-    LIST            =   1 << 10, // reversed array (growing from head)
-    ARRAY           =   1 << 11, // ARRAY
-    MAP             =   1 << 12, // Mapped array of KEYVAL
-    SET             =   1 << 13, // Mapped array of keys
-    SEQ             =   1 << 14, // Walker on a sequence
-    CONS            =   1 << 15, // Walker on two SEQUABLES
-    LAZY            =   1 << 16, // Walker on a lazy sequence
-    NAMESPACE       =   1 << 17, // Interning place for global symbols
-    ENV_STACK       =   1 << 18, // is a list of ENVIRONMENT
-    ENVIRONMENT     =   1 << 19, // is a map of nodes, mapped by SYMBOL
-    API             =   1 << 20, // is a map of FUNCTION, mapped by args (ARRAY)
-    FUNCTION        =   1 << 21, // Function pointer
-    LAMBDA          =   1 << 22, // Body of language to evaluate
-    VAR             =   1 << 23, // Values of global vars (bind)
-//	REF             =   1 << 24, // CSP managed values
-//	FUTURE          =   1 << 25, // Asynchronously managed values
-//  AGENT           =   1 << 26, // Agent management through messages
-    READER          =   1 << 27, // Reader implemented in language
-    WRITER          =   1 << 28, // Writer implemented in language
-    KEYVAL          =   1 << 29, // Binding of key / values for MAP
-    INVALID         =        30, // Self explaining... used not to go too far... :D
-
-    NUMBER          =   INTEGER | DECIMAL,
-
-    NAMED           =   SYMBOL | KEYWORD,
-
-    ITERABLE        =   LIST |
-                        ARRAY |
-                        SEQ,
-
-    COLLECTION      =   LIST |          // Walk on list's nodes
-                        ARRAY |         // Walk on array's nodes
-                        MAP |           // Walk on map's keyvals. [key value]
-                        SET |           // Walk on
-                        SEQ,            // returns itself's ref
-
-    SEQUABLE        =   LIST |          // Walk on list's nodes
-                        ARRAY |         // Walk on array's nodes
-                        MAP |           // Walk on map's keyvals. [key value]
-                        SET |           // returns itself's ref
-                        SEQ |           // returns itself's ref
-                        API |           // Walk on function's implementations as keyval [args function]
-                        NIL,            // = NIL
-
-    INDEXED         =   STRING |        // Get char at position
-                        ARRAY,          // Get Node at postion
-
-    MAPPED          =   MAP |
-                        SET |
-                        NAMESPACE |
-                        ENVIRONMENT |
-                        API,
-
-    CALLABLE        =   FUNCTION |
-                        LAMBDA
-
-} NodeType;  // WIP
+    INIL             =   1,  // Constant nil value
+    ITRUE            =   2,  // Constant true value
+    IFALSE           =   3,  // Constant false value
+    ISYMBOL          =   4,  // Symbol that can be binded in ENVIRONMENT
+    IKEYWORD         =   5,  // Constant symbol :key evaluate to itself
+    IINTEGER         =   6,  // Integer numeric values
+    IFRACTION        =   7,  // Fractional numeric values
+    IDECIMAL         =   8,  // floating numeric values
+    ISTRING          =   9,  // String
+    ILIST            =   10, // reversed array (growing from head)
+    IARRAY           =   11, // ARRAY
+    IMAP             =   12, // Mapped array of KEYVAL
+    ISET             =   13, // Mapped array of keys
+    ISEQ             =   14, // Walker on a sequence
+    ICONS            =   15, // Walker on two SEQUABLES
+    ILAZY            =   16, // Walker on a lazy sequence
+    INAMESPACE       =   17, // Interning place for global symbols
+    IENV_STACK       =   18, // is a list of ENVIRONMENT
+    IENVIRONMENT     =   19, // is a map of nodes, mapped by SYMBOL
+    IAPI             =   20, // is a map of FUNCTION, mapped by args (ARRAY)
+    IFUNCTION        =   21, // Function pointer
+    ILAMBDA          =   22, // Body of language to evaluate
+    IVAR             =   23, // Values of global vars (bind)
+    IREF             =   24, // CSP managed values
+    IFUTURE          =   25, // Asynchronously managed values
+    IAGENT           =   26, // Agent management through messages
+    IREADER          =   27, // Reader implemented in language
+    IWRITER          =   28, // Writer implemented in language
+    IKEYVAL          =   29, // Binding of key / values for MAP
+    IINVALID         =   30  // Self explaining... used not to go too far... :D
+};
 
 /*
     String representation of types
@@ -128,10 +138,10 @@ typedef enum
 /*
     Used type definitions
 */
-#define bool    int
-#define Integer long
-#define Decimal double
-#define String  char *
+#define bool        int
+#define Integer     long
+#define Decimal     double
+#define String      char *
 struct  Node; // forward
 
 /*
@@ -168,6 +178,7 @@ Node *EVAL(Node *node, Node *env);
 
 // public function for types
 String      str_type(NodeType type);
+enum TYPE   log_type(NodeType type);
 
 // public function for nodes
 Node        *link_node(Node *node);

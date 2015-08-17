@@ -13,12 +13,65 @@
 #include "string.h"
 #include "free.h"
 #include "writer.h"
+
+// Error signal
+Node *error_node = NULL;
+
+// Error* function
+void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
+{
+    char buffer[4000];
+    va_list args;
+    sprintf(buffer, "%s(%d) %s() : %s", file, line, func, fmt);
+    // error_node = string_sprintf(buffer, args);
+    va_start(args, fmt);
+    fprintf(stderr, buffer, args);
+}
+
 /*
-    double linked list of nodes
+    type of nodes
 */
+const NodeType NIL             =   1l;       // Constant nil value
+const NodeType TRUE            =   1l << 1;  // Constant true value
+const NodeType FALSE           =   1l << 2;  // Constant false value
+const NodeType SYMBOL          =   1l << 3;  // Symbol that can be binded in ENVIRONMENT
+const NodeType KEYWORD         =   1l << 4;  // Constant symbol :key evaluate to itself
+const NodeType INTEGER         =   1l << 5;  // Integer numeric values
+//const NodeType FRACTION        =   1l << 6;  // Fractional numeric values
+const NodeType DECIMAL         =   1l << 7;  // floating numeric values
+const NodeType STRING          =   1l << 8;  // String
+const NodeType LIST            =   1l << 9; // reversed array (growing from head)
+const NodeType ARRAY           =   1l << 10; // ARRAY
+const NodeType MAP             =   1l << 11; // Mapped array of KEYVAL
+const NodeType SET             =   1l << 12; // Mapped array of keys
+const NodeType SEQ             =   1l << 13; // Walker on a sequence
+const NodeType CONS            =   1l << 14; // Walker on two SEQUABLES
+const NodeType LAZY            =   1l << 15; // Walker on a lazy sequence
+const NodeType NAMESPACE       =   1l << 16; // Interning place for global symbols
+const NodeType ENV_STACK       =   1l << 17; // is a list of ENVIRONMENT
+const NodeType ENVIRONMENT     =   1l << 18; // is a map of nodes; mapped by SYMBOL
+const NodeType API             =   1l << 19; // is a map of FUNCTION; mapped by args (ARRAY)
+const NodeType FUNCTION        =   1l << 20; // Function pointer
+const NodeType LAMBDA          =   1l << 21; // Body of language to evaluate
+const NodeType VAR             =   1l << 22; // Values of global vars (bind)
+//const NodeType REF             =   1l << 23; // CSP managed values
+//const NodeType FUTURE          =   1l << 24; // Asynchronously managed values
+//const NodeType AGENT           =   1l << 25; // Agent management through messages
+const NodeType READER          =   1l << 26; // Reader implemented in language
+const NodeType WRITER          =   1l << 27; // Writer implemented in language
+const NodeType KEYVAL          =   1l << 28; // Binding of key / values for MAP
+const NodeType INVALID         =        30l; // Self explaining... used not to go too far... :D
+
+const NodeType    NUMBER          =   INTEGER | DECIMAL;
+const NodeType    NAMED           =   SYMBOL | KEYWORD;
+const NodeType    ITERABLE        =   LIST | ARRAY | SEQ;
+const NodeType    MAPPED          =   MAP | SET;
+const NodeType    COLLECTION      =   ITERABLE | MAPPED;
+const NodeType    SEQUABLE        =   COLLECTION | NIL;
+const NodeType    INDEXED         =   STRING | ARRAY;
+const NodeType    CALLABLE        =   FUNCTION | LAMBDA;
+
 #ifdef DEBUG_ALLOC
-    Node *first_node    = NULL;
-    Node *last_node     = NULL;
     #define NEW_CONST(type) {type, 0l, NULL, NULL, {0}}
 #else
     #define NEW_CONST(type) {type, 0l, {0}}
@@ -32,25 +85,13 @@ Node *nil = &nil_val;
 Node *false = &false_val;
 Node *true = &true_val;
 
-// Error signal
-Node *error_node = NULL;
-
-// Error* function
-void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
-{
-    char buffer[255];
-    va_list args;
-    va_start(args, fmt);
-    sprintf(buffer, "%s(%d) %s() : %s", file, line, func, fmt);
-    error_node = string_sprintf(buffer, args);
-    fprintf(stderr, "%s", GET_STRING(error_node));
-}
 
 /*
     String representation of types
 */
 static char            *str_types[] =
                             {
+                                "mheu",
                                 "nil",
                                 "true",
                                 "false",
@@ -65,7 +106,9 @@ static char            *str_types[] =
                                 "map",
                                 "set",
                                 "sequence",
-                                "namespace"
+                                "cons",
+                                "lazy",
+                                "namespace",
                                 "env_stack",
                                 "environment",
                                 "api",
@@ -74,11 +117,28 @@ static char            *str_types[] =
                                 "var",
                                 "ref",
                                 "future",
-                                "agent"
+                                "agent",
                                 "reader",
+                                "writer",
                                 "keyval",
-                                "<invalid type>"
+                                "<invalid type1>",
+                                "<invalid type2>",
+                                "<invalid type3>",
+                                "<invalid type4>",
+                                "<invalid type5>"
                             };
+
+/*
+   get main type order
+*/
+enum TYPE log_type(NodeType type)
+{
+    int i = 0;
+    for(;i < INVALID; i++)
+        if((1l << i) & type)
+            break;
+    return i + 1;
+}
 
 /*
    get type name
@@ -87,9 +147,12 @@ String str_type(NodeType type)
 {
     int i = 0;
     for(;i < INVALID; i++)
-        if(1 << i == type)
+        {
+        // fprintf(stderr, "type = %ld, %ld = %d = %s\n", type, (1l << i), i + 1, str_types[i + 1]);
+        if((1l << i) & type)
             break;
-    return str_types[i];
+        }
+    return str_types[i + 1];
 }
 
 /*
@@ -123,38 +186,23 @@ static Node *init_node(Node *node, NodeType type)
 */
 Node *NEW(NodeType type_of_node)
 {
+	fprintf(stderr, "fait nouveau node %s %ld\n", str_type(type_of_node), type_of_node);
     Node *new = malloc(sizeof(Node));
+
     ASSERT(new, "allocation of node of type %s", str_type(type_of_node));
 
     Node *tmp = new;
+
     new = init_node(new, type_of_node); // init_node does link
     if(!new)
     {
+    	fprintf(stderr, "Erreur niouveau Node %s\n", str_type(type_of_node));
+
         free(tmp);
         ABORT("initialisation of node of type %s", str_type(type_of_node));
     }
-
+	fprintf(stderr, "Node %s créé\n____________\n", str_type(new->type));
     return new;
-}
-
-/*
-    completely unlink and init node list
-*/
-bool init_node_list()
-{
-#ifdef DEBUG_ALLOC
-    while(first_node)
-    {
-        Node *node = first_node;
-        first_node = node->next_node;
-
-        // empty allocation
-        while(node)
-            node = unlink_node(node);
-    }
-    last_node = NULL;
-#endif
-    return TRUE;
 }
 
 /*

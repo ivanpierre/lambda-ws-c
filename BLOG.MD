@@ -1,4 +1,16 @@
 #BLOG (just what happens)
+##17 aug 2015
+Ok, that was a little painful to manage all the different stuff. Now as it's a little stabilized, we proceed to the
+first exhaustive test on all the AST elements. Especially tracing memory leaks. As we have a stack printing function,
+it's possible to monitor activities. Some points to overview.
+
+- All free function should completely clean up the whole mess.
+- Output should be managed too.
+- As soon as possible put the environment active to write the first functions.
+- A tinming function should be put in place to see everwhelmig usage of ressouces.
+- as soon it's done, proceed with the writing of tzhe core functions and write a repl.
+
+
 ##10 aug 2015
 - Reformat all names of structure source.e, each one manage a structure.
 - A header should be created for public access functions
@@ -26,7 +38,7 @@ PRINT(node), EVAL(node), and not the function specific to the structures.
 - Local environment is passed as argument and push and pop managed by the FUNCTION eval function.
 - Local environment chaining pass through closure. Let for example is just a function call.
 
-```
+```.clj
     (let [a va
           b a]
        body)

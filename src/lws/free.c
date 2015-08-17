@@ -9,6 +9,16 @@
 #include <stdio.h>
 #include "nodes.h"
 #include "free.h"
+#include "writer.h"
+#include "string.h"
+
+/*
+    double linked list of nodes
+*/
+#ifdef DEBUG_ALLOC
+    Node *first_node    = NULL;
+    Node *last_node     = NULL;
+#endif
 
 // Forward
 static Node *FREE(Node *node);
@@ -28,6 +38,7 @@ static bool unlinkable(Node *node)
 */
 Node *link_node(Node *node)
 {
+    fprintf(stderr, "linking %s\n", str_type(node->type));
     if(!unlinkable(node))
         node->occurrences++;
     return node;
@@ -40,12 +51,36 @@ Node *link_node(Node *node)
 */
 Node *unlink_node(Node *node)
 {
+    fprintf(stderr, "unlinking %s\n", str_type(node->type));
     if(!unlinkable(node))
     {
         if(node->occurrences)
             node->occurrences--;
         if(!node->occurrences)
-            return FREE(node);
+        {
+            fprintf(stderr, "freeing %s\n", str_type(node->type));
+#ifdef DEBUG_ALLOC
+            if(node == first_node &&
+                node == last_node)
+                first_node = last_node = NULL;
+             else if(first_node == node)
+             {
+                first_node = node->next_node;
+                first_node->previous_node = NULL;
+             }
+             else if(last_node == node)
+             {
+                last_node = node->previous_node;
+                last_node->next_node = NULL;
+             }
+             else
+             {
+                node->next_node->previous_node = node->previous_node;
+                node->previous_node->next_node = node->next_node;
+             }
+#endif
+            FREE(node);
+        }
     }
     return node;
 }
@@ -73,46 +108,46 @@ static Node *free_node(Node *node)
 {
     ASSERT(node, "free_node : NULL node");
 
-    switch(node->type)
+    switch(log_type(node->type))
     {
-        case NIL :
-        case TRUE :
-        case FALSE :
+        case INIL :
+        case ITRUE :
+        case IFALSE :
             return node;
 
-        case KEYWORD :
-        case SYMBOL :
+        case IKEYWORD :
+        case ISYMBOL :
             node = named_free(node);
             break;
 
-        case STRING :
+        case ISTRING :
             node = string_free(node);
             break;
 
-        case ENV_STACK :
+        case IENV_STACK :
             break;
 
-        case ENVIRONMENT :
+        case IENVIRONMENT :
             node = env_free(node);
             break;
 
-        case LIST :
-        case ARRAY :
-        case MAP :
-        case SET :
+        case ILIST :
+        case IARRAY :
+        case IMAP :
+        case ISET :
             node = collection_free(node);
             break;
 
-    	case SEQ :
+    	case ISEQ :
     	    node = seq_free(node);
     	    break;
 
-        case KEYVAL :
+        case IKEYVAL :
             node = keyval_free(node);
             break;
 
-        case FUNCTION :
-        case LAMBDA :
+        case IFUNCTION :
+        case ILAMBDA :
             node = function_free(node);
             break;
 
@@ -122,15 +157,15 @@ static Node *free_node(Node *node)
 //      case FUTURE
 //          break;
 
-        case VAR :
+        case IVAR :
             node = FREE(node->val.compl);
             break;
 
-        case READER :
+        case IREADER :
             node = reader_free(node);
             break;
 
-        case WRITER :
+        case IWRITER :
             node = writer_free(node);
             break;
 
@@ -138,16 +173,14 @@ static Node *free_node(Node *node)
 //          fraction_free(node->val.compl)
 //          break;
 
-        case INTEGER :
-        case DECIMAL :
+        case IINTEGER :
+        case IDECIMAL :
             node = number_free(node);
             break;
 
         default :
             break;
     }
-
-    unlink_node(node); // we can now free the main node
     return NULL;
 }
 
@@ -162,5 +195,41 @@ Node *(*free_ptr)(Node *node) = &free_node;
 static Node *FREE(Node *node)
 {
     return (*free_ptr)(node);
+}
+
+/*
+    completely unlink and init node list
+*/
+bool init_node_list()
+{
+#ifdef DEBUG_ALLOC
+    while(first_node)
+    {
+        Node *node = first_node;
+        first_node = node->next_node;
+
+        // empty allocation
+        while(node)
+            node = unlink_node(node);
+    }
+    last_node = NULL;
+#endif
+    return TRUE;
+}
+
+void print_stack_trace()
+{
+    fprintf(stderr, "Stack trace\n");
+    fprintf(stderr, "-----------\n");
+#ifdef DEBUG_ALLOC
+    Node *walk = first_node;
+    int i = 1;
+    while(walk)
+    {
+        fprintf(stderr, "%d) %s %ld\n", i++, str_type(walk->type), walk->occurrences);
+        walk = walk->next_node;
+    }
+#endif
+    fprintf(stderr, "-----------\n");
 }
 

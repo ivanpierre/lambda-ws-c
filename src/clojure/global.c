@@ -8,11 +8,70 @@
 
 #include <stdio.h>
 #include "global.h"
+#include "free.h"
+#include "number.h"
+#include "string.h"
+#include "writer.h"
 
 /*
     Special functions
 */
 
+    Node *node = NULL;
+
 /*
     Normal functions
 */
+/*
+    Normal functions
+*/
+void test_integer()
+{
+    print_stack_trace();
+
+    // creation integer
+    node = integer(123l);
+    print_stack_trace();
+    PRINT(node);
+
+    print_stack_trace();
+}
+
+/*
+    Normal functions
+*/
+void test_decimal()
+{
+    print_stack_trace();
+
+    // creation decimal
+    node = decimal(123.345);
+    print_stack_trace();
+    PRINT(node);
+
+    print_stack_trace();
+}
+
+
+/*
+    Normal functions
+*/
+void test_string()
+{
+    print_stack_trace();
+
+    // creation string
+    node = string("hgfjhgfjhgfjhgfjhgfhj");
+    print_stack_trace();
+    PRINT(node);
+
+    print_stack_trace();
+}
+
+void test()
+{
+    // test_integer();
+    test_decimal();
+    // test_string();
+}
+

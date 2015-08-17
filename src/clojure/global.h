@@ -9,7 +9,6 @@
 
 #include "nodes.h"
 
-Node *string(Node *node);
-Node *eval(Node *node, Node *env);
+void test();
 
 #endif

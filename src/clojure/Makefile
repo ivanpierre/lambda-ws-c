@@ -13,11 +13,14 @@ vpath %.h ../lws
 
 CFLAGS = -fPIC -I. -I../lws
 LDFLAGS = -o
-LDLIBS = -L../lws -llws
-CC = cc
+LDLIBS = -L. -llws
+CC = cc -g
 
-clojure : $(objects)
-	$(CC) $(lflags) $@ $(objects) $(libflags)
+clojure : $(objects) liblws.so
+	$(CC) $(LDFLAGS) $@ $(objects) $(LDLIBS)
+
+liblws.so : ../lws/liblws.so
+	cp ../lws/liblws.so .
 
 clean:
-	rm -f *.o lcw
+	rm -f *.o lib* clojure

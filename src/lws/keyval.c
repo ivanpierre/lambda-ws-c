@@ -46,6 +46,14 @@ Node *keyval_value(Node *node)
 }
 
 /*
+    Evaluation of other keyval
+*/
+Node *keyval_eval(Node *node, Node *env)
+{
+    return node;
+}
+
+/*
     Free keyval
 */
 Node *keyval_free(Node *node)
@@ -66,15 +74,15 @@ Node *keyval_free(Node *node)
 */
 Node *keyval(Node *key, Node *value)
 {
-	Node *node = NEW(KEYVAL); // Create linked node
+    Node *node = NEW(KEYVAL); // Create linked node
 
-	if(!node)
-	{
-		ABORT("cannor create new keyval");
-	}
+    if(!node)
+    {
+        ABORT("cannor create new keyval");
+    }
 
-	KEYVAL(node)->key = key; // don't unlink, it's assigned to keyval
-	KEYVAL(node)->value = value;
+    KEYVAL(node)->key = key; // don't unlink, it's assigned to keyval
+    KEYVAL(node)->value = value;
 
-	return node; // Node is already linked
+    return node; // Node is already linked
 }

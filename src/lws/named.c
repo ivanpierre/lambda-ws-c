@@ -104,6 +104,15 @@ Node *named_ns(Node *node)
 }
 
 /*
+    Evaluation of symbol
+*/
+Node *symbol_eval(Node *node, Node *env)
+{
+    // TODO implement evaluation
+    return node;
+}
+
+/*
     Unalloc named elements : ns and name
 */
 Node *named_free(Node *node)

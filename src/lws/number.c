@@ -17,6 +17,7 @@
 */
 Node *integer(Integer value)
 {
+	fprintf(stdout, "Va faire %s\n", str_type(INTEGER));
 	Node *node = NEW(INTEGER);
 
 	if(!node)
@@ -24,7 +25,8 @@ Node *integer(Integer value)
 
 	node->val.integer = value;
 
-	return link_node(node);
+	fprintf(stderr, "%s fait !\n______________\n", str_type(node->type));
+	return node; // already linked
 }
 
 /*
@@ -49,7 +51,7 @@ Node *integer_Q_(Node *node)
 */
 Node *decimal(Decimal value)
 {
-	Node *node = NEW(INTEGER);
+	Node *node = NEW(DECIMAL);
 	node->val.decimal = value;
 	return link_node(node);
 }

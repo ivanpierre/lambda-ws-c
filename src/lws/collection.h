@@ -33,5 +33,7 @@ Node        *collection(NodeType type, long alloc);
 Node        *collection_eval(Node *node, Node *env);
 Node        *list_eval(Node *node, Node *env);
 Node        *keyval_eval(Node *node, Node *env);
+Node        *list_eval(Node *node, Node *env);
+Node        *collection_eval(Node *node, Node *env);
 
 #endif

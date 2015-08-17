@@ -11,11 +11,11 @@
 
 // symbols, keywords
 Node        *symbol(Node *ns, Node *name);
-Node        *keyword(Node *ns, Node *name);
 Node        *symbol_Q_(Node *node);
+Node        *symbol_eval(Node *node, Node *env);
+Node        *keyword(Node *ns, Node *name);
 Node        *keyword_Q_(Node *node);
 Node        *named_name(Node *node);
 Node        *named_ns(Node *node);
-Node        *symbol_eval(Node *node, Node *env);
 
 #endif

@@ -41,9 +41,9 @@ Node *seq(long index, Node *coll)
         /*
             We will manage the CONS, BUNDLE, etc. types
         */
-        switch(coll->type)
+        switch(log_type(coll->type))
         {
-            case SEQ:
+            case ISEQ:
                 new_coll = seq_coll(coll);
                 index += seq_index(coll);
                 unlink_node(coll);

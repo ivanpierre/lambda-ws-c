@@ -158,6 +158,24 @@ Node *collection_realloc(Node *node, long size)
 }
 
 /*
+    Evaluation of lists
+*/
+Node *list_eval(Node *node, Node *env)
+{
+    // TODO implement evaluation
+    return node;
+}
+
+/*
+    Evaluation of other collections
+*/
+Node *collection_eval(Node *node, Node *env)
+{
+    // TODO implement evaluation
+    return node;
+}
+
+/*
     create a new empty collection
 */
 Node *collection(NodeType type,  long alloc)

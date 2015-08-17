@@ -12,5 +12,6 @@
 Node *keyval_key(Node *node);
 Node *keyval_value(Node *node);
 Node *keyval(Node *key, Node *value);
+Node *keyval_eval(Node *node, Node *env);
 
 #endif

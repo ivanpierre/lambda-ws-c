@@ -9,12 +9,12 @@
 sources := $(wildcard *.c)
 objects := $(patsubst %.c,%.o,$(sources))
 
-CFLAGS = -fPIC
+CFLAGS = -fPIC -g
 LDFLAGS = -shared -W1,-soname,liblws.so.1 -o
 CC = cc
 
-liblws.so.1 : $(objects)
-	$(CC) $(LDFLAGS) liblws.so.1.0.1 $(objects)
+liblws.so : $(objects)
+	$(CC) $(LDFLAGS) liblws.so $(objects)
 
 clean:
 	rm -f *.o lcw

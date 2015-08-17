@@ -43,6 +43,7 @@ static Writer *GET_WRITER(Node *node)
 */
 Node *writer(FILE *file)
 {
+    fprintf(stderr, "create writer %ld\n", WRITER);
     Node *new_writer = NEW(WRITER);
     new_writer->val.compl = malloc(sizeof(Writer));
     GET_WRITER(new_writer)->file = file;
@@ -212,21 +213,21 @@ static Node *string_collection(Node *coll)
     if(!inner_content)
         ABORT("Error getting inner content of collection");
 
-    switch(coll->type)
+    switch(log_type(coll->type))
     {
-        case LIST:
+        case ILIST:
             res = string_sprintf("(%s)", inner_content);
             break;
 
-        case ARRAY:
+        case IARRAY:
             res = string_sprintf("[%s]", inner_content);
             break;
 
-        case SET:
+        case ISET:
             res = string_sprintf("#{%s}", inner_content);
             break;
 
-        case MAP:
+        case IMAP:
             res = string_sprintf("{%s}", inner_content);
             break;
 
@@ -377,12 +378,12 @@ static Node *string_named_formated(Node *node)
 {
     Node *formated = NULL;
     String compl_str = string_named_interned(node);
-    switch(node->type)
+    switch(log_type(node->type))
     {
-        case KEYWORD :
+        case IKEYWORD :
             formated = string_sprintf(":%s", compl_str);
             break;
-        case SYMBOL :
+        case ISYMBOL :
             formated = string_sprintf("%s", compl_str);
             break;
         default:
@@ -449,26 +450,26 @@ Node *print_node(Node *node, bool readable)
 {
     ASSERT(node, "string_node : NULL node");
     Node *res = NULL;
-    switch(node->type)
+    switch(log_type(node->type))
     {
-        case NIL :
+        case INIL :
             res = string_sprintf("nil");
             break;
 
-        case TRUE :
+        case ITRUE :
             res = string_sprintf("true");
             break;
 
-        case FALSE :
+        case IFALSE :
             res = string_sprintf("false");
             break;
 
-        case KEYWORD :
-        case SYMBOL :
+        case IKEYWORD :
+        case ISYMBOL :
             res = string_named_formated(node);
             break;
 
-        case STRING :
+        case ISTRING :
             if(readable)
             {
                 res = string_formated(node);
@@ -480,45 +481,45 @@ Node *print_node(Node *node, bool readable)
                 break;
             }
 
-        case LIST :
-        case ARRAY :
-        case MAP :
-        case SET :
+        case ILIST :
+        case IARRAY :
+        case IMAP :
+        case ISET :
             res = string_collection(node);
             break;
 
 
 //      case ENV_STACK :
 
-        case ENVIRONMENT :
+        case IENVIRONMENT :
             res = string_env(node);
             break;
 
-        case KEYVAL :
+        case IKEYVAL :
             res = string_keyval(node, BOOL_FALSE);
             break;
 
-        case FUNCTION :
-        case LAMBDA :
+        case IFUNCTION :
+        case ILAMBDA :
             res = string_function(node);
             break;
 
-        case VAR :
+        case IVAR :
             res = string_var(node);
             break;
 
 //    	case REF :
 //    	case FUTURE :
 
-        case READER :
+        case IREADER :
             res = string_reader(node);
             break;
 
-        case INTEGER :
+        case IINTEGER :
             res = string_integer(node);
             break;
 
-        case DECIMAL :
+        case IDECIMAL :
             res = string_decimal(node);
             break;
 
