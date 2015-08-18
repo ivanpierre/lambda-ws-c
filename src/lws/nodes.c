@@ -26,9 +26,8 @@ void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
     va_start(args, fmt);
     va_start(args, fmt);
 
-    strcpy(buffer, "%s(%d) %s() : ");
-    strcat(buffer, fmt);
-    fprintf(stderr, buffer, file, line, func, fmt, args);
+    sprintf(buffer, "%s(%d) %s() : %s\n", file, line, func, fmt);
+    vfprintf(stderr, buffer, args);
 }
 
 /*

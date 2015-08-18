@@ -606,7 +606,7 @@ Node *pr(Node *node)
 Node *PRINT(Node *node)
 {
     if(!curr)
-        writer_curr(writer(stdout));
+        writer_curr(writer_stderr());
     writer_print(print(node));
     return nil;
 }
@@ -617,7 +617,7 @@ Node *PRINT(Node *node)
 Node *PR(Node *node)
 {
     if(!curr)
-        writer_curr(writer(stdout));
+        writer_curr(writer_stderr());
     writer_print(pr(node));
     return nil;
 }
@@ -628,7 +628,7 @@ Node *PR(Node *node)
 Node *PRINTLN(Node *node)
 {
     if(!curr)
-        writer_curr(writer(stdout));
+        writer_curr(writer_stderr());
     writer_print(print(node));
     writer_nl();
     return nil;
@@ -640,7 +640,7 @@ Node *PRINTLN(Node *node)
 Node *PRN(Node *node)
 {
     if(!curr)
-        writer_curr(writer(stdout));
+        writer_curr(writer_stderr());
     writer_print(pr(node));
     writer_nl();
     return nil;

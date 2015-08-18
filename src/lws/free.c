@@ -63,21 +63,21 @@ Node *unlink_node(Node *node)
             if(node == first_node &&
                 node == last_node)
                 first_node = last_node = NULL;
-             else if(first_node == node)
-             {
+            else if(first_node == node)
+            {
                 first_node = node->next_node;
                 first_node->previous_node = NULL;
-             }
-             else if(last_node == node)
-             {
+            }
+            else if(last_node == node)
+            {
                 last_node = node->previous_node;
                 last_node->next_node = NULL;
-             }
-             else
-             {
+            }
+            else
+            {
                 node->next_node->previous_node = node->previous_node;
                 node->previous_node->next_node = node->next_node;
-             }
+            }
 #endif
             FREE(node);
         }

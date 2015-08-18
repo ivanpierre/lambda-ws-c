@@ -94,6 +94,8 @@ void test_string2()
 */
 void test_string3()
 {
+    ERROR("Essai d'erreur en tout sens %d\n", 123);
+
     banner();
     print_stack_trace();
 
