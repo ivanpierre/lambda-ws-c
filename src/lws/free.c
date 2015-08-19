@@ -38,7 +38,7 @@ static bool unlinkable(Node *node)
 */
 Node *link_node(Node *node)
 {
-    fprintf(stderr, "linking %s\n", str_type(node->type));
+    TRACE("linking %s", str_type(node->type));
     if(!unlinkable(node))
         node->occurrences++;
     return node;
@@ -51,35 +51,39 @@ Node *link_node(Node *node)
 */
 Node *unlink_node(Node *node)
 {
-    fprintf(stderr, "unlinking %s\n", str_type(node->type));
+    TRACE("unlinking %s", str_type(node->type));
     if(!unlinkable(node))
     {
         if(node->occurrences)
             node->occurrences--;
         if(!node->occurrences)
         {
-            fprintf(stderr, "freeing %s\n", str_type(node->type));
+            TRACE("freeing %s", str_type(node->type));
 #ifdef DEBUG_ALLOC
             if(node == first_node &&
                 node == last_node)
                 first_node = last_node = NULL;
             else if(first_node == node)
             {
+                ASSERT(node->next_node, "Error in node memory management");
                 first_node = node->next_node;
                 first_node->previous_node = NULL;
             }
             else if(last_node == node)
             {
+                ASSERT(node->previous_node, "Error in node memory management");
                 last_node = node->previous_node;
                 last_node->next_node = NULL;
             }
             else
             {
+                ASSERT(node->next_node && node->previous_node, "Error in node memory management");
                 node->next_node->previous_node = node->previous_node;
                 node->previous_node->next_node = node->next_node;
             }
 #endif
             FREE(node);
+            node = NULL;
         }
     }
     return node;
@@ -219,19 +223,19 @@ bool init_node_list()
 
 void print_stack_trace()
 {
-    fprintf(stderr, "Stack trace\n");
-    fprintf(stderr, "-----------\n");
+    TRACE("Stack trace");
+    TRACE("-----------");
 #ifdef DEBUG_ALLOC
     Node *walk = first_node;
     int i = 1;
     while(walk)
     {
-        fprintf(stderr, "%d) %s %ld\n", i++, str_type(walk->type), walk->occurrences);
+        TRACE("%d) %s %ld", i++, str_type(walk->type), walk->occurrences);
         fflush(stderr);
         walk = walk->next_node;
     }
 #endif
-    fprintf(stderr, "-----------\n");
+    TRACE("-----------");
     fflush(stderr);
 }
 

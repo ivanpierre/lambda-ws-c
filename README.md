@@ -106,5 +106,6 @@ And it's a side project, so I can not always give to it intended time ;)
 ## Licence
 For now :
 
-- Eclipse Public License - v 1.0 for the code. See [Licence file](LICENCE).
-- CC creative common for documentation.
+- GNU General Public Licence - v 3.0 for the code. See http://www.gnu.org/licenses/gpl.html.
+- Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0) for documentation. http://creativecommons.org/licenses/by-sa/3.0/
+

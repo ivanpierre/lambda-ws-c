@@ -26,8 +26,23 @@ void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
     va_start(args, fmt);
     va_start(args, fmt);
 
-    sprintf(buffer, "%s(%d) %s() : %s\n", file, line, func, fmt);
+    sprintf(buffer, "ERROR !!!! %s(%d) %s() : %s\n", file, line, func, fmt);
     vfprintf(stderr, buffer, args);
+    fflush(stderr);
+}
+
+// Error* function
+void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...)
+{
+    char buffer[4000];
+    va_list args;
+    va_start(args, fmt);
+    va_start(args, fmt);
+
+    // sprintf(buffer, "%s(%d) %s() : %s\n", file, line, func, fmt);
+    sprintf(buffer, "            %s\n", fmt);
+    vfprintf(stdout, buffer, args);
+    fflush(stdout);
 }
 
 /*
@@ -150,7 +165,7 @@ String str_type(NodeType type)
     int i = 0;
     for(;i < INVALID; i++)
         {
-        // fprintf(stderr, "type = %ld, %ld = %d = %s\n", type, (1l << i), i + 1, str_types[i + 1]);
+        // TRACE("type = %ld, %ld = %d = %s\n", type, (1l << i), i + 1, str_types[i + 1]);
         if((1l << i) & type)
             break;
         }
@@ -188,7 +203,7 @@ static Node *init_node(Node *node, NodeType type)
 */
 Node *NEW(NodeType type_of_node)
 {
-	fprintf(stderr, "fait nouveau node %s %ld\n", str_type(type_of_node), type_of_node);
+	TRACE("fait nouveau node %s %ld", str_type(type_of_node), type_of_node);
     Node *new = malloc(sizeof(Node));
 
     ASSERT(new, "allocation of node of type %s", str_type(type_of_node));
@@ -198,12 +213,10 @@ Node *NEW(NodeType type_of_node)
     new = init_node(new, type_of_node); // init_node does link
     if(!new)
     {
-    	fprintf(stderr, "Erreur niouveau Node %s\n", str_type(type_of_node));
-
         free(tmp);
         ABORT("initialisation of node of type %s", str_type(type_of_node));
     }
-	fprintf(stderr, "Node %s créé\n____________\n", str_type(new->type));
+	TRACE("Node %s créé", str_type(new->type));
     return new;
 }
 

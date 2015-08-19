@@ -74,8 +74,8 @@ Node *string_sprintf(char *fmt, ...)
     if(!formated)
         return string_allocate("cannot format string");
 
-    fprintf(stderr, "Formatt = %s'\n", fmt);
-    fprintf(stderr, "Formatted String = %s'\n", formated);
+    // TRACE("Formatt = %s'", fmt);
+    // TRACE("Formatted String = %s'", formated);
     return string(formated);
 }
 

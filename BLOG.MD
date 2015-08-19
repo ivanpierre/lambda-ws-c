@@ -1,4 +1,12 @@
 #BLOG (just what happens)
+##18 aug 2015
+- [X] Don't close stdout and stderr. It really close them... :D
+- [X] Complete review of writer for allocations and unallocations.
+- [X] Bad thought, function doesen't unalloc arguments, only temporary values used to proceed with
+its functions. Assigning a node to a variable mean we link it. And end of scope for this variable means
+that we unlink it.
+- [X] Generalize TRACE function for debugging reasons.
+
 ##17 aug 2015
 - [X] Closing the writer and release ressources.
 - [X] Adding stdout and stderr.

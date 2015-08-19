@@ -17,12 +17,18 @@
 */
 extern struct Node *error_node;
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
+void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
 
 
 
 #define ERROR(fmt, ...) \
     { \
         ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+    }
+
+#define TRACE(fmt, ...) \
+    { \
+        TRACE_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
     }
 
 #define ABORT(fmt, ...) \

@@ -44,7 +44,7 @@ static Writer *GET_WRITER(Node *node)
 */
 Node *writer(FILE *file)
 {
-    fprintf(stderr, "create writer %ld\n", WRITER);
+    TRACE("create writer %ld", WRITER);
     Node *new_writer = NEW(WRITER);
     new_writer->val.compl = malloc(sizeof(Writer));
     GET_WRITER(new_writer)->file = file;
@@ -98,7 +98,7 @@ FILE *writer_file(Node *node)
 Node *writer_curr(Node *node)
 {
     if(curr != NULL)
-        curr = unlink_node(curr);
+        curr = writer_curr_close(curr);
     return curr = node;
 }
 
@@ -112,6 +112,7 @@ Node *writer_curr_close()
         unlink_node(curr);
         curr = NULL;
     }
+
     return nil;
 }
 
@@ -121,9 +122,11 @@ Node *writer_curr_close()
 Node *writer_print(Node *node)
 {
     String str = GET_STRING(node);
+
     fprintf(writer_file(curr), "%s", str);
     fflush(writer_file(curr));
-    unlink_node(node);
+    free(str);
+
     return nil;
 }
 
@@ -138,14 +141,27 @@ Node *writer_nl()
 }
 
 /*
+    Flush current output
+*/
+Node *writer_flush()
+{
+    fflush(writer_file(curr));
+    return nil;
+}
+
+/*
     Free writer and close file
 */
 Node *writer_free(Node *node)
 {
     // close the file, standard files will not be closed
-    fprintf(stderr, "Closing writer %ld\n", WRITER);
-    fflush(writer_file(curr));
-    fclose(writer_file(curr));
+    TRACE("Closing writer %ld", WRITER);
+
+    FILE *file = writer_file(curr);
+    fflush(file);
+    if(file != stderr && file != stdout)
+        fclose(writer_file(curr));
+
     free(GET_WRITER(node));
     free(node);
     return nil;
@@ -168,7 +184,6 @@ static Node *string_keyval(Node *node, bool map)
         res = string_sprintf("[%s %s]", k, v);
     free(v);
     free(k);
-    unlink_node(node);
     ASSERT(res, "Error printing keyval");
     return res;
 }
@@ -198,7 +213,7 @@ static char **get_array(Node *node)
         if(curr->type & KEYVAL )
             value = string_keyval(curr, node->type & MAP);
         else
-            value = PRINT(curr);
+            value = print(curr);
         str_res[i] = strdup(GET_STRING(value));
         unlink_node(value);
         unlink_node(curr);
@@ -206,12 +221,16 @@ static char **get_array(Node *node)
     return str_res;
 }
 
+/*
+    calculate the size of the string to display inner elements
+    There is at last one element
+*/
 static long list_size(long size, char *arr[])
 {
     long res = 0;
     for(int i = 0; i < size; i++)
         res += strlen(arr[i]) + 1; // space
-    return res + 1; // '\0'
+    return res; // '\0' on the last space
 }
 
 /*
@@ -226,13 +245,16 @@ static String collection_get_inner_content(Node *node)
 
     bool rev = node->type & LIST; // LIST is growing from head
     long size = collection_size(node);
-    char **str_res = get_array(node);
-    if(!str_res)
+    if(size <= 0)
         return strdup("");
 
+    char **str_res = get_array(node);
+    ASSERT(str_res, "reasding the elements of inner list");
     long str_size = list_size(size, str_res);
+
     char *string_res = malloc(sizeof(char) * str_size);
     string_res[0] = '\0';
+
     for(long i = rev ? size - 1 : 0;
                  rev ? i >=0 : i < size;
                  rev ? i-- : i++)
@@ -293,8 +315,6 @@ Node *string_reader(Node *node)
     ASSERT(node, "string_reader : null environment");
     ASSERT_TYPE(node, READER, "string_env : Bad type %s", str_type(node->type));
     return string_sprintf("<%s FILE*=?>",
-//						   node->val.function->is_macro ? "yes" : "no",
-//						   node->val.function->is_special ? "yes" : "no",
                            str_type(FUNCTION));
 }
 
@@ -305,21 +325,21 @@ Node *string_var(Node *node)
 {
     ASSERT(node, "null var");
     ASSERT_TYPE(node, VAR, "Bad type %s", str_type(node->type));
-    String sym = GET_ELEM_STRING(node, &var_symbol);
+
     Node *res = NULL;
 
+    String sym = GET_ELEM_STRING(node, &var_symbol);
     if(FALSE_Q_(var_bound_Q_(node)))
     {
         res = string_sprintf("<%s symbol*=%s unbound>", sym);
-        free(sym);
     }
     else
     {
         String val = GET_ELEM_STRING(node, &var_value);
         res = string_sprintf("<%s symbol*=%s value=%s>", sym);
         free(val);
-        free(sym);
     }
+    free(sym);
 
     return res;
 }
@@ -332,17 +352,20 @@ static Node *string_env(Node *node)
 {
     ASSERT(node, "null environment");
     ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
+
     Node *map = env_map(node);
     if(map)
     {
         Node *map_str = PRINT(map);
+        unlink_node(map);
+
         Node *res = string_sprintf("<%s map=%s>",
                                     str_type(ENVIRONMENT),
                                     GET_STRING(map_str));
         unlink_node(map_str);
-        unlink_node(map);
         return res;
     }
+
     return string_sprintf("<%s map=null>", str_type(ENVIRONMENT));
 }
 
@@ -354,6 +377,7 @@ static Node *string_function(Node *node)
 {
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, CALLABLE, "Bad type %s", str_type(node->type));
+
     Node *res = NULL;
     String closure = GET_ELEM_STRING(node, &function_closure);
     String args = GET_ELEM_STRING(node, &function_args);
@@ -379,7 +403,7 @@ static Node *string_function(Node *node)
 
     free(args);
     free(closure);
-    unlink_node(node);
+
     return res;
 }
 
@@ -435,7 +459,6 @@ static Node *string_named_formated(Node *node)
             break;;
     }
     free(compl_str);
-    unlink_node(node);
 
     ASSERT(formated, "cannot format node");
     return formated;
@@ -480,10 +503,13 @@ static Node *string_decimal(Node *node)
 */
 static Node *string_formated(Node *node)
 {
-    fprintf(stderr, "string_formatted = '%s'", node->val.compl);
+    TRACE("string_formatted = '%s'", node->val.compl);
     ASSERT_TYPE(node, STRING, "node is not a string");
+
     String str = GET_STRING(node);
     Node *formated = string_sprintf("\"%s\"",str);
+    free(str);
+
     ASSERT(formated, "cannot format node");
     return formated; // formated allocated
 }
@@ -518,12 +544,11 @@ Node *print_node(Node *node, bool readable)
             if(readable)
             {
                 res = string_formated(node);
-                print_stack_trace();
                 break;
             }
             else
             {
-                // res will be node and node will be unlinked...
+                // res will be node and this node will be unlinked...
                 res = link_node(node);
 
                 break;
@@ -575,7 +600,6 @@ Node *print_node(Node *node, bool readable)
             break;
     }
 
-    unlink_node(node);
     return res;
 }
 
@@ -607,7 +631,11 @@ Node *PRINT(Node *node)
 {
     if(!curr)
         writer_curr(writer_stderr());
-    writer_print(print(node));
+
+    Node *pr_node = print(node);
+    writer_print(pr_node);
+    unlink_node(pr_node);
+
     return nil;
 }
 
@@ -617,8 +645,12 @@ Node *PRINT(Node *node)
 Node *PR(Node *node)
 {
     if(!curr)
-        writer_curr(writer_stderr());
-    writer_print(pr(node));
+        writer_curr(writer_stdout());
+
+    Node *pr_node = pr(node);
+    writer_print(pr_node);
+    unlink_node(pr_node);
+
     return nil;
 }
 
@@ -628,8 +660,12 @@ Node *PR(Node *node)
 Node *PRINTLN(Node *node)
 {
     if(!curr)
-        writer_curr(writer_stderr());
-    writer_print(print(node));
+        writer_curr(writer_stdout());
+
+    Node *pr_node = print(node);
+    writer_print(pr_node);
+    unlink_node(pr_node);
+
     writer_nl();
     return nil;
 }
@@ -640,9 +676,13 @@ Node *PRINTLN(Node *node)
 Node *PRN(Node *node)
 {
     if(!curr)
-        writer_curr(writer_stderr());
-    writer_print(pr(node));
+        writer_curr(writer_stdout());
+
+    Node *pr_node = pr(node);
+    writer_print(pr_node);
+    unlink_node(pr_node);
+
     writer_nl();
-    return nil;
+    return node;
 }
 
