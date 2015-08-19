@@ -26,7 +26,7 @@ void test_string1()
     // node = string("hgfjhgfjhgfjhgfjhgfhj"); // The string will be deallocated
 
     // marche
-    Node *node = string_allocate(("hgfjhgfjhgfjhgfjhgfhj"));        // this do the strdup internally
+    Node *node = string_allocate("hgfjhgfjhgfjhgfjhgfhj");        // this do the strdup internally
     Node *node2 = string(strdup("hgfjhgfjhgfjhgfjhgfhj"));          // ok nice
     Node *node3 = string_allocate(strdup("hgfjhgfjhgfjhgfjhgfhj")); // Two time allocated
     print_stack_trace();
@@ -75,7 +75,7 @@ void test_string2()
 
     // creation string
     // workse
-    Node *node = string_allocate(("hgfjhgfjhgfjhgfjhgfhj"));
+    Node *node = string_allocate("hgfjhgfjhgfjhgfjhgfhj");
     Node *node2 = link_node(node);
     Node *node3 = link_node(node);
     print_stack_trace();
@@ -124,7 +124,7 @@ void test_string3()
 
     // creation string
     // workse
-    Node *node = string_allocate(("hgfjhgfjhgfjhgfjhgfhj"));
+    Node *node = string_allocate("hgfjhgfjhgfjhgfjhgfhj");
     Node *node2 = link_node(node);
     Node *node3 = link_node(node2);
 
@@ -137,6 +137,20 @@ void test_string3()
     print_stack_trace();
 
     PRN(node3);
+    print_stack_trace();
+
+    PRINTLN(nil);
+    print_stack_trace();
+
+    PRINTLN(false);
+    print_stack_trace();
+
+    PRINTLN(true);
+    print_stack_trace();
+
+    unlink_node(node3);
+    unlink_node(node);
+    unlink_node(node2);
     print_stack_trace();
 
     writer_curr_close();

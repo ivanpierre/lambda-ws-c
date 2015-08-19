@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include "nodes.h"
 #include "global.h"
 #include "free.h"
 #include "number.h"
@@ -24,8 +25,8 @@ void test_integer()
     PRINT(node);
     print_stack_trace();
 
-    PRINT(node);
-    print_stack_trace();
+    // PRINT(node);
+    // print_stack_trace();
 
     unlink_node(node);
     print_stack_trace();
@@ -78,8 +79,8 @@ void test_integer3()
 
     // creation integer
     Node *node = integer(123l);
-    Node *node2 = node;
-    Node *node3 = node2;
+    Node *node2 = link_node(node);
+    Node *node3 = link_node(node2);
     print_stack_trace();
 
     PRINT(node2);
@@ -97,9 +98,9 @@ void test_integer3()
     PRINT(node2);
     print_stack_trace();
 
-    unlock_node(node2)
-    unlock_node(node3)
-    unlock_node(node)
+    unlink_node(node2);
+    unlink_node(node3);
+    unlink_node(node);
     print_stack_trace();
 
     writer_curr_close();
@@ -191,8 +192,8 @@ void test_decimal3()
 
     // creation decimal
     Node *node = decimal(123.345);
-    Node *node2 = node;
-    Node *node3 = node2;
+    Node *node2 = link_node(node);
+    Node *node3 = link_node(node2);
     print_stack_trace();
 
     PRINT(node);

@@ -65,7 +65,7 @@ Node *eval_node(Node *node, Node *env)
 
         case IINVALID :
         default:
-            ERROR("cannot evaluate '%s0 of type '%s'", GET_STRING(pr(node)), str_type(node->type));
+            ERROR("cannot evaluate '%s' of type '%s'", GET_STRING(pr(node)), str_type(node->type));
             break;
     }
     unlink_node(node);

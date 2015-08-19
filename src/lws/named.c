@@ -39,16 +39,29 @@ static Node *named_base(Node *ns, Node *name, NodeType type)
 {
     ASSERT(ns, "namespace is null");
     ASSERT(name, "name is null");
-    ASSERT_TYPE(ns, SYMBOL | STRING | NAMESPACE, "namespace bad type");
+    ASSERT_TYPE(ns, SYMBOL | STRING | NAMESPACE | NIL, "namespace bad type");
     ASSERT_TYPE(name, SYMBOL | STRING, "name bad type");
 
     Node *node = NEW(type);
 
-    if(!node)
-        return NULL;
+    ASSERT(node, "Cannot create %s", str_type(node->type));
+
+    node->val.compl = malloc(sizeof(Named));
 
     GET_NAMED(node)->ns = ns;
-    GET_NAMED(node)->name = name; // allocate place for the string
+    switch(log_type(name->type))
+    {
+        case ISYMBOL:
+            GET_NAMED(node)->name = link_node(named_name(name)); // allocate place for the string
+            break;
+
+        case ISTRING:
+            GET_NAMED(node)->name = link_node(name); // allocate place for the string
+            break;
+
+        default:
+            ABORT("name bad type");
+    }
 
     return node; // create node does the link
 }
@@ -90,8 +103,8 @@ Node *keyword_Q_(Node *node)
 */
 Node *named_name(Node *node)
 {
-    ASSERT_TYPE(node, SYMBOL|KEYWORD, "node is neither a symbol nor keyword");
-    return link_node(GET_NAMED(node)->name); // alloc node
+    ASSERT_TYPE(node, NAMED, "node is neither a symbol nor keyword");
+    return GET_NAMED(node)->name; // alloc node
 }
 
 /*
@@ -99,8 +112,8 @@ Node *named_name(Node *node)
 */
 Node *named_ns(Node *node)
 {
-    ASSERT_TYPE(node, SYMBOL|KEYWORD, "node is neither a symbol nor keyword");
-    return link_node(GET_NAMED(node)->ns); // alloc node
+    ASSERT_TYPE(node, NAMED, "node is neither a symbol nor keyword");
+    return GET_NAMED(node)->ns; // alloc node
 }
 
 /*
@@ -125,5 +138,5 @@ Node *named_free(Node *node)
     unlink_node(named_name(node));
     free(node->val.compl);
     free(node);
-    return node;
+    return NULL;
 }

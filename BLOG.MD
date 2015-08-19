@@ -1,4 +1,7 @@
 #BLOG (just what happens)
+##20 aug 2015
+Symbol OK. But it gives some problem in the way to be sure that all object creation and deletion
+will be matched. Hammock design... :D
 ##18 aug 2015
 - [X] Don't close stdout and stderr. It really close them... :D
 - [X] Complete review of writer for allocations and unallocations.
@@ -6,6 +9,11 @@
 its functions. Assigning a node to a variable mean we link it. And end of scope for this variable means
 that we unlink it.
 - [X] Generalize TRACE function for debugging reasons.
+- [X] write_string and write_formated false unallocation of string.
+- [X] nil, true, false OK
+- [X] Missing allocation of named in named_base.
+- [X] GET_STRING return a duplicate of the string, as this is a reference that is quite always
+unallocated.
 
 ##17 aug 2015
 - [X] Closing the writer and release ressources.
@@ -13,7 +21,6 @@ that we unlink it.
 - [X] Decimal memory leak.
 - [X] String desallocated 2 times :(
 - [X] Closing writer keep old config...
-
 
 ##17 aug 2015
 Ok, that was a little painful to manage all the different stuff. Now as it's a little stabilized, we proceed to the
@@ -25,7 +32,6 @@ it's possible to monitor activities. Some points to overview.
 - As soon as possible put the environment active to write the first functions.
 - A tinming function should be put in place to see everwhelmig usage of ressouces.
 - as soon it's done, proceed with the writing of tzhe core functions and write a repl.
-
 
 ##10 aug 2015
 - Reformat all names of structure source.e, each one manage a structure.

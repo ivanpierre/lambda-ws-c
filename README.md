@@ -7,10 +7,6 @@ You can see the github https://github.com/FunctionalRomandie/LambdaCalculusWorks
 
 - [Goals](GOALS.MD)
 - [Implementation](IMPLEMENTATION.MD)
- - [Library](LWS.MD)
- - [Clojure](CLOJURE.MD)
- - [Basic](BASIC.MD)
- - [Java](JAVA.MD)
 - [Garbage collection](GARBAGE.MD)
 - Code generation (TBD)
 - [Project requirements](REQUIREMENTS)
@@ -29,7 +25,7 @@ language). THE AST only give access to basis computational concepts all language
 
 For the AST point of view, the two following pieces of code here are quite the same :
 
-```bas
+```.bas
     10 If a = 0 Then Print "coucou" Else Print "caca"
 ```
 ```.clj

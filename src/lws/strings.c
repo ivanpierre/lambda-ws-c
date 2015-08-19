@@ -22,7 +22,7 @@ String GET_STRING(Node *node)
 {
     ASSERT(node, "null value")
     ASSERT_TYPE(node, STRING, "get szring grom non string");
-    return (String)(node->val.compl);
+    return strdup(node->val.compl);
 }
 
 /*
@@ -74,8 +74,8 @@ Node *string_sprintf(char *fmt, ...)
     if(!formated)
         return string_allocate("cannot format string");
 
-    // TRACE("Formatt = %s'", fmt);
-    // TRACE("Formatted String = %s'", formated);
+    TRACE("Formatt = %s'", fmt);
+    TRACE("Formatted String = %s'", formated);
     return string(formated);
 }
 

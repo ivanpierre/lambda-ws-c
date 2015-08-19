@@ -39,8 +39,8 @@ void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...)
     va_start(args, fmt);
     va_start(args, fmt);
 
-    // sprintf(buffer, "%s(%d) %s() : %s\n", file, line, func, fmt);
-    sprintf(buffer, "            %s\n", fmt);
+                        sprintf(buffer, "            %s(%d) %s() : %s\n", file, line, func, fmt);
+    // sprintf(buffer, "            %s\n", fmt);
     vfprintf(stdout, buffer, args);
     fflush(stdout);
 }

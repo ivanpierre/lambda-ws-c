@@ -124,8 +124,8 @@ Node *writer_print(Node *node)
     String str = GET_STRING(node);
 
     fprintf(writer_file(curr), "%s", str);
-    fflush(writer_file(curr));
     free(str);
+    fflush(writer_file(curr));
 
     return nil;
 }
@@ -214,7 +214,7 @@ static char **get_array(Node *node)
             value = string_keyval(curr, node->type & MAP);
         else
             value = print(curr);
-        str_res[i] = strdup(GET_STRING(value));
+        str_res[i] = GET_STRING(value);
         unlink_node(value);
         unlink_node(curr);
     }
@@ -359,9 +359,11 @@ static Node *string_env(Node *node)
         Node *map_str = PRINT(map);
         unlink_node(map);
 
+        String map_str_str = GET_STRING(map_str);
         Node *res = string_sprintf("<%s map=%s>",
                                     str_type(ENVIRONMENT),
-                                    GET_STRING(map_str));
+                                    map_str_str);
+        free(map_str_str);
         unlink_node(map_str);
         return res;
     }
@@ -419,19 +421,17 @@ static String string_named_interned(Node *node)
     Node *complete = NULL;
     if(FALSE_Q_(ns))
     {
-        complete = name;
+        complete = link_node(name);
     }
     else
     {
         String ns_str = GET_STRING(ns);
         String name_str = GET_STRING(name);
-        unlink_node(name);
 
         complete = string_sprintf("%s/%s", ns_str, name_str);
         free(ns_str);
         free(name_str);
     }
-    unlink_node(ns);
 
     String compl_str = GET_STRING(complete);
     unlink_node(complete);
@@ -509,7 +509,6 @@ static Node *string_formated(Node *node)
     String str = GET_STRING(node);
     Node *formated = string_sprintf("\"%s\"",str);
     free(str);
-
     ASSERT(formated, "cannot format node");
     return formated; // formated allocated
 }
@@ -550,7 +549,6 @@ Node *print_node(Node *node, bool readable)
             {
                 // res will be node and this node will be unlinked...
                 res = link_node(node);
-
                 break;
             }
 
@@ -630,7 +628,7 @@ Node *pr(Node *node)
 Node *PRINT(Node *node)
 {
     if(!curr)
-        writer_curr(writer_stderr());
+        writer_curr(writer_stdout());
 
     Node *pr_node = print(node);
     writer_print(pr_node);

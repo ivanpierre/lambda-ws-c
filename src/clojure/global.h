@@ -9,6 +9,7 @@
 
 void test_number();
 void test_string();
+void test_symbol();
 
 extern Node *node;
 extern Node *node2;

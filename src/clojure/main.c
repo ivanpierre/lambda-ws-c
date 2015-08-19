@@ -6,6 +6,7 @@
 */
 
 #include <stdio.h>
+#include "nodes.h"
 #include "global.h"
 
 /*
@@ -13,8 +14,9 @@
 */
 int main(int argc, const char* argv[])
 {
-    test();
-    test_string();
+    // test_number();
+    // test_string();
+    test_symbol();
     return 0;
 }
 
