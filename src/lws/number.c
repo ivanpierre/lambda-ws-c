@@ -17,8 +17,8 @@
 */
 Node *integer(Integer value)
 {
-	TRACE("Va faire %s", str_type(INTEGER));
-	Node *node = NEW(INTEGER);
+	TRACE("Va faire %s", str_type(IINTEGER));
+	Node *node = NEW(IINTEGER);
 	ASSERT(node, "Error creating integer");
 	node->val.integer = value;
 	TRACE("%s fait !", str_type(node->type));
@@ -38,7 +38,7 @@ Integer number_integer(Node *node)
 */
 Node *integer_Q_(Node *node)
 {
-	return (node && node->type & INTEGER) ? true : false;
+	return (node && node->type == IINTEGER) ? true : false;
 }
 
 ////// Decimals
@@ -47,8 +47,8 @@ Node *integer_Q_(Node *node)
 */
 Node *decimal(Decimal value)
 {
-	TRACE("Va faire %s", str_type(DECIMAL));
-	Node *node = NEW(DECIMAL);
+	TRACE("Va faire %s", str_type(IDECIMAL));
+	Node *node = NEW(IDECIMAL);
 	ASSERT(node, "Error creating decimal");
 	node->val.decimal = value;
 	TRACE("%s fait !", str_type(node->type));
@@ -68,7 +68,7 @@ Decimal number_decimal(Node *node)
 */
 Node *decimal_Q_(Node *node)
 {
-	return (node && node->type & DECIMAL) ? true : false;
+	return (node && node->type == IDECIMAL) ? true : false;
 }
 
 /*

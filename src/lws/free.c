@@ -28,7 +28,7 @@ static Node *FREE(Node *node);
 */
 static bool unlinkable(Node *node)
 {
-    return node && node->type & (NIL | TRUE | FALSE);
+    return node && exp_type(node->type) & (NIL | TRUE | FALSE);
 }
 
 /*
@@ -112,7 +112,7 @@ static Node *free_node(Node *node)
 {
     ASSERT(node, "free_node : NULL node");
 
-    switch(log_type(node->type))
+    switch(node->type)
     {
         case INIL :
         case ITRUE :

@@ -71,7 +71,7 @@ Node *function_body(Node *node)
     return link_node(res);
 }
 
-void *func(Node *node)
+void *function_func(Node *node)
 {
     void *res = GET_FUNCTION(node)->func.func;
     if(!res)

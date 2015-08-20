@@ -32,7 +32,7 @@ static Node *string_base(String value)
 {
     ASSERT(value, "value is null");
 
-    Node *node = NEW(STRING);
+    Node *node = NEW(ISTRING);
 
     if(!node)
         return NULL;
@@ -84,7 +84,7 @@ Node *string_sprintf(char *fmt, ...)
 */
 Node *string_Q_(Node *node)
 {
-    return (node && node->type & STRING) ? true : false;
+    return (node && node->type == ISTRING) ? true : false;
 }
 
 /*

@@ -23,7 +23,7 @@ Node *eval_node(Node *node, Node *env)
 
     Node *res = NULL;
 
-    switch(log_type(node->type))
+    switch(node->type)
     {
         case ISYMBOL :
             res = symbol_eval(node, env);

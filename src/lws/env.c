@@ -65,7 +65,7 @@ Node *env_free(Node *node)
 */
 Node *env(Node *previous, Node *map)
 {
-	Node *node = NEW(ENVIRONMENT); // Create linked node
+	Node *node = NEW(IENVIRONMENT); // Create linked node
 
 	if(!node)
 		ABORT("cannor create new environment");

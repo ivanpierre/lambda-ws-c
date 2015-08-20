@@ -14,8 +14,8 @@
 */
 int main(int argc, const char* argv[])
 {
-    // test_number();
-    // test_string();
+    test_number();
+    test_string();
     test_symbol();
     return 0;
 }

@@ -36,7 +36,7 @@ Node *var(Node *symbol, Node *value)
     ASSERT(symbol, "Null symbol");
     ASSERT_TYPE(symbol, SYMBOL, "Var not referencing a Symbol");
 
-    Node *node = NEW(VAR);
+    Node *node = NEW(IVAR);
     GET_VAR(node)->symbol = symbol;
     GET_VAR(node)->value = value;
 

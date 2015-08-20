@@ -55,12 +55,12 @@ Node *collection_free(Node *node)
 */
 long collection_size(Node *node)
 {
-    if(!(node && (node->type & (SEQUABLE | NIL))))
+    if(!(node && (exp_type(node->type) & (SEQUABLE | NIL))))
     {
         ERROR("get size of bad type : %s", str_type(node->type));
         return -1;
     }
-    if(node->type & NIL)
+    if(node->type == INIL)
         return 0;
     return GET_COLLECTION(node)->size;
 }
@@ -83,9 +83,9 @@ Node *collection_first(Node *node)
 {
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, COLLECTION, "not a coll %s", str_type(node->type));
-    if(node->type & NIL || GET_COLLECTION(node)->size == 0)
+    if(node->type == INIL || GET_COLLECTION(node)->size == 0)
         return nil;
-    if(node->type & LIST)
+    if(node->type == ILIST)
         return link_node(GET_COLLECTION(node)->nodes[GET_COLLECTION(node)->size - 1]);
     else
         return link_node(GET_COLLECTION(node)->nodes[0]);
@@ -99,9 +99,9 @@ Node *collection_last(Node *node)
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, COLLECTION,
                 "not a coll %s", str_type(node->type));
-    if(node->type & NIL || GET_COLLECTION(node)->size == 0)
+    if(node->type == INIL || GET_COLLECTION(node)->size == 0)
         return nil;
-    if(node->type & LIST)
+    if(node->type == ILIST)
         return link_node(GET_COLLECTION(node)->nodes[0]);
     else
         return link_node(GET_COLLECTION(node)->nodes[GET_COLLECTION(node)->size - 1]);
@@ -115,11 +115,11 @@ Node *collection_nth(Node *node, long index)
     ASSERT(node, "null pointer");
     ASSERT_TYPE(node, COLLECTION | NIL,
                 "not a coll %s", str_type(node->type));
-    ASSERT(node->type & NIL || index < GET_COLLECTION(node)->size || index >= 0,
+    ASSERT(node->type == INIL || index < GET_COLLECTION(node)->size || index >= 0,
             "Index out of bound");
-    if(node->type & NIL || GET_COLLECTION(node)->size == 0)
+    if(node->type == INIL || GET_COLLECTION(node)->size == 0)
         return nil;
-    if(node->type & LIST)
+    if(node->type == ILIST)
         return link_node(GET_COLLECTION(node)->nodes[GET_COLLECTION(node)->size - index - 1]);
     else
         return link_node(GET_COLLECTION(node)->nodes[index]);
@@ -178,9 +178,9 @@ Node *collection_eval(Node *node, Node *env)
 /*
     create a new empty collection
 */
-Node *collection(NodeType type,  long alloc)
+Node *collection(enum TYPE type,  long alloc)
 {
-    ASSERT(type & COLLECTION, "bad type %s", str_type(type));
+    ASSERT(exp_type(type) & COLLECTION, "bad type %s", str_type(type));
     Node *node = NEW(type);
     ASSERT(node, "Error alocating collection node");
     if(collection_malloc(node, alloc))

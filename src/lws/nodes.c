@@ -48,45 +48,45 @@ void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...)
 /*
     type of nodes
 */
-const NodeType NIL             =   1l;       // Constant nil value
-const NodeType TRUE            =   1l << 1;  // Constant true value
-const NodeType FALSE           =   1l << 2;  // Constant false value
-const NodeType SYMBOL          =   1l << 3;  // Symbol that can be binded in ENVIRONMENT
-const NodeType KEYWORD         =   1l << 4;  // Constant symbol :key evaluate to itself
-const NodeType INTEGER         =   1l << 5;  // Integer numeric values
-//const NodeType FRACTION        =   1l << 6;  // Fractional numeric values
-const NodeType DECIMAL         =   1l << 7;  // floating numeric values
-const NodeType STRING          =   1l << 8;  // String
-const NodeType LIST            =   1l << 9; // reversed array (growing from head)
-const NodeType ARRAY           =   1l << 10; // ARRAY
-const NodeType MAP             =   1l << 11; // Mapped array of KEYVAL
-const NodeType SET             =   1l << 12; // Mapped array of keys
-const NodeType SEQ             =   1l << 13; // Walker on a sequence
-const NodeType CONS            =   1l << 14; // Walker on two SEQUABLES
-const NodeType LAZY            =   1l << 15; // Walker on a lazy sequence
-const NodeType NAMESPACE       =   1l << 16; // Interning place for global symbols
-const NodeType ENV_STACK       =   1l << 17; // is a list of ENVIRONMENT
-const NodeType ENVIRONMENT     =   1l << 18; // is a map of nodes; mapped by SYMBOL
-const NodeType API             =   1l << 19; // is a map of FUNCTION; mapped by args (ARRAY)
-const NodeType FUNCTION        =   1l << 20; // Function pointer
-const NodeType LAMBDA          =   1l << 21; // Body of language to evaluate
-const NodeType VAR             =   1l << 22; // Values of global vars (bind)
-//const NodeType REF             =   1l << 23; // CSP managed values
-//const NodeType FUTURE          =   1l << 24; // Asynchronously managed values
-//const NodeType AGENT           =   1l << 25; // Agent management through messages
-const NodeType READER          =   1l << 26; // Reader implemented in language
-const NodeType WRITER          =   1l << 27; // Writer implemented in language
-const NodeType KEYVAL          =   1l << 28; // Binding of key / values for MAP
-const NodeType INVALID         =        30l; // Self explaining... used not to go too far... :D
+const NodeType NIL             =   1l << INIL;          // Constant nil value
+const NodeType TRUE            =   1l << ITRUE;         // Constant true value
+const NodeType FALSE           =   1l << IFALSE;        // Constant false value
+const NodeType SYMBOL          =   1l << ISYMBOL;       // Symbol that can be binded in ENVIRONMENT
+const NodeType KEYWORD         =   1l << IKEYWORD;      // Constant symbol :key evaluate to itself
+const NodeType INTEGER         =   1l << IINTEGER;      // Integer numeric values
+const NodeType FRACTION        =   1l << IFRACTION;     // Fractional numeric values
+const NodeType DECIMAL         =   1l << IDECIMAL;      // floating numeric values
+const NodeType STRING          =   1l << ISTRING;       // String
+const NodeType LIST            =   1l << ILIST;         // reversed array (growing from head)
+const NodeType ARRAY           =   1l << IARRAY;        // ARRAY
+const NodeType MAP             =   1l << IMAP;          // Mapped array of KEYVAL
+const NodeType SET             =   1l << ISET;          // Mapped array of keys
+const NodeType SEQ             =   1l << ISEQ;          // Walker on a sequence
+const NodeType CONS            =   1l << ICONS;         // Walker on two SEQUABLES
+const NodeType LAZY            =   1l << ILAZY;         // Walker on a lazy sequence
+const NodeType NAMESPACE       =   1l << INAMESPACE;    // Interning place for global symbols
+const NodeType ENV_STACK       =   1l << IENV_STACK;    // is a list of ENVIRONMENT
+const NodeType ENVIRONMENT     =   1l << IENVIRONMENT;  // is a map of nodes; mapped by SYMBOL
+const NodeType API             =   1l << IAPI;          // is a map of FUNCTION; mapped by args (ARRAY)
+const NodeType FUNCTION        =   1l << IFUNCTION;     // Function pointer
+const NodeType LAMBDA          =   1l << ILAMBDA;       // Body of language to evaluate
+const NodeType VAR             =   1l << IVAR;          // Values of global vars (bind)
+const NodeType REF             =   1l << IREF;          // CSP managed values
+const NodeType FUTURE          =   1l << IFUTURE;       // Asynchronously managed values
+const NodeType AGENT           =   1l << IAGENT;        // Agent management through messages
+const NodeType READER          =   1l << IREADER;       // Reader implemented in language
+const NodeType WRITER          =   1l << IWRITER;       // Writer implemented in language
+const NodeType KEYVAL          =   1l << IKEYVAL;       // Binding of key / values for MAP
+const NodeType INVALID         =         IINVALID;      // Self explaining... used not to go too far... :D
 
-const NodeType    NUMBER          =   INTEGER | DECIMAL;
-const NodeType    NAMED           =   SYMBOL | KEYWORD;
-const NodeType    ITERABLE        =   LIST | ARRAY | SEQ;
-const NodeType    MAPPED          =   MAP | SET;
-const NodeType    COLLECTION      =   ITERABLE | MAPPED;
-const NodeType    SEQUABLE        =   COLLECTION | NIL;
-const NodeType    INDEXED         =   STRING | ARRAY;
-const NodeType    CALLABLE        =   FUNCTION | LAMBDA;
+const NodeType    NUMBER       =   INTEGER | DECIMAL;
+const NodeType    NAMED        =   SYMBOL | KEYWORD;
+const NodeType    ITERABLE     =   LIST | ARRAY | SEQ;
+const NodeType    MAPPED       =   MAP | SET;
+const NodeType    COLLECTION   =   ITERABLE | MAPPED;
+const NodeType    SEQUABLE     =   COLLECTION | NIL;
+const NodeType    INDEXED      =   STRING | ARRAY;
+const NodeType    CALLABLE     =   FUNCTION | LAMBDA;
 
 #ifdef DEBUG_ALLOC
     #define NEW_CONST(type) {type, 0l, NULL, NULL, {0}}
@@ -95,9 +95,9 @@ const NodeType    CALLABLE        =   FUNCTION | LAMBDA;
 #endif
 
 // global values
-static Node nil_val = NEW_CONST(NIL);
-static Node true_val = NEW_CONST(TRUE);
-static Node false_val = NEW_CONST(FALSE);
+static Node nil_val = NEW_CONST(INIL);
+static Node true_val = NEW_CONST(ITRUE);
+static Node false_val = NEW_CONST(IFALSE);
 Node *nil = &nil_val;
 Node *false = &false_val;
 Node *true = &true_val;
@@ -108,7 +108,6 @@ Node *true = &true_val;
 */
 static char            *str_types[] =
                             {
-                                "mheu",
                                 "nil",
                                 "true",
                                 "false",
@@ -147,36 +146,37 @@ static char            *str_types[] =
 
 /*
    get main type order
-*/
 enum TYPE log_type(NodeType type)
 {
     int i = 0;
     for(;i < INVALID; i++)
         if((1l << i) & type)
             break;
-    return i + 1;
+    return i;
+}
+*/
+
+/*
+   get main type order
+*/
+NodeType exp_type(enum TYPE type)
+{
+    return 1l << type;
 }
 
 /*
    get type name
 */
-String str_type(NodeType type)
+String str_type(enum TYPE type)
 {
-    int i = 0;
-    for(;i < INVALID; i++)
-        {
-        // TRACE("type = %ld, %ld = %d = %s\n", type, (1l << i), i + 1, str_types[i + 1]);
-        if((1l << i) & type)
-            break;
-        }
-    return str_types[i + 1];
+    return str_types[type];
 }
 
 /*
     First initialisation of an allocated node, first link to the data segment
     Return linked node or NIL
 */
-static Node *init_node(Node *node, NodeType type)
+static Node *init_node(Node *node, enum TYPE type)
 {
     node->type = type;
     node->occurrences = 0; // will be incremented on link
@@ -201,7 +201,7 @@ static Node *init_node(Node *node, NodeType type)
     Create a node
     Constructor, return linked
 */
-Node *NEW(NodeType type_of_node)
+Node *NEW(enum TYPE type_of_node)
 {
 	TRACE("fait nouveau node %s %ld", str_type(type_of_node), type_of_node);
     Node *new = malloc(sizeof(Node));
@@ -256,7 +256,7 @@ String GET_ELEM_STRING(Node *node, Node *(*func)(Node *))
 */
 bool FALSE_Q_(Node *node)
 {
-    return node->type & (NIL | FALSE);
+    return exp_type(node->type) & (NIL | FALSE);
 }
 
 /*

@@ -29,7 +29,7 @@ Node        *collection_reducel(Node *init, Node *(*fn)(Node *arg1, Node *arg2),
 Node        *collection_filter(Node *(*fn)(Node *node), Node *coll);
 Node        *collection_map(Node *(*fn)(Node *node), Node *coll);
 Node        *collection_map2(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
-Node        *collection(NodeType type, long alloc);
+Node        *collection(enum TYPE type, long alloc);
 Node        *collection_eval(Node *node, Node *env);
 Node        *list_eval(Node *node, Node *env);
 Node        *keyval_eval(Node *node, Node *env);

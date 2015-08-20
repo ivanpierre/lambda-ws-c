@@ -35,12 +35,12 @@ static Named *GET_NAMED(Node *node)
 /*
     Create a linked string, don't allocate space for the string
 */
-static Node *named_base(Node *ns, Node *name, NodeType type)
+static Node *named_base(Node *ns, Node *name, enum TYPE type)
 {
     ASSERT(ns, "namespace is null");
     ASSERT(name, "name is null");
-    ASSERT_TYPE(ns, SYMBOL | STRING | NAMESPACE | NIL, "namespace bad type");
-    ASSERT_TYPE(name, SYMBOL | STRING, "name bad type");
+    ASSERT_TYPE(ns, SYMBOL | STRING | NAMESPACE | NIL, "namespace bad type %s", str_type(ns->type));
+    ASSERT_TYPE(name, SYMBOL | STRING, "name bad type %s", str_type(name->type));
 
     Node *node = NEW(type);
 
@@ -49,7 +49,7 @@ static Node *named_base(Node *ns, Node *name, NodeType type)
     node->val.compl = malloc(sizeof(Named));
 
     GET_NAMED(node)->ns = ns;
-    switch(log_type(name->type))
+    switch(name->type)
     {
         case ISYMBOL:
             GET_NAMED(node)->name = link_node(named_name(name)); // allocate place for the string
@@ -71,7 +71,7 @@ static Node *named_base(Node *ns, Node *name, NodeType type)
 */
 Node *symbol(Node *ns, Node *name)
 {
-    return named_base(ns, name, SYMBOL); // make_string does the link
+    return named_base(ns, name, ISYMBOL); // make_string does the link
 }
 
 /*
@@ -79,7 +79,7 @@ Node *symbol(Node *ns, Node *name)
 */
 Node *keyword(Node *ns, Node *name)
 {
-    return named_base(ns, name, KEYWORD); // make_string does the link
+    return named_base(ns, name, IKEYWORD); // make_string does the link
 }
 
 /*
@@ -87,7 +87,7 @@ Node *keyword(Node *ns, Node *name)
 */
 Node *symbol_Q_(Node *node)
 {
-    return (node && node->type & SYMBOL) ? true : false;
+    return (node && node->type == ISYMBOL) ? true : false;
 }
 
 /*
@@ -95,7 +95,7 @@ Node *symbol_Q_(Node *node)
 */
 Node *keyword_Q_(Node *node)
 {
-    return (node && node->type & KEYWORD) ? true : false;
+    return (node && node->type == IKEYWORD) ? true : false;
 }
 
 /*

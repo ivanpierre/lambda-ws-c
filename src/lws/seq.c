@@ -36,12 +36,12 @@ Node *seq(long index, Node *coll)
 {
     Node *new_coll = NULL;
     // loop across seq if we make a seq from a seq until we find a collection
-    while(coll->type & SEQ)
+    while(coll->type == ISEQ)
     {
         /*
             We will manage the CONS, BUNDLE, etc. types
         */
-        switch(log_type(coll->type))
+        switch(coll->type)
         {
             case ISEQ:
                 new_coll = seq_coll(coll);
@@ -63,7 +63,7 @@ Node *seq(long index, Node *coll)
     }
 
     // create seq
-    Node *node = NEW(SEQ);
+    Node *node = NEW(ISEQ);
     ASSERT(node, "Creation of new seq");
     GET_SEQ(node)->index = index;
     GET_SEQ(node)->coll = coll;

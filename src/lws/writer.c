@@ -44,8 +44,8 @@ static Writer *GET_WRITER(Node *node)
 */
 Node *writer(FILE *file)
 {
-    TRACE("create writer %ld", WRITER);
-    Node *new_writer = NEW(WRITER);
+    TRACE("create writer %ld", IWRITER);
+    Node *new_writer = NEW(IWRITER);
     new_writer->val.compl = malloc(sizeof(Writer));
     GET_WRITER(new_writer)->file = file;
     return new_writer;
@@ -154,9 +154,6 @@ Node *writer_flush()
 */
 Node *writer_free(Node *node)
 {
-    // close the file, standard files will not be closed
-    TRACE("Closing writer %ld", WRITER);
-
     FILE *file = writer_file(curr);
     fflush(file);
     if(file != stderr && file != stdout)
@@ -210,8 +207,8 @@ static char **get_array(Node *node)
 
         // here we will print the node
         Node *value;
-        if(curr->type & KEYVAL )
-            value = string_keyval(curr, node->type & MAP);
+        if(curr->type == IKEYVAL )
+            value = string_keyval(curr, node->type == IMAP);
         else
             value = print(curr);
         str_res[i] = GET_STRING(value);
@@ -243,7 +240,7 @@ static String collection_get_inner_content(Node *node)
                 "error stringing bad type : %s",
                 str_type(node->type));
 
-    bool rev = node->type & LIST; // LIST is growing from head
+    bool rev = node->type == ILIST; // LIST is growing from head
     long size = collection_size(node);
     if(size <= 0)
         return strdup("");
@@ -280,7 +277,7 @@ static Node *string_collection(Node *coll)
     if(!inner_content)
         ABORT("Error getting inner content of collection");
 
-    switch(log_type(coll->type))
+    switch(coll->type)
     {
         case ILIST:
             res = string_sprintf("(%s)", inner_content);
@@ -300,7 +297,7 @@ static Node *string_collection(Node *coll)
 
         default :
             free(inner_content);
-            ABORT("string_coll : bad type for collection %s", coll->type);
+            ABORT("string_coll : bad type for collection %s", str_type(coll->type));
     }
     free(inner_content);
     return res;
@@ -384,7 +381,7 @@ static Node *string_function(Node *node)
     String closure = GET_ELEM_STRING(node, &function_closure);
     String args = GET_ELEM_STRING(node, &function_args);
 
-    if(node->type & LAMBDA)
+    if(node->type == ILAMBDA)
     {
         String body = GET_ELEM_STRING(node, &function_body);
         res = string_sprintf("<%s macro=%s special=%s args=%s closure=%s body=%s>",
@@ -447,7 +444,7 @@ static Node *string_named_formated(Node *node)
 {
     Node *formated = NULL;
     String compl_str = string_named_interned(node);
-    switch(log_type(node->type))
+    switch(node->type)
     {
         case IKEYWORD :
             formated = string_sprintf(":%s", compl_str);
@@ -520,7 +517,7 @@ Node *print_node(Node *node, bool readable)
 {
     ASSERT(node, "string_node : NULL node");
     Node *res = NULL;
-    switch(log_type(node->type))
+    switch(node->type)
     {
         case INIL :
             res = string_sprintf("nil");
