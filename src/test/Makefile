@@ -16,7 +16,7 @@ LDFLAGS = -o
 LDLIBS = -L. -llws
 CC = cc -g
 
-clojure : $(objects) liblws.so
+test : $(objects) liblws.so
 	$(CC) $(LDFLAGS) $@ $(objects) $(LDLIBS)
 
 liblws.so : ../lws/liblws.so

@@ -17,7 +17,7 @@
 */
 typedef struct
 {
-    struct Node     *mutable;
+    bool            mutable;
     long            size;
     long            max;
     struct Node     **nodes;
@@ -136,7 +136,7 @@ Node *collection_malloc(Node *node, long size)
     ASSERT_TYPE(node, COLLECTION, "bad type %s", str_type(node->type));
     ASSERT(size >= 0, "Allocation cannot be negative %ld", size);
     GET_COLLECTION(node)->nodes = malloc(sizeof(Node *) * size);
-    ASSERT(GET_COLLECTION(node)->nodes, "Error alocating collection nodes");
+    ASSERT(GET_COLLECTION(node)->nodes, "Error allocating collection nodes");
     GET_COLLECTION(node)->max = size;
     return node;
 }
@@ -154,6 +154,7 @@ Node *collection_realloc(Node *node, long size)
     GET_COLLECTION(node)->nodes = realloc(GET_COLLECTION(node)->nodes, sizeof(Node *) * size);
     ASSERT(GET_COLLECTION(node)->nodes, "realloc_coll : Error alocating collection nodes");
     GET_COLLECTION(node)->max = size;
+    if(size)
     return node;
 }
 
@@ -178,18 +179,22 @@ Node *collection_eval(Node *node, Node *env)
 /*
     create a new empty collection
 */
-Node *collection(enum TYPE type,  long alloc)
+Node *collection(enum TYPE type,  long alloc, bool mutable)
 {
     ASSERT(exp_type(type) & COLLECTION, "bad type %s", str_type(type));
     Node *node = NEW(type);
     ASSERT(node, "Error alocating collection node");
-    if(collection_malloc(node, alloc))
-    {
-        GET_COLLECTION(node)->max = GET_COLLECTION(node)->size = 0;
-        unlink_node(node);
-        return NULL;
-    }
+
+    GET_COLLECTION(node)->nodes = NULL;
+    GET_COLLECTION(node)->max = 0;
     GET_COLLECTION(node)->size = 0;
+    GET_COLLECTION(node)->mutable = mutable;
+    if(collection_malloc(node, alloc * sizeof(Node *)));
+    if(!coll)
+    {
+        unlink_node(node);
+        ABORT("Error allocating collection node");
+    }
     return node; // linked by node
 }
 
