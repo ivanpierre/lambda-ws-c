@@ -36,7 +36,7 @@ static Collection *GET_COLLECTION(Node *node)
 */
 Node *collection_free(Node *node)
 {
-    ASSERT_TYPE(node, COLLECTION, "free_coll : error unallocatig bad type : %s", str_type(node->type));
+    ASSERT_TYPE(node, BCOLLECTION, str_type(node->type));
 
     long size = collection_size(node);
     if(size <= 0)
@@ -81,8 +81,8 @@ static long list_size(long size, char **strings)
 */
 Node *collection_first(Node *node)
 {
-    ASSERT(node, "null pointer");
-    ASSERT_TYPE(node, COLLECTION, "not a coll %s", str_type(node->type));
+    ASSERT(node, ERR_NULL_PTR);
+    ASSERT_TYPE(node, BCOLLECTION, str_type(node->type));
     if(node->type == INIL || GET_COLLECTION(node)->size == 0)
         return nil;
     if(node->type == ILIST)
@@ -96,9 +96,8 @@ Node *collection_first(Node *node)
 */
 Node *collection_last(Node *node)
 {
-    ASSERT(node, "null pointer");
-    ASSERT_TYPE(node, COLLECTION,
-                "not a coll %s", str_type(node->type));
+    ASSERT(node, ERR_NULL_PTR);
+    ASSERT_TYPE(node, BCOLLECTION, str_type(node->type));
     if(node->type == INIL || GET_COLLECTION(node)->size == 0)
         return nil;
     if(node->type == ILIST)
@@ -112,11 +111,9 @@ Node *collection_last(Node *node)
 */
 Node *collection_nth(Node *node, long index)
 {
-    ASSERT(node, "null pointer");
-    ASSERT_TYPE(node, COLLECTION | NIL,
-                "not a coll %s", str_type(node->type));
-    ASSERT(node->type == INIL || index < GET_COLLECTION(node)->size || index >= 0,
-            "Index out of bound");
+    ASSERT(node, ERR_NULL_PTRT);
+    ASSERT_TYPE(node, BSEQUABLE, str_type(node->type));
+    ASSERT(node->type == INIL || index < GET_COLLECTION(node)->size || index >= 0, ERR_INDEX, index);
     if(node->type == INIL || GET_COLLECTION(node)->size == 0)
         return nil;
     if(node->type == ILIST)
@@ -130,13 +127,13 @@ Node *collection_nth(Node *node, long index)
 */
 Node *collection_malloc(Node *node, long size)
 {
-    ASSERT(node, "null pointer");
-    if(node->type & NIL)
-        return collection(LIST, size);
-    ASSERT_TYPE(node, COLLECTION, "bad type %s", str_type(node->type));
-    ASSERT(size >= 0, "Allocation cannot be negative %ld", size);
+    ASSERT(node, ERR_NULL_PTR);
+    if(node->type == INIL)
+        return collection(ILIST, size);
+    ASSERT_TYPE(node, BCOLLECTION, str_type(node->type));
+    ASSERT(size >= 0, ERR_NEG_ALLOC, size);
     GET_COLLECTION(node)->nodes = malloc(sizeof(Node *) * size);
-    ASSERT(GET_COLLECTION(node)->nodes, "Error allocating collection nodes");
+    ASSERT(GET_COLLECTION(node)->nodes, ERR_ALLOC);
     GET_COLLECTION(node)->max = size;
     return node;
 }
@@ -146,15 +143,17 @@ Node *collection_malloc(Node *node, long size)
 */
 Node *collection_realloc(Node *node, long size)
 {
-    ASSERT(node, "null pointer");
-    ASSERT_TYPE(node, COLLECTION,
-                "bad type %s",
-                str_type(node->type));
-    ASSERT(size >= 0, "reallocation cannot be negative %ld", size);
+    ASSERT(node, ERR_NULL_PTR);
+    ASSERT_TYPE(node, BCOLLECTION, str_type(node->type));
+    ASSERT(size >= 0, ERR_NEG_ALLOC, size);
     GET_COLLECTION(node)->nodes = realloc(GET_COLLECTION(node)->nodes, sizeof(Node *) * size);
-    ASSERT(GET_COLLECTION(node)->nodes, "realloc_coll : Error alocating collection nodes");
+    ASSERT(GET_COLLECTION(node)->nodes, ERR_ALLOC);
     GET_COLLECTION(node)->max = size;
-    if(size)
+    if(GET_COLLECTION(node)->size >= size)
+    {
+        GET_COLLECTION(node)->mutable = BOOL_FALSE;
+        GET_COLLECTION(node)->size = size;
+    }
     return node;
 }
 
@@ -179,21 +178,26 @@ Node *collection_eval(Node *node, Node *env)
 /*
     create a new empty collection
 */
-Node *collection(enum TYPE type,  long alloc, bool mutable)
+Node *collection(enum TYPE type,  long alloc)
 {
-    ASSERT(exp_type(type) & COLLECTION, "bad type %s", str_type(type));
+    ASSERT_TYPE(exp_type(type) & BCOLLECTION, ERR_TYPE, str_type(type), BCOLLECTION);
     Node *node = NEW(type);
-    ASSERT(node, "Error alocating collection node");
+    ASSERT(node, ERR_CREATE_NEW, );
+
+    TRACE("Creating %s", str_type(type));
+    node->val.compl = malloc(sizeof(Collection));
+    ASSERT(GET_COLLECTION(node), ERR_ALLOC);
 
     GET_COLLECTION(node)->nodes = NULL;
     GET_COLLECTION(node)->max = 0;
     GET_COLLECTION(node)->size = 0;
-    GET_COLLECTION(node)->mutable = mutable;
-    if(collection_malloc(node, alloc * sizeof(Node *)));
-    if(!coll)
+    GET_COLLECTION(node)->mutable = alloc > 0;
+
+    TRACE("Allocating %s", str_type(type));
+    if(!collection_malloc(node, alloc * sizeof(Node *)))
     {
         unlink_node(node);
-        ABORT("Error allocating collection node");
+        ABORT(ERR_ALLOC);
     }
     return node; // linked by node
 }

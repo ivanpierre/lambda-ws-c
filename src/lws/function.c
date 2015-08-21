@@ -84,8 +84,8 @@ void *function_func(Node *node)
 */
 Node *function_free(Node *node)
 {
-    ASSERT(node, "free_function : null environment");
-    ASSERT_TYPE(node, FUNCTION, "free_function : Bad type %s", str_type(node->type));
+    ASSERT(node, ERR_NULL_TYPE);
+    ASSERT_TYPE(node, FUNCTION, str_type(node->type));
     unlink_node(GET_FUNCTION(node)->args);
     unlink_node(GET_FUNCTION(node)->closure);
     unlink_node(GET_FUNCTION(node)->func.body);

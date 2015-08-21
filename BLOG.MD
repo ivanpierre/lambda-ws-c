@@ -1,7 +1,28 @@
 #BLOG (just what happens)
+##21 aug 2015
+Tests on collections.
+- Missing allocation on creation.
+- Ok empty list, array, map, set + print.
+- Adding error.c & .h for assertions and texts.
+
+Change in allocation deallocation mode.
+
+For every node creation, link, and unlink the address of a variable should be given. This is
+reasonable as every node value should be bond to something... Unallocation or allocation
+on a bound value should deallocate value and ensure the variable is set to NULL before any
+action as new allocation... So we insure that there will not be any dandling node hanging
+somewhere... such as passing a constructor result as argument...
+
+A new ASSERT_ALLOC error helper will make a `goto error_assert;` to proceed with clean-up. All
+failing assertion will also do the same ensuring that any failing assertion will do intended
+clean-ups.
+
+All ERROR() should be replaced by an ABORT...
+
 ##20 aug 2015
 Symbol OK. But it gives some problem in the way to be sure that all object creation and deletion
 will be matched. Hammock design... :D
+Should continue tests...
 ##18 aug 2015
 - [X] Don't close stdout and stderr. It really close them... :D
 - [X] Complete review of writer for allocations and unallocations.

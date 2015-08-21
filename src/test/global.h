@@ -10,9 +10,6 @@
 void test_number();
 void test_string();
 void test_symbol();
-
-extern Node *node;
-extern Node *node2;
-extern Node *node3;
+void test_list();
 
 #endif

@@ -31,8 +31,8 @@ typedef struct
 */
 Node *env_map(Node *node)
 {
-    ASSERT(node, "null environment");
-    ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
+    ASSERT(node, ERR_NULL_PTR);
+    ASSERT_TYPE(node, BENVIRONMENT, str_type(node->type));
     return link_node(ENV(node)->map);
 }
 
@@ -41,8 +41,8 @@ Node *env_map(Node *node)
 */
 Node *env_previous(Node *node)
 {
-    ASSERT(node, "null environment");
-    ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
+    ASSERT(node, ERR_NULL_PTR);
+    ASSERT_TYPE(node, BENVIRONMENT, str_type(node->type));
     return link_node(ENV(node)->previous);
 }
 
@@ -51,8 +51,8 @@ Node *env_previous(Node *node)
 */
 Node *env_free(Node *node)
 {
-    ASSERT(node, "null environment");
-    ASSERT_TYPE(node, ENVIRONMENT, "Bad type %s", str_type(node->type));
+    ASSERT(node, ERR_NULL_PTR);
+    ASSERT_TYPE(node, BENVIRONMENT, str_type(node->type));
     ENV(node)->map = unlink_node(ENV(node)->map);
     unlink_node(ENV(node)->previous);
     free(node->val.compl);
@@ -68,7 +68,7 @@ Node *env(Node *previous, Node *map)
 	Node *node = NEW(IENVIRONMENT); // Create linked node
 
 	if(!node)
-		ABORT("cannor create new environment");
+		ABORT(ERR_CREATE_NEW, str_type(IENVIRONMENT));
 
 	ENV(node)->previous = previous; // don't link
 	ENV(node)->map = map;

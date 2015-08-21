@@ -58,9 +58,7 @@ Node *keyval_eval(Node *node, Node *env)
 */
 Node *keyval_free(Node *node)
 {
-    ASSERT_TYPE(node, KEYVAL,
-                "error unallocatig bad type : %s",
-                str_type(node->type));
+    ASSERT_TYPE(node, KEYVAL, str_type(node->type));
 
     unlink_node(keyval_key(node));
     unlink_node(keyval_value(node));
@@ -76,11 +74,7 @@ Node *keyval(Node *key, Node *value)
 {
     Node *node = NEW(IKEYVAL); // Create linked node
 
-    if(!node)
-    {
-        ABORT("cannor create new keyval");
-    }
-
+    ASSERT(node, ERR_CREATE_NEW, IKEYVAL);
     KEYVAL(node)->key = key; // don't unlink, it's assigned to keyval
     KEYVAL(node)->value = value;
 
