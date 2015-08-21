@@ -1,9 +1,14 @@
 #BLOG (just what happens)
+##22 aug 2015
+Completely missed the point too complicated and overwhelming code.
+I finish current version and should begin a new one from scratch.
+
 ##21 aug 2015
 Tests on collections.
 - Missing allocation on creation.
 - Ok empty list, array, map, set + print.
 - Adding error.c & .h for assertions and texts.
+- Adding type.c, .h, error.c, .h
 
 Change in allocation deallocation mode.
 

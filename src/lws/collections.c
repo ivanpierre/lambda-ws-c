@@ -34,7 +34,7 @@ static Collection *GET_COLLECTION(Node *node)
 /*
     Free coll
 */
-Node *collection_free(Node *node)
+Node *collection_free(Node **node)
 {
     ASSERT_TYPE(node, BCOLLECTION, str_type(node->type));
 
@@ -44,10 +44,14 @@ Node *collection_free(Node *node)
 
     for(long i = 0; i < size; i++)
         if(GET_COLLECTION(node)->nodes[i])
-            unlink_node(GET_COLLECTION(node)->nodes[i]);
+            unlink_node(&GET_COLLECTION(node)->nodes[i]);
 
-    free(node);
-    return NULL;
+    free(*node);
+    *node = NULL;
+    return BOOL_TRUE;
+
+error_assert;
+    return false;
 }
 
 /*

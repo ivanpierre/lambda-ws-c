@@ -61,6 +61,7 @@ enum TYPE
 
 // public function for types
 char *      str_type(enum TYPE type);
+char *      str_btype(NodeType type);
 NodeType    exp_type(enum TYPE type);
 
 #endif
