@@ -16,7 +16,7 @@
 
 void test_integer()
 {
-    TRACE("-----------------------test_integer()----------------------------------------")
+    TRACE("-----------------------test_integer()----------------------------------------");
     print_stack_trace();
 
     Node *node = integer(123l);
@@ -38,7 +38,7 @@ void test_integer()
 
 void test_integer2()
 {
-    TRACE("-----------------------test_integer2()----------------------------------------")
+    TRACE("-----------------------test_integer2()----------------------------------------");
     print_stack_trace();
 
     // creation integer
@@ -74,7 +74,7 @@ void test_integer2()
 
 void test_integer3()
 {
-    TRACE("-----------------------test_integer3()----------------------------------------")
+    TRACE("-----------------------test_integer3()----------------------------------------");
     print_stack_trace();
 
     // creation integer
@@ -113,7 +113,7 @@ void test_integer3()
 */
 void test_decimal()
 {
-    TRACE("-----------------------test_decimal()----------------------------------------")
+    TRACE("-----------------------test_decimal()----------------------------------------");
     print_stack_trace();
 
     // creation decimal
@@ -141,7 +141,7 @@ void test_decimal()
 */
 void test_decimal2()
 {
-    TRACE("-----------------------test_decimal2()----------------------------------------")
+    TRACE("-----------------------test_decimal2()----------------------------------------");
     print_stack_trace();
 
     // creation decimal
@@ -187,7 +187,7 @@ void test_decimal2()
 */
 void test_decimal3()
 {
-    TRACE("-----------------------test_decimal3()----------------------------------------")
+    TRACE("-----------------------test_decimal3()----------------------------------------");
     print_stack_trace();
 
     // creation decimal

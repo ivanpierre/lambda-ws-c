@@ -44,7 +44,7 @@ void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
     }
 
 #define ASSERT_TYPE(node, typ, curr_type) \
-    if(!(node && (exp_type(node->type) & (typ)))) \
+    if(!((node) && (exp_type((node)->type) & (typ)))) \
         ABORT(ERR_TYPE, str_type(curr_type), str_btype(typ));
 
 #define ASSERT_ALLOC(alloc) \
