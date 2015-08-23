@@ -93,7 +93,7 @@ Node *var_bound_Q_(Node *node)
         ERROR("%& is unbound", sym_str);
         free(sym_str);
     }
-    Node *res = value ? true : false;
+    Node *res = value ? true : FALSE;
     unlink_node(value);
     return res;
 }

@@ -12,33 +12,88 @@
 #include <string.h>
 #include "error.h"
 
-// Error signal
-Node *error_node = NULL;
+// Stack trace
+Exception *stack = NULL;
 
 // Error* function
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
 {
-    char buffer[4000];
+    char *mess;
     va_list args;
-    va_start(args, fmt);
-    va_start(args, fmt);
 
-    sprintf(buffer, "ERROR !!!! %s(%d) %s() : %s\n", file, line, func, fmt);
-    vfprintf(stderr, buffer, args);
+    // get message
+    va_start(args, fmt);
+    vasprintf(&mess, fmt, args);
+
+    // Push it
+    stack_push(file,line, func, mess); // message has been allocated
+
+    // print it
+    fprintf(stderr, "ERROR !!!! %s(%d) %s() : %s\n", file, line, func, mess);
     fflush(stderr);
 }
 
 // Error* function
 void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...)
 {
-    char buffer[4000];
+    char *mess;
     va_list args;
-    va_start(args, fmt);
-    va_start(args, fmt);
 
-                        sprintf(buffer, "            %s(%d) %s() : %s\n", file, line, func, fmt);
-    // sprintf(buffer, "            %s\n", fmt);
-    vfprintf(stdout, buffer, args);
+    // get message
+    va_start(args, fmt);
+    vasprintf(&mess, fmt, args);
+
+    // print it
+    fprintf(stdout, "            %s(%d) %s() : %s\n", file, line, func, mess);
     fflush(stdout);
+    free(mess);
 }
 
+/*
+ * Push exception on the trace stack
+ */
+void stack_push(const char file[], int line, const char func[], char *mess)
+{
+    Exception *error = malloc(sizeof(Exception));
+    error->file = file;
+    error->line = line;
+    error->func = func;
+    error->mess = mess;
+    error->previous = stack;
+    stack = error;
+}
+
+/*
+ * Print stack trace
+ */
+void stack_print()
+{
+    Exception *walk = stack;
+
+    fprintf(stderr, "Stack trace");
+    fprintf(stderr, "===========");
+
+    while(walk)
+    {
+        fprintf(stderr, "%s(%d) %s() : %s\n",
+                walk.file, walk.line, walk.func, walk.mess);
+    }
+
+    fprintf(stderr, "===========");
+}
+
+/*
+ * erase stack trace
+ */
+void stack_free()
+{
+    Exception *walk = stack;
+
+    while(walk)
+    {
+        Exception *free = walk;
+        walk = walk.previous
+        free(free.mess);
+        free(free);
+    }
+}

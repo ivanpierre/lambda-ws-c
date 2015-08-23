@@ -21,15 +21,16 @@ extern const NodeType    BSEQUABLE;
 extern const NodeType    BINDEXED;
 extern const NodeType    BMAPPED;
 extern const NodeType    BCALLABLE;
+extern const NodeType    BUNLINKABLE;
 
 /*
     type of nodes
 */
-enum TYPE
+typedef enum TYPE
 {
     INIL             =   1,  // Constant nil value
     ITRUE            =   2,  // Constant true value
-    IFALSE           =   3,  // Constant false value
+    IFALSE           =   3,  // Constant FALSE value
     ISYMBOL          =   4,  // Symbol that can be binded in ENVIRONMENT
     IKEYWORD         =   5,  // Constant symbol :key evaluate to itself
     IINTEGER         =   6,  // Integer numeric values
@@ -57,7 +58,14 @@ enum TYPE
     IWRITER          =   28, // Writer implemented in language
     IKEYVAL          =   29, // Binding of key / values for MAP
     IINVALID         =   30  // Self explaining... used not to go too far... :D
-};
+} TYPE;
+
+typedef struct Type
+{
+    Node        *symbol;
+    TYPE        itype;
+    NodeType    btype;
+} Type;
 
 // public function for types
 char *      str_type(enum TYPE type);

@@ -17,7 +17,7 @@
 
 void test_symbol1()
 {
-    TRACE("-----------------------test_symbol1()----------------------------------------")
+    TRACE("-----------------------test_symbol1()----------------------------------------");
     print_stack_trace();
 
     // creation symbol
@@ -63,7 +63,7 @@ void test_symbol1()
 
 void test_symbol2()
 {
-    TRACE("-----------------------test_symbol2()----------------------------------------")
+    TRACE("-----------------------test_symbol2()----------------------------------------");
     print_stack_trace();
 
     // creation symbol
@@ -107,7 +107,7 @@ void test_symbol2()
 
 void test_symbol3()
 {
-    TRACE("-----------------------test_symbol3()----------------------------------------")
+    TRACE("-----------------------test_symbol3()----------------------------------------");
     print_stack_trace();
 
     // creation symbol

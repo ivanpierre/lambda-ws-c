@@ -38,7 +38,7 @@ Integer number_integer(Node *node)
 */
 Node *integer_Q_(Node *node)
 {
-	return (node && node->type == IINTEGER) ? true : false;
+	return (node && node->type == IINTEGER) ? true : FALSE;
 }
 
 ////// Decimals
@@ -68,7 +68,7 @@ Decimal number_decimal(Node *node)
 */
 Node *decimal_Q_(Node *node)
 {
-	return (node && node->type == IDECIMAL) ? true : false;
+	return (node && node->type == IDECIMAL) ? true : FALSE;
 }
 
 /*

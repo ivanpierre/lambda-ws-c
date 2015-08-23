@@ -1,10 +1,33 @@
-#BLOG (just what happens)
-##22 aug 2015
+# BLOG (just what happens)
+#### 24 aug 2015
+Core functions will have this general format :
+
+`Node *func([Node *arg [, arg2...]])`
+
+These function will be directly linked to the Function nodes. Some function will have non Node
+arguments, but they will be only called internally, like string, number, function constructors.
+
+Rewriting and adapting the whole thing
+
+#### 23 aug 2015
+Testing various data models. Big problem, ensure that all bind Node will be traced.
+
+Nodes will be bind :
+
+- To a C variable : link_node of Node. NO direct assignment. Bound variables will be unbound in
+the same function.
+- To an argument of function : Function will bind and unbind arguments.
+- To a Namespace : this will be the DEF function.
+- To a closure, this will be made in the APPLY function
+
+#### 22 aug 2015
 Completely missed the point too complicated and overwhelming code.
 I finish current version and should begin a new one from scratch.
+Begin to modify data model.
 
-##21 aug 2015
+#### 21 aug 2015
 Tests on collections.
+
 - Missing allocation on creation.
 - Ok empty list, array, map, set + print.
 - Adding error.c & .h for assertions and texts.
@@ -24,31 +47,32 @@ clean-ups.
 
 All ERROR() should be replaced by an ABORT...
 
-##20 aug 2015
+#### 20 aug 2015
 Symbol OK. But it gives some problem in the way to be sure that all object creation and deletion
 will be matched. Hammock design... :D
 Should continue tests...
-##18 aug 2015
+
+#### 18 aug 2015
 - [X] Don't close stdout and stderr. It really close them... :D
 - [X] Complete review of writer for allocations and unallocations.
 - [X] Bad thought, function doesen't unalloc arguments, only temporary values used to proceed with
 its functions. Assigning a node to a variable mean we link it. And end of scope for this variable means
 that we unlink it.
 - [X] Generalize TRACE function for debugging reasons.
-- [X] write_string and write_formated false unallocation of string.
-- [X] nil, true, false OK
+- [X] write_string and write_formated FALSE unallocation of string.
+- [X] nil, true, FALSE OK
 - [X] Missing allocation of named in named_base.
 - [X] GET_STRING return a duplicate of the string, as this is a reference that is quite always
 unallocated.
 
-##17 aug 2015
+#### 17 aug 2015
 - [X] Closing the writer and release ressources.
 - [X] Adding stdout and stderr.
 - [X] Decimal memory leak.
 - [X] String desallocated 2 times :(
 - [X] Closing writer keep old config...
 
-##17 aug 2015
+#### 17 aug 2015
 Ok, that was a little painful to manage all the different stuff. Now as it's a little stabilized, we proceed to the
 first exhaustive test on all the AST elements. Especially tracing memory leaks. As we have a stack printing function,
 it's possible to monitor activities. Some points to overview.
@@ -59,7 +83,7 @@ it's possible to monitor activities. Some points to overview.
 - A tinming function should be put in place to see everwhelmig usage of ressouces.
 - as soon it's done, proceed with the writing of tzhe core functions and write a repl.
 
-##10 aug 2015
+#### 10 aug 2015
 - Reformat all names of structure source.e, each one manage a structure.
 - A header should be created for public access functions
 - PRINT, EVAL, FREE, READ will be managed through a function pointer, so it can be enhanced a an upper
@@ -67,11 +91,11 @@ level. Specific functions will be forwarded hardcoded way and not through header
 PRINT(node), EVAL(node), and not the function specific to the structures.
 - At language level all specific functions will be overloaded if needed... 
 
-##06 aug 2015
+#### 06 aug 2015
 - Split source into AST library and language implementation. 
 - Simplifying Node definition.
 
-##04 aug 2015
+#### 04 aug 2015
 - Separate STRING et SYMBOL, new [symbol.c`](src/lws/namned.c) for keywords and symbols.
 - Adding evaluation functions.
 - Adding NAMESPACE.
@@ -103,7 +127,7 @@ is the same as
 so the body is evaluated with the fn arguments. And fn evaluation is made with the previous environment witch is
 linked to the new local environment.
 
-##03 aug 2015
+#### 03 aug 2015
 - Clarify and precise implementation details.
 - Finalizing previous enhancements. 
 - Functions definition, creation calling.
@@ -118,7 +142,7 @@ linked to the new local environment.
 - Added type KEYVAL for maps key / values bindings.
 - Implementation in numbers.c for INTEGER and DECIMAL.
 
-##30 jul 2015
+#### 30 jul 2015
 Ok, `glib` is a nice library. But I will go with the idea of writing the whole with standard lib.
 
 In fact glib is a big boilerplate, ant it's hard to get some bite from it w/o the rest. And even is you link with 
@@ -127,7 +151,7 @@ some flags, there's still a big monster in the backyard ;)
 So for compatibilty sake, I'll write the data structure mess, I anyway need to have, not only but first to have an 
 environment to grab bindings in...
 
-##29 jul 2015
+#### 29 jul 2015
 - [x] Change node structure as value is an union to ease the data access.
 - [x] Change list as an array access
 - [x] Put all structures definitions in node.c
@@ -138,7 +162,7 @@ environment to grab bindings in...
 - [x] Numbers are now managed by numbers.c
 - [x] consolidate changes.
 
-##28 jul 2015
+#### 28 jul 2015
 Some changes in view.
 
 - [0] Use of glib library for ARRAY, MAP and SET. It will be easier doesn't change the problem a lot. Just unifies the 
@@ -153,6 +177,6 @@ sense anymore.
 
 This should greatly simplify the code and enable a better journey.
 
-##Started 28 Jul 2015
+#### Started 28 Jul 2015
 
 CC licence

@@ -87,7 +87,7 @@ Node *keyword(Node *ns, Node *name)
 */
 Node *symbol_Q_(Node *node)
 {
-    return (node && node->type == ISYMBOL) ? true : false;
+    return (node && node->type == ISYMBOL) ? true : FALSE;
 }
 
 /*
@@ -95,7 +95,7 @@ Node *symbol_Q_(Node *node)
 */
 Node *keyword_Q_(Node *node)
 {
-    return (node && node->type == IKEYWORD) ? true : false;
+    return (node && node->type == IKEYWORD) ? true : FALSE;
 }
 
 /*

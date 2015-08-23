@@ -23,6 +23,6 @@ by another node (i.e. lists, array, map, ...) Types manage the release of memory
 The allocation is done by the constructor of each types, arguments for it depends on the type.
 
 There is only three values that are never linked or unlinked : NIL, TRUE and FALSE. They are equal to themselves.
-NIL and FALSE are false boolean values, FALSE is here for disambiguating NIL values than can be pertinent return 
+NIL and FALSE are FALSE boolean values, FALSE is here for disambiguating NIL values than can be pertinent return
 values. 
 

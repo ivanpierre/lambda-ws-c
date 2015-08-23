@@ -10,9 +10,9 @@
 #define FUNCTION_H
 
 Node *function_is_macro(Node *node);
-Node *function_set_macro(Node *node, Node *macro); // nil, false, or else
+Node *function_set_macro(Node *node, Node *macro); // nil, FALSE, or else
 Node *function_is_special(Node *node);
-Node *function_set_special(Node *node, Node *macro); // nil, false, or else
+Node *function_set_special(Node *node, Node *macro); // nil, FALSE, or else
 Node *function_clojure(Node *node);
 Node *function_args(Node *node);
 Node *function_body(Node *node);

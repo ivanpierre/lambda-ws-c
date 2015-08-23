@@ -6,19 +6,18 @@
     Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#ifndef STRING_H
-#define STRING_H
+#ifndef STRINGS_H
+#define STRINGS_H
 
 // Strings
-Node        *string(char *value);
-Node        *string_allocate(char *value);
-Node        *string_sprintf(char *fmt, ...);
-Node        *string_Q_(Node *node);
+bool string            (Node **var, char *value);
+bool string_sprintf    (Node **var, char *fmt, ...);
+bool string_Q_         (Node **var, Node *node);
 
 /*
     Access string from Node
 */
-String GET_STRING(Node *node);
-
+String GET_STRING       (Node *node);
+String GET_ELEM_STRING  (Node *elem, bool (*func)(Node **, Node *));
 
 #endif

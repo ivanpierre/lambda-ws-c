@@ -84,7 +84,7 @@ Node *string_sprintf(char *fmt, ...)
 */
 Node *string_Q_(Node *node)
 {
-    return (node && node->type == ISTRING) ? true : false;
+    return (node && node->type == ISTRING) ? true : FALSE;
 }
 
 /*
@@ -98,5 +98,13 @@ Node *string_free(Node *node)
     node->val.compl = NULL;
     free(node);
     return NULL;
+}
+
+/*
+    Standard string getter for node function to element
+*/
+String GET_ELEM_STRING(Node *elem, Node *(*func)(void **, Node *))
+{
+    return thread_node(elem, func, &PRINT, &GET_STRING, NULL);
 }
 

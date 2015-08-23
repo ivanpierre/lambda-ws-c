@@ -6,7 +6,15 @@
     Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#include <stdio.h>
-#include "nodes.h"
-#include "api.h"
-#include "collection.h"
+#ifndef API_H
+#define API_H
+
+/*
+    Api
+*/
+typedef struct
+{
+    Node        *api; /* Map of {Args Callable} */
+} Api;
+
+#endif

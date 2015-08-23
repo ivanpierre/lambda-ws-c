@@ -9,9 +9,20 @@
 #ifndef ENV_H
 #define ENV_H
 
-Node *env_map(Node *node);
-Node *env_previous(Node *node);
-Node *env_free(Node *node);
-Node *env(Node *previous, Node *map);
+/*
+    Environment. There is only uninterned (local) symbol, so we can
+    only keep the symbol name
+*/
+typedef struct
+{
+    struct Node     *previous; // Environment
+    struct Node     *map; // map [String Value]
+} Env;
+
+Node *env           (Node **var, Node *previous, Node *map);
+Node *env_free      (Node **var);
+
+Node *env_previous  (Node **var, Node *node);
+Node *env_map       (Node **var, Node *node);
 
 #endif

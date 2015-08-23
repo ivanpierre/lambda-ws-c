@@ -23,10 +23,10 @@
 /*
     Used type definitions
 */
-#define bool        int
-#define Integer     long
-#define Decimal     double
-#define String      char *
+#define bool            int
+#define Integer         long
+#define Decimal         double
+#define String          char *
 struct  Node; // forward
 
 /*
@@ -34,48 +34,37 @@ struct  Node; // forward
 */
 typedef struct Node
 {
-    enum TYPE       type;
-    long            occurrences;
+    enum TYPE           type;
+    long                occurrences;
 #ifdef DEBUG_ALLOC
-    struct Node     *previous_node;
-    struct Node     *next_node;
+    struct Node         *previous_node;
+    struct Node         *next_node;
 #endif
-    union
-    {
-        Integer     integer;        // Integer as long
-        Decimal     decimal;        // Floats as double
-        void        *compl;         // all node details
-    } val;
 } Node;
 
+void *NODE_STRUCT(Node *node);
+
 // global values
-extern Node *nil;
-extern Node *true;
-extern Node *false;
-
-/*
-    Main functions pointers FREE, EVAL, PRINT
-*/
-extern Node *(*eval_ptr)(Node *node, Node *env);
-
-// Node *FREE(Node *node); // called by unlink_node
-Node *EVAL(Node *node, Node *env);
+extern Node             *NIL;
+extern Node             *TRUE;
+extern Node             *FALSE;
 
 // public function for nodes
-bool        *link_node(Node **node);
-bool        *unlink_node(Node **node);
-bool        FALSE(Node *node);
-bool        TRUE(Node *node);
-bool        NEW(Node **node, enum TYPE type);
-bool        thread_node(void **res, Node *init, ...);
-bool        GET_ELEM_STRING(void **node, Node *elem, Node *(*func)(Node *));
+Node *link_node          (Node **var, Node *);
+Node *unlink_node        (Node **var);
+Node *new_node           (Node **var, enum TYPE type);
 
+Node *false_Q_           (Node **var, Node *node);
+Node *true_Q_            (Node **var, Node *node);
 
-// Atom
-Node        *var_deref(Node *node); // internal
+// Non-standard functions
+void *NODE_STRUCT       (Node *node, enum TYPE type);
+bool FALSE_Q_           (Node *node);
+bool TRUE_Q_            (Node *node);
+void *THREAD_NODE       (void **var, Node *init, ...);
 
 // DEBUG_ALLOC functions
-bool        init_node_list();
-void        print_node_list();
+bool init_node_list     ();
+void print_node_list    ();
 
 #endif

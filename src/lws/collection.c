@@ -1,5 +1,5 @@
 /****
-    colls sets and maps
+    Collections List, array, set and map
 
     Lambda Calculus Workshop
     C version
@@ -13,71 +13,51 @@
 #include "collection.h"
 
 /*
-    Collection : Array, List, Map and Set
-*/
-typedef struct
-{
-    bool            mutable;
-    long            size;
-    long            max;
-    struct Node     **nodes;
-} Collection;
-
-/*
-    Access Collection from Node
-*/
-static Collection *GET_COLLECTION(Node *node)
-{
-    return (Collection *)(node->val.compl);
-}
-
-/*
     create a new empty collection
 */
-bool collection(Node **node, enum TYPE type,  long alloc)
+bool collection(Node **var, enum TYPE type,  Node *alloc)
 {
-    ASSERT_TYPE((*node), BCOLLECTION, type);
+    ASSERT_VAR(var);
 
     // Create node base
-    ASSERT(NEW(node, type), ERR_INIT, str_type(type));
-    ASSERT((*node), ERR_CREATE_NEW, str_type(type));
+    TRACE("Creating %s", str_type(type));
+    ASSERT(new_node(var, type), ERR_INIT, str_type(type));
 
     // Alloc collection bases
-    TRACE("Creating %s", str_type(type));
-    Collection *coll = (*node)->val.compl = malloc(sizeof(Collection));
+    Collection *coll = (*var)->val = malloc(sizeof(Collection));
     ASSERT(coll, ERR_ALLOC);
 
     // init collection node
     coll->nodes = NULL;
     coll->max = 0;
     coll->size = 0;
-    coll->mutable = alloc > 0;
+    coll->mut = alloc > 0;
 
     // Alloc collection array
     TRACE("Allocating %s", str_type(type));
-    ASSERT(collection_malloc(node, alloc * sizeof(Node *)), ERR_ALLOC);
+    ASSERT(collection_malloc(var, *var, alloc * sizeof(Node *)), ERR_ALLOC);
     return BOOL_TRUE;
 
-error_assert:
-    unlink_node(node); // Will unalloc all the stuff
-    *node = NULL;
+    error_assert:
+    unlink_node(var); // Will unalloc all the stuff
     return BOOL_FALSE;
 }
 
 /*
     Allocate nodes
 */
-bool collection_malloc(Node **node, long size)
+bool collection_malloc(Node **var, long size)
 {
+
     // nil is replaced by a new collection
-    if((*node)->type == INIL)
+    if((*var)->type == INIL)
     {
-        unlink_node(node);
-        return collection(node, ILIST, size);
+        unlink_node(var);
+        return collection(var, ILIST, size);
     }
 
     // collection with positive or 0 allocation
-    ASSERT_TYPE(*node, BCOLLECTION, (*node)->type);
+    ASSERT_TYPE(*var, BCOLLECTION, (*node)->type);
     ASSERT(size >= 0, ERR_NEG_ALLOC, size);
 
     // set new collection values
@@ -93,9 +73,8 @@ bool collection_malloc(Node **node, long size)
     coll->max = size;
     return BOOL_TRUE;
 
-error_assert:
-    unlink_node(node); // Will unalloc all the stuff
-    *node = NULL;
+    error_assert:
+    unlink_node(var); // Will unalloc all the stuff
     return BOOL_FALSE;
 }
 
@@ -116,12 +95,12 @@ bool collection_realloc(Node **node, long size)
     coll->max = size;
     if(coll->size >= size)
     {
-        coll->mutable = BOOL_FALSE;
+        coll->mut = BOOL_FALSE;
         coll->size = size;
     }
     return BOOL_TRUE;
 
-error_assert:
+    error_assert:
     unlink_node(node); // Will unalloc all the stuff
     *node = NULL;
     return BOOL_FALSE;
@@ -144,22 +123,22 @@ bool collection_free(Node **node)
     *node = NULL;
     return BOOL_TRUE;
 
-error_assert:
+    error_assert:
     return BOOL_FALSE;
 }
 
 /*
     Size of coll
 */
-long collection_size(Node *node)
+bool collection_size(Node **var, Node *node)
 {
-    ASSERT(node, ERR_NULL_PTR);
-    ASSERT_TYPE(node, BSEQUABLE, node->type);
+    ASSERT_VAR(var);
+    ASSERT_Node(node, BSEQUABLE);
     if(node->type == INIL)
         return 0;
     return GET_COLLECTION(node)->size;
 
-error_assert:
+    error_assert:
     return 0; // TODO mhhhh faut voir comment
 }
 
@@ -177,26 +156,26 @@ static long list_size(long size, char **strings)
 /*
     Get first element of coll or nil, nil gives nil
 */
-Node *collection_first(Node *node)
+collection_first(Node **var, Node *node)
 {
-    ASSERT(node, ERR_NULL_PTR);
-    ASSERT_TYPE(node, BCOLLECTION, node->type);
-    Collection *col = GET_COLLECTION(node);
-    if(node->type == INIL || coll->size == 0)
-        return nil;
-    if(node->type == ILIST)
-        return link_node(&coll->nodes[coll->size - 1]);
-    else
-        return link_node(&coll->nodes[0]);
+ASSERT(node, ERR_NULL_PTR);
+ASSERT_TYPE(node, BCOLLECTION, node->type);
+Collection *col = GET_COLLECTION(node);
+if(node->type == INIL || coll->size == 0)
+return nil;
+if(node->type == ILIST)
+return link_node(&coll->nodes[coll->size - 1]);
+else
+return link_node(&coll->nodes[0]);
 
 error_assert:
-    return NULL; // TODO mhhhh faut voir comment
+return NULL; // TODO mhhhh faut voir comment
 }
 
 /*
     Get last element of coll or nil, nil gives nil
 */
-Node *collection_last(Node *node)
+Node *collection_last(Node **node, Node *node)
 {
     ASSERT(node, ERR_NULL_PTR);
     ASSERT_TYPE(node, BCOLLECTION, str_type(node->type));
@@ -211,7 +190,7 @@ Node *collection_last(Node *node)
 /*
     Get nth element of coll or nil, nil gives nil
 */
-Node *collection_nth(Node *node, long index)
+Node *collection_nth(Node **node, Node *node, long index)
 {
     ASSERT(node, ERR_NULL_PTRT);
     ASSERT_TYPE(node, BSEQUABLE, str_type(node->type));
@@ -227,7 +206,7 @@ Node *collection_nth(Node *node, long index)
 /*
     Evaluation of lists
 */
-Node *list_eval(Node *node, Node *env)
+Node *list_eval(Node **node, Node *node, Node *env)
 {
     // TODO implement evaluation
     return node;
@@ -236,24 +215,8 @@ Node *list_eval(Node *node, Node *env)
 /*
     Evaluation of other collections
 */
-Node *collection_eval(Node *node, Node *env)
+Node *collection_eval(Node **node, Node *node, Node *env)
 {
     // TODO implement evaluation
     return node;
 }
-
-/*
-Node        *collection_reduce(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *coll);
-Node        *collection_filter(Node *(*fn)(Node *node), Node *coll);
-Node        *collection_map(Node *(*fn)(Node *node), Node *coll);
-Node        *collection_map2(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
-Node        *collection_alloc_clone(Node *coll, long size);
-Node        *collection_assoc(Node *map, Node *keyval);
-Node        *collection_dissoc(Node *map, Node *keyval);
-Node        *collection_push(Node *coll, Node *elem);
-Node        *collection_pop(Node *coll);
-Node        *collection_sort(Node coll);
-Node        *keyval_new(Node *key, Node *value);
-long        collection_get(Node *coll, Node *search);
-long        collection_get_def(Node *coll, Node *search, Node *default);
-*/

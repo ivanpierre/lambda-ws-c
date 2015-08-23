@@ -17,7 +17,7 @@
 
 void test_string1()
 {
-    TRACE("-----------------------test_string1()----------------------------------------")
+    TRACE("-----------------------test_string1()----------------------------------------");
     print_stack_trace();
 
     // creation string
@@ -70,7 +70,7 @@ void test_string1()
 */
 void test_string2()
 {
-    TRACE("-----------------------test_string2()----------------------------------------")
+    TRACE("-----------------------test_string2()----------------------------------------");
     print_stack_trace();
 
     // creation string
@@ -119,7 +119,7 @@ void test_string2()
 */
 void test_string3()
 {
-    TRACE("-----------------------test_string3()----------------------------------------")
+    TRACE("-----------------------test_string3()----------------------------------------");
     print_stack_trace();
 
     // creation string
@@ -142,7 +142,7 @@ void test_string3()
     PRINTLN(nil);
     print_stack_trace();
 
-    PRINTLN(false);
+    PRINTLN(FALSE);
     print_stack_trace();
 
     PRINTLN(true);

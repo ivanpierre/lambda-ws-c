@@ -1,5 +1,5 @@
 /****
-    Ciollection header
+    Collection header
 
     Lambda Calculus Workshop
     C version
@@ -9,37 +9,57 @@
 #ifndef COLLECTION_H
 #define COLLECTION_H
 
-// Collections
-bool collection(Node **node, enum TYPE type, long alloc);
-bool collection_free(Node **node); // internal
-bool collection_malloc(Node **node, long diff);
-bool collection_realloc(Node **node, long diff);
-bool collection_malloc_clone(Node **node, Node *coll, long diff);
+/*
+    Collection : Array, List, Map and Set
+*/
+typedef struct
+{
+    bool            mut;
+    long            size;
+    long            max;
+    struct Node     **nodes;
+} Collection;
+
+// Collections 
+Node *empty_list            ();
+Node *empty_array           ();
+Node *empty_set             ();
+Node *empty_map             ();
+Node *list                  (Node *arg, ...);
+Node *array                 (Node *arg, ...);
+Node *set                   (Node *arg, ...);
+Node *map                   (Node *arg, ...);
+
+// allocation
+Node *collection_resize     (Node *coll, Node *size);
+Node *collection_clone      (Node *coll);
 
 // accessors
-long        collection_size(Node *coll);
-Node        *collection_first(Node *coll);
-Node        *collection_last(Node *coll);
-Node        *collection_take(Node *coll, long nb);
-Node        *collection_assoc(Node *map, Node *keyval, Node *value);
-Node        *collection_dissoc(Node *map, Node *keyval);
-Node        *collection_nth(Node *coll, long index);
-Node        *collection_push(Node *coll, Node *elem);
-Node        *collection_pop(Node *coll);
-Node        *collection_sort(Node coll); // TODO cmp func
-Node        *collection_reverse(Node coll);
-long        collection_pos(Node *coll, Node *key);
+Collection *GET_COLLECTION  (Node *node);
+Node *collection_size       (Node *coll);
+Node *collection_max        (Node *coll);
+Node *collection_mut        (Node *coll);
 
-// helpers for evaluation
-Node        *list_eval(Node *node, Node *env);
-Node        *keyval_eval(Node *node, Node *env);
-Node        *collection_eval(Node *node, Node *env);
+Node *collection_first      (Node *coll);
+Node *collection_last       (Node *coll);
+Node *collection_nth        (Node *coll, Node *index);
+Node *collection_pos        (Node *coll, Node *key);
 
 // functions
-Node        *collection_reducel(Node *init, Node *(*fn)(Node *arg1, Node *arg2), Node *coll);
-Node        *collection_filter(Node *(*fn)(Node *node), Node *coll);
-Node        *collection_map(Node *(*fn)(Node *node), Node *coll);
-Node        *collection_map2(Node *(*fn)(Node *node1, Node *node2), Node *coll1, Node *coll2);
-Node        *collection_eval(Node *node, Node *env);
+Node *collection_dissoc     (Node *map, Node *keyval);
+Node *collection_take       (Node *coll, Node *nb);
+Node *collection_push       (Node *coll, Node *elem);
+Node *collection_pop        (Node *coll);
+Node *collection_sort       (Node *coll); // TODO cmp func
+Node *collection_reverse    (Node *coll);
+Node *collection_reduce     (Node *init, Node *func2, Node *coll);
+Node *collection_filter     (Node *pred, Node *coll);
+Node *collection_map        (Node *func1, Node *coll);
+Node *collection_map2       (Node *func2, Node *coll1, Node *coll2);
+Node *collection_eval       (Node *coll, Node *env);
+
+// helpers for evaluation
+Node *list_eval             (Node *coll, Node *env);
+Node *collection_eval       (Node *coll, Node *env);
 
 #endif

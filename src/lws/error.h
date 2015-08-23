@@ -14,21 +14,44 @@
 /* standard error texts */
 #define ERR_NULL_PTR    "Null pointer assignement."
 #define ERR_ALLOC       "Allocation error."
+#define ERR_NEG_ALLOC   "Allocation cannot be negative %ld."
+#define ERR_LINK        "Linking error."
+#define ERR_CREATE_NEW  "cannot create new %s."
 #define ERR_INIT        "Initialization of %s."
 #define ERR_TYPE        "type error %s, expected %s."
 #define ERR_INDEX       "Index %ld out of bound."
-#define ERR_NEG_ALLOC   "Allocation cannot be negative %ld."
-#define ERR_CREATE_NEW  "cannot create new %s."
+#define ERR_VAR         "Null pointer on var."
+#define ERR_NODE        "Null pointer on node."
+
+/*
+ * Manage the stack
+ */
+typedef struct Exception
+{
+    struct Exception    *previous;
+    const char          *file;
+    int                 line;
+    const char          *func;
+    char                *mess;
+} Exception;
+
+extern Exception *stack;
 
 /*
     Errors and assertions
 */
-extern struct Node *error_node;
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
 void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
 
+/*
+ * trace management
+ */
+void stack_pushconst(char file[], int line,const char func[], char *mess);
+void stack_print();
+void stack_free();
+
 #define TRACE(fmt, ...) \
-        TRACE_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__);
+        TRACE_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
 
 #define ABORT(fmt, ...) \
     { \
@@ -43,12 +66,17 @@ void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
         goto error_assert; \
     }
 
-#define ASSERT_TYPE(node, typ, curr_type) \
-    if(!((node) && (exp_type((node)->type) & (typ)))) \
-        ABORT(ERR_TYPE, str_type(curr_type), str_btype(typ));
+#define ASSERT_TYPE(node, type) \
+    if(!((node) && (exp_type((node)->type) & (type)))) \
+        ABORT(ERR_TYPE, str_type((node)->type), str_btype(type))
 
-#define ASSERT_ALLOC(alloc) \
-    if(!(alloc)) \
-        ABORT(ERR_ALLOC);
+#define ASSERT_VAR(var) \
+    ASSERT(var, ERR_VAR); \
+    if(*var) unlink_node(var)
+
+#define ASSERT_NODE(node, tmpnode, type) \ // Node *var
+    ASSERT(node, ERR_NODE); \
+    ASSERT_TYPE(node, type); \
+    Node *tmpnode = link_node(node)
 
 #endif

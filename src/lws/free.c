@@ -9,8 +9,6 @@
 #include <stdio.h>
 #include "nodes.h"
 #include "free.h"
-#include "writer.h"
-#include "strings.h"
 
 /*
     double linked list of nodes
@@ -21,14 +19,14 @@
 #endif
 
 // Forward
-static Node *FREE(Node *node);
+static Node *FREE(Node **node);
 
 /*
     test if linking is applyable
 */
 static bool unlinkable(Node *node)
 {
-    return node && exp_type(node->type) & (NIL | TRUE | FALSE);
+    return !node ||  exp_type(node->type) & (BUNLINKABLE);
 }
 
 /*
@@ -36,12 +34,20 @@ static bool unlinkable(Node *node)
     Return Linked node
     Constant elements are not lonked
 */
-Node *link_node(Node *node)
+Node *link_node(Node **var, Node *node)
 {
     TRACE("linking %s", str_type(node->type));
+    if(*var) unlink_node(var);
+
+    ASSERT(node, ERR_NULL_PTR);
     if(!unlinkable(node))
         node->occurrences++;
-    return node;
+    *var = node;
+    return *var;
+
+error_assert:
+    *var = NULL;
+    return *var;
 }
 
 /*
@@ -49,7 +55,7 @@ Node *link_node(Node *node)
     return return NULL on freeing else return node.
     Constant nodes are niot unlinked
 */
-Node *unlink_node(Node *node)
+Node *unlink_node(Node **node)
 {
     TRACE("unlinking %s", str_type(node->type));
     if(!unlinkable(node))
@@ -89,35 +95,30 @@ Node *unlink_node(Node *node)
     return node;
 }
 
-/*
-       Extern definition of free functions
-       These should be used nowhere else that here
-*/
-Node *keyval_free(Node *node);
-Node *string_free(Node *string);
-Node *named_free(Node *node);
-Node *function_free(Node *node);
-Node *collection_free(Node *node);
-Node *var_free(Node *node);
-Node *reader_free(Node *node);
-Node *writer_free(Node *node);
-Node *seq_free(Node *node);
-Node *env_free(Node *node);
-Node *number_free(Node *node);
+bool collection_free (Node **var);
+bool named_free (Node **var);
+bool string_free (Node **var);
+bool env_free (Node **var);
+bool seq_free (Node **var);
+bool keyval_free (Node **var);
+bool function_free (Node **var);
+bool reader_free (Node **var);
+bool writer_free (Node **var);
+bool number_free (Node **var);
 
 /*
     Free all nodes according to type
 */
-static Node *free_node(Node *node)
+static Node *free_node(Node **node)
 {
-    ASSERT(node, "free_node : NULL node");
+    ASSERT_VAR(node, exp_type((*node)->type));
 
-    switch(node->type)
+    switch((*node)->type)
     {
         case INIL :
         case ITRUE :
         case IFALSE :
-            return node;
+            return *node;
 
         case IKEYWORD :
         case ISYMBOL :
@@ -155,11 +156,6 @@ static Node *free_node(Node *node)
             node = function_free(node);
             break;
 
-//      case REF
-//      case ATOM
-//      case AGENT
-//      case FUTURE
-//          break;
 
         case IVAR :
             node = FREE(node->val.compl);
@@ -173,16 +169,16 @@ static Node *free_node(Node *node)
             node = writer_free(node);
             break;
 
-//      case FRACTION :
-//          fraction_free(node->val.compl)
-//          break;
-
         case IINTEGER :
         case IDECIMAL :
             node = number_free(node);
             break;
 
-        default :
+        case FRACTION :
+        case REF:
+        case ATOM:
+        case AGENT:
+        case FUTURE:
             break;
     }
     return NULL;
@@ -191,12 +187,12 @@ static Node *free_node(Node *node)
 /*
     def pointer for free
 */
-Node *(*free_ptr)(Node *node) = &free_node;
+Node *(*free_ptr)(Node **node) = &free_node;
 
 /*
     FREE unalloc node using pointer
 */
-static Node *FREE(Node *node)
+static Node *FREE(Node **node)
 {
     return (*free_ptr)(node);
 }
@@ -221,7 +217,7 @@ bool init_node_list()
     return TRUE;
 }
 
-void print_stack_trace()
+void print_node_stack()
 {
     TRACE("Stack trace");
     TRACE("-----------");

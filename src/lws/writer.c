@@ -528,7 +528,7 @@ Node *print_node(Node *node, bool readable)
             break;
 
         case IFALSE :
-            res = string_sprintf("false");
+            res = string_sprintf("FALSE");
             break;
 
         case IKEYWORD :

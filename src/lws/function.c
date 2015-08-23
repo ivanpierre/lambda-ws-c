@@ -39,12 +39,12 @@ static Function *GET_FUNCTION(Node *node)
 
 Node *function_is_macro(Node *node)
 {
-    return GET_FUNCTION(node)->is_macro ? true : false;
+    return GET_FUNCTION(node)->is_macro ? true : FALSE;
 }
 
 Node *function_is_special(Node *node)
 {
-    return GET_FUNCTION(node)->is_special ? true : false;
+    return GET_FUNCTION(node)->is_special ? true : FALSE;
 }
 
 Node *function_closure(Node *node)

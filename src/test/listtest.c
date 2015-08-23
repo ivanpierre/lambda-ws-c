@@ -26,16 +26,16 @@ void test_list1()
     Node *map = NULL;
     Node *set = NULL;
 
-    ASSERT_ALLOC(collection(&list, ILIST, 0));
+    ASSERT(collection(&list, ILIST, 0));
     print_stack_trace();
 
-    ASSERT_ALLOC(collection(&array, IARRAY, 0));
+    ASSERT(collection(&array, IARRAY, 0));
     print_stack_trace();
 
-    ASSERT_ALLOC(collection(&map, IMAP, 0));
+    ASSERT(collection(&map, IMAP, 0));
     print_stack_trace();
 
-    ASSERT_ALLOC(collection(&set, ISET, 0));
+    ASSERT(collection(&set, ISET, 0));
     print_stack_trace();
 
     PRINT(list);

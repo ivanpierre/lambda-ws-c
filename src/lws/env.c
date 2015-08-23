@@ -12,16 +12,6 @@
 #include "env.h"
 
 /*
-    Environment. There is only uninterned (local) symbol, so we can
-    only keep the symbol name
-*/
-typedef struct
-{
-    struct Node     *previous; // Environment
-    struct Node     *map; // map [String Value]
-} Env;
-
-/*
     Access Env from Node
 */
 #define ENV(node) (node ? ((Env *)(node->val.compl)) : NULL)
