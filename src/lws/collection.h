@@ -14,52 +14,53 @@
 */
 typedef struct
 {
-    bool            mut;
-    long            size;
-    long            max;
-    struct Node     **nodes;
+	bool mut;
+	long size;
+	long max;
+	struct Node **nodes;
 } Collection;
 
 // Collections 
-Node *empty_list            ();
-Node *empty_array           ();
-Node *empty_set             ();
-Node *empty_map             ();
-Node *list                  (Node *arg, ...);
-Node *array                 (Node *arg, ...);
-Node *set                   (Node *arg, ...);
-Node *map                   (Node *arg, ...);
+Node *empty_list();
+Node *empty_array();
+Node *empty_set();
+Node *empty_map();
+Node *list(Node *arg, ...);
+Node *array(Node *arg, ...);
+Node *set(Node *arg, ...);
+Node *map(Node *arg, ...);
 
 // allocation
-Node *collection_resize     (Node *coll, Node *size);
-Node *collection_clone      (Node *coll);
+Node *collection_resize(Node *coll, Node *size);
+Node *collection_clone(Node *coll);
 
 // accessors
-Collection *GET_COLLECTION  (Node *node);
-Node *collection_size       (Node *coll);
-Node *collection_max        (Node *coll);
-Node *collection_mut        (Node *coll);
+Collection *GET_COLLECTION(Node *node);
 
-Node *collection_first      (Node *coll);
-Node *collection_last       (Node *coll);
-Node *collection_nth        (Node *coll, Node *index);
-Node *collection_pos        (Node *coll, Node *key);
+Node *collection_size(Node *coll);
+Node *collection_max(Node *coll);
+Node *collection_mut(Node *coll);
+
+// nodes accessors
+Node *collection_first(Node *coll);
+Node *collection_last(Node *coll);
+Node *collection_nth(Node *coll, Node *index);
+Node *collection_pos(Node *coll, Node *key);
 
 // functions
-Node *collection_dissoc     (Node *map, Node *keyval);
-Node *collection_take       (Node *coll, Node *nb);
-Node *collection_push       (Node *coll, Node *elem);
-Node *collection_pop        (Node *coll);
-Node *collection_sort       (Node *coll); // TODO cmp func
-Node *collection_reverse    (Node *coll);
-Node *collection_reduce     (Node *init, Node *func2, Node *coll);
-Node *collection_filter     (Node *pred, Node *coll);
-Node *collection_map        (Node *func1, Node *coll);
-Node *collection_map2       (Node *func2, Node *coll1, Node *coll2);
-Node *collection_eval       (Node *coll, Node *env);
+Node *collection_dissoc(Node *map, Node *keyval);
+Node *collection_take(Node *coll, Node *nb);
+Node *collection_push(Node *coll, Node *elem);
+Node *collection_pop(Node *coll);
+Node *collection_sort(Node *coll); // TODO cmp func
+Node *collection_reverse(Node *coll);
+Node *collection_reduce(Node *init, Node *func2, Node *coll);
+Node *collection_filter(Node *pred, Node *coll);
+Node *collection_map(Node *func1, Node *coll);
+Node *collection_map2(Node *func2, Node *coll1, Node *coll2);
 
 // helpers for evaluation
-Node *list_eval             (Node *coll, Node *env);
-Node *collection_eval       (Node *coll, Node *env);
+Node *list_eval(Node *coll, Node *environment);
+Node *collection_eval(Node *coll, Node *environment);
 
 #endif

@@ -7,7 +7,9 @@ Core functions will have this general format :
 These function will be directly linked to the Function nodes. Some function will have non Node
 arguments, but they will be only called internally, like string, number, function constructors.
 
-Rewriting and adapting the whole thing
+Rewriting and adapting the whole thing.
+
+Adding Type structure and Node. So all the internal bakery in encapsulated in it.
 
 #### 23 aug 2015
 Testing various data models. Big problem, ensure that all bind Node will be traced.

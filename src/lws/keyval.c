@@ -12,15 +12,6 @@
 #include "keyval.h"
 
 /*
-    Key/Values binding
-*/
-typedef struct
-{
-    struct Node     *key;
-    struct Node     *value;
-} KeyVal;
-
-/*
     Access Keyval from Node
 */
 #define KEYVAL(node) ((KeyVal *)(node->val.compl))
@@ -30,9 +21,9 @@ typedef struct
 */
 Node *keyval_key(Node *node)
 {
-    Node *res = link_node(KEYVAL(node)->key);
-    unlink_node(node);
-    return res;
+	Node *res = link_node(KEYVAL(node)->key);
+	unlink_node(node);
+	return res;
 }
 
 /*
@@ -40,17 +31,17 @@ Node *keyval_key(Node *node)
 */
 Node *keyval_value(Node *node)
 {
-    Node *res = link_node(KEYVAL(node)->value);
-    unlink_node(node);
-    return res;
+	Node *res = link_node(KEYVAL(node)->value);
+	unlink_node(node);
+	return res;
 }
 
 /*
     Evaluation of other keyval
 */
-Node *keyval_eval(Node *node, Node *env)
+Node *keyval_eval(Node *node, Node *environment)
 {
-    return node;
+	return node;
 }
 
 /*
@@ -58,13 +49,13 @@ Node *keyval_eval(Node *node, Node *env)
 */
 Node *keyval_free(Node *node)
 {
-    ASSERT_TYPE(node, KEYVAL, str_type(node->type));
+	ASSERT_TYPE(node, KEYVAL, str_type(node->type));
 
-    unlink_node(keyval_key(node));
-    unlink_node(keyval_value(node));
-    free(node->val.compl);
-    free(node);
-    return node;
+	unlink_node(keyval_key(node));
+	unlink_node(keyval_value(node));
+	free(node->val.compl);
+	free(node);
+	return node;
 }
 
 /*
@@ -72,11 +63,11 @@ Node *keyval_free(Node *node)
 */
 Node *keyval(Node *key, Node *value)
 {
-    Node *node = NEW(IKEYVAL); // Create linked node
+	Node *node          = NEW(IKEYVAL); // Create linked node
 
-    ASSERT(node, ERR_CREATE_NEW, IKEYVAL);
-    KEYVAL(node)->key = key; // don't unlink, it's assigned to keyval
-    KEYVAL(node)->value = value;
+	ASSERT(node, ERR_CREATE_NEW, IKEYVAL);
+	KEYVAL(node)->key   = key; // don't unlink, it's assigned to keyval
+	KEYVAL(node)->value = value;
 
-    return node; // Node is already linked
+	return node; // Node is already linked
 }

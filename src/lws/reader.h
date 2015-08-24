@@ -9,6 +9,12 @@
 #ifndef READER_H
 #define READER_H
 
-
+/*
+    Reader
+*/
+typedef struct
+{
+    int             (*getc)();
+} Reader;
 
 #endif

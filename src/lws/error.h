@@ -28,11 +28,11 @@
  */
 typedef struct Exception
 {
-    struct Exception    *previous;
-    const char          *file;
-    int                 line;
-    const char          *func;
-    char                *mess;
+	struct Exception *previous;
+	const char *file;
+	int line;
+	const char *func;
+	char *mess;
 } Exception;
 
 extern Exception *stack;
@@ -41,13 +41,16 @@ extern Exception *stack;
     Errors and assertions
 */
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
+
 void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
 
 /*
  * trace management
  */
-void stack_pushconst(char file[], int line,const char func[], char *mess);
+void stack_push(const char file[], int line, const char func[], char *mess);
+
 void stack_print();
+
 void stack_free();
 
 #define TRACE(fmt, ...) \
@@ -67,16 +70,12 @@ void stack_free();
     }
 
 #define ASSERT_TYPE(node, type) \
-    if(!((node) && (exp_type((node)->type) & (type)))) \
-        ABORT(ERR_TYPE, str_type((node)->type), str_btype(type))
+    if(!((node) && node_isa_type(node, type))) \
+        ABORT(ERR_TYPE, (node)->type->str_type, str_type(type))
 
-#define ASSERT_VAR(var) \
-    ASSERT(var, ERR_VAR); \
-    if(*var) unlink_node(var)
-
-#define ASSERT_NODE(node, tmpnode, type) \ // Node *var
+#define ASSERT_NODE(node, tmpnode, type) \
     ASSERT(node, ERR_NODE); \
     ASSERT_TYPE(node, type); \
-    Node *tmpnode = link_node(node)
+    tmpnode = link_node(node)
 
 #endif

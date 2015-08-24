@@ -11,14 +11,6 @@
 #include "nodes.h"
 
 /*
-    Reader
-*/
-typedef struct
-{
-    int             (*getc)();
-} Reader;
-
-/*
     Unalloc reader
 */
 Node *reader_free(Node *node)
@@ -29,6 +21,3 @@ Node *reader_free(Node *node)
     free(node);
     return NULL;
 }
-
-
-

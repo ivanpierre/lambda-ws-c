@@ -9,10 +9,19 @@
 #ifndef VAR_H
 #define VAR_H
 
-Node *var(Node *symbol, Node *value);
-Node *var_symbol(Node *node);
-Node *var_value(Node *node);
-Node *var_bound_Q_(Node *node);
-Node *var_set_value(Node *node, Node *value);
+/*
+    Var
+*/
+typedef struct
+{
+	Node *symbol;  // reference symbol
+	Node *value;   // Bobed value
+} Var;
+
+Node *var(Node * symbol, Node * value);
+Node *var_symbol(Node * node);
+Node *var_value(Node * node);
+Node *var_bound_Q_(Node * node);
+Node *var_set_value(Node * node, Node * value);
 
 #endif

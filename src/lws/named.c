@@ -16,15 +16,6 @@
 #include "named.h"
 
 /*
-    Named : symbols and kerywords
-*/
-typedef struct
-{
-    struct Node     *ns;
-    struct Node     *name;
-} Named;
-
-/*
     Access named data
 */
 static Named *GET_NAMED(Node *node)
@@ -119,7 +110,7 @@ Node *named_ns(Node *node)
 /*
     Evaluation of symbol
 */
-Node *symbol_eval(Node *node, Node *env)
+Node *symbol_eval(Node *node, Node *environment)
 {
     // TODO implement evaluation
     return node;

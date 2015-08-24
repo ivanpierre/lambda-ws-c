@@ -17,7 +17,7 @@
 /*
     return evaluation of nodes according to type
 */
-Node *eval_node(Node *node, Node *env)
+Node *eval_node(Node *node, Node *environment)
 {
     ASSERT(node, "eval_node : NULL node");
 
@@ -26,22 +26,22 @@ Node *eval_node(Node *node, Node *env)
     switch(node->type)
     {
         case ISYMBOL :
-            res = symbol_eval(node, env);
+            res = symbol_eval(node, environment);
             break;
 
         case ILIST :
         case ISEQ :
-            res = list_eval(node, env);
+            res = list_eval(node, environment);
             break;
 
         case IARRAY :
         case IMAP :
         case ISET :
-            res = collection_eval(node, env);
+            res = collection_eval(node, environment);
             break;
 
         case IKEYVAL :
-            res = keyval_eval(node, env);
+            res = keyval_eval(node, environment);
             break;
 
         case INIL :

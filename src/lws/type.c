@@ -1,113 +1,145 @@
 /****
-    Nodes
+	Nodes
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#include "types.h"
+#include <stdio.h>
+#include "nodes.h"
+#include "named.h"
+#include "number.h"
+#include "strings.h"
+#include "collection.h"
+#include "environment.h"
+#include "api.h"
+#include "function.h"
+#include "var.h"
+#include "reader.h"
+#include "writer.h"
+#include "keyval.h"
 
 /*
-    type of nodes
+	type of nodes
 */
-const NodeType BNODES           =   -1;                  // all nodes
-const NodeType BNIL             =   1l << INIL;          // Constant nil value
-const NodeType BTRUE            =   1l << ITRUE;         // Constant true value
-const NodeType BFALSE           =   1l << IFALSE;        // Constant FALSE value
-const NodeType BSYMBOL          =   1l << ISYMBOL;       // Symbol that can be binded in ENVIRONMENT
-const NodeType BKEYWORD         =   1l << IKEYWORD;      // Constant symbol :key evaluate to itself
-const NodeType BINTEGER         =   1l << IINTEGER;      // Integer numeric values
-const NodeType BFRACTION        =   1l << IFRACTION;     // Fractional numeric values
-const NodeType BDECIMAL         =   1l << IDECIMAL;      // floating numeric values
-const NodeType BSTRING          =   1l << ISTRING;       // String
-const NodeType BLIST            =   1l << ILIST;         // reversed array (growing from head)
-const NodeType BARRAY           =   1l << IARRAY;        // ARRAY
-const NodeType BMAP             =   1l << IMAP;          // Mapped array of KEYVAL
-const NodeType BSET             =   1l << ISET;          // Mapped array of keys
-const NodeType BSEQ             =   1l << ISEQ;          // Walker on a sequence
-const NodeType BCONS            =   1l << ICONS;         // Walker on two SEQUABLES
-const NodeType BLAZY            =   1l << ILAZY;         // Walker on a lazy sequence
-const NodeType BNAMESPACE       =   1l << INAMESPACE;    // Interning place for global symbols
-const NodeType BENV_STACK       =   1l << IENV_STACK;    // is a list of ENVIRONMENT
-const NodeType BENVIRONMENT     =   1l << IENVIRONMENT;  // is a map of nodes; mapped by SYMBOL
-const NodeType BAPI             =   1l << IAPI;          // is a map of FUNCTION; mapped by args (ARRAY)
-const NodeType BFUNCTION        =   1l << IFUNCTION;     // Function pointer
-const NodeType BLAMBDA          =   1l << ILAMBDA;       // Body of language to evaluate
-const NodeType BVAR             =   1l << IVAR;          // Values of global vars (bind)
-const NodeType BREF             =   1l << IREF;          // CSP managed values
-const NodeType BFUTURE          =   1l << IFUTURE;       // Asynchronously managed values
-const NodeType BAGENT           =   1l << IAGENT;        // Agent management through messages
-const NodeType BREADER          =   1l << IREADER;       // Reader implemented in language
-const NodeType BWRITER          =   1l << IWRITER;       // Writer implemented in language
-const NodeType BKEYVAL          =   1l << IKEYVAL;       // Binding of key / values for MAP
-const NodeType BINVALID         =         IINVALID;      // Self explaining... used not to go too far... :D
+const long BNODES       = -1;                    // all nodes
+const long BNIL         = (1l << INIL);          // Constant nil value
+const long BTRUE        = (1l << ITRUE);         // Constant true value
+const long BFALSE       = (1l << IFALSE);        // Constant FALSE value
+const long BSYMBOL      = (1l << ISYMBOL);       // Symbol that can be binded in ENVIRONMENT
+const long BKEYWORD     = (1l << IKEYWORD);      // Constant symbol :key evaluate to itself
+const long BINTEGER     = (1l << IINTEGER);      // Integer numeric values
+const long BFRACTION    = (1l << IFRACTION);     // Fractional numeric values
+const long BDECIMAL     = (1l << IDECIMAL);      // floating numeric values
+const long BSTRING      = (1l << ISTRING);       // String
+const long BLIST        = (1l << ILIST);         // reversed array (growing from head)
+const long BARRAY       = (1l << IARRAY);        // ARRAY
+const long BMAP         = (1l << IMAP);          // Mapped array of KEYVAL
+const long BSET         = (1l << ISET);          // Mapped array of keys
+const long BSEQ         = (1l << ISEQ);          // Walker on a sequence
+const long BCONS        = (1l << ICONS);         // Walker on two SEQUABLES
+const long BLAZY        = (1l << ILAZY);         // Walker on a lazy sequence
+const long BNAMESPACE   = (1l << INAMESPACE);    // Interning place for global symbols
+const long BENV_STACK   = (1l << IENV_STACK);    // is a list of ENVIRONMENT
+const long BENVIRONMENT = (1l << IENVIRONMENT);  // is a map of nodes); mapped by SYMBOL
+const long BAPI         = (1l << IAPI);          // is a map of FUNCTION); mapped by args (ARRAY)
+const long BFUNCTION    = (1l << IFUNCTION);     // Function pointer
+const long BLAMBDA      = (1l << ILAMBDA);       // Body of language to evaluate
+const long BVAR         = (1l << IVAR);          // Values of global vars (bind)
+const long BREF         = (1l << IREF);          // CSP managed values
+const long BFUTURE      = (1l << IFUTURE);       // Asynchronously managed values
+const long BAGENT       = (1l << IAGENT);        // Agent management through messages
+const long BREADER      = (1l << IREADER);       // Reader implemented in language
+const long BWRITER      = (1l << IWRITER);       // Writer implemented in language
+const long BTYPE        = (1l << ITYPE);         // Type of nodes
+const long BKEYVAL      = (1l << IKEYVAL);       // Binding of key / values for MAP
+const long BINVALID     = IINVALID;              // Self explaining... used not to go too far... :D
 
-const NodeType BNUMBER          =   BINTEGER | BDECIMAL;
-const NodeType BNAMED           =   BSYMBOL | BKEYWORD;
-const NodeType BITERABLE        =   BLIST | BARRAY | BSEQ;
-const NodeType BMAPPED          =   BMAP | BSET;
-const NodeType BCOLLECTION      =   BITERABLE | BMAPPED;
-const NodeType BSEQUABLE        =   BCOLLECTION | BNIL;
-const NodeType BINDEXED         =   BSTRING | BARRAY;
-const NodeType BCALLABLE        =   BFUNCTION | BLAMBDA;
-const NodeType BUNLINKABLE      =   BNIL | BTRUE | BFALSE;
+const long BNUMBER     = BINTEGER | BDECIMAL;
+const long BNAMED      = BSYMBOL | BKEYWORD;
+const long BITERABLE   = BLIST | BARRAY | BSEQ;
+const long BMAPPED     = BMAP | BSET;
+const long BCOLLECTION = BITERABLE | BMAPPED;
+const long BSEQUABLE   = BCOLLECTION | BNIL;
+const long BINDEXED    = BSTRING | BARRAY;
+const long BCALLABLE   = BFUNCTION | BLAMBDA;
+const long BUNLINKABLE = BNIL | BTRUE | BFALSE | BTYPE;
 
 /*
-    String representation of types
+	Representation of types
 */
-static char            *str_types[] =
-                            {
-                                "node"
-                                "nil",
-                                "true",
-                                "FALSE",
-                                "symbol",
-                                "keyword",
-                                "integer",
-                                "fraction",
-                                "decimal",
-                                "string",
-                                "list",
-                                "array",
-                                "map",
-                                "set",
-                                "sequence",
-                                "cons",
-                                "lazy",
-                                "namespace",
-                                "env_stack",
-                                "environment",
-                                "api",
-                                "function",
-                                "lambda",
-                                "var",
-                                "ref",
-                                "future",
-                                "agent",
-                                "reader",
-                                "writer",
-                                "keyval",
-                                "<invalid type1>",
-                                "<invalid type2>",
-                                "<invalid type3>",
-                                "<invalid type4>",
-                                "<invalid type5>"
-                            };
+Type type_array[] = {{"Node", BNODES, 0},
+					{"Nil", BNIL, 0},
+					{"True", BTRUE, 0},
+					{"False", BFALSE, 0},
+					{"Symbol", BSYMBOL, sizeof(Named)},
+					{"Keyword", BKEYWORD, sizeof(Named)},
+					{"Integer", BINTEGER, sizeof(Integer)},
+					{"Fraction", BFRACTION, 0},
+					{"Decimal", BDECIMAL, sizeof(Decimal)},
+					{"String", BSTRING, sizeof(String)},
+					{"List", BLIST, sizeof(Collection)},
+					{"Array", BARRAY, sizeof(Collection)},
+					{"Map", BMAP, sizeof(Collection)},
+					{"Set", BSET, sizeof(Collection)},
+					{"Seq", BSEQ, 0},
+					{"Cons", BCONS, 0},
+					{"Lazy", BLAZY, sizeof(Named)},
+					{"Namespace", BNAMESPACE, 0},
+					{"EnvStack", BENV_STACK, 0},
+					{"Environment", BENVIRONMENT, sizeof(Environment)},
+					{"Api", BAPI, sizeof(Api)},
+					{"Function", BFUNCTION, sizeof(Function)},
+					{"Lambda", BLAMBDA, sizeof(Function)},
+					{"Var", BVAR, sizeof(Var)},
+					{"Ref", BREF, 0},
+					{"Future", BFUTURE, 0},
+					{"Agent", BAGENT, 0},
+					{"Reader", BREADER, sizeof(Reader)},
+					{"Writer", BWRITER, sizeof(Writer)},
+					{"Type", BTYPE, sizeof(NodeType)},
+					{"Keyval", BKEYVAL, sizeof(KeyVal)},
+					{"Invalid", BINVALID, 0}};
+
+/*
+ * get type from an TYPE
+ */
+Type *get_type(TYPE type)
+{
+	return &(type_array[type]);
+}
 
 /*
    get bitmaped version of node type
 */
-NodeType exp_type(enum TYPE type)
+long bin_type(TYPE type)
 {
-    return 1l << type - 1;
+	return get_type(type)->bin_type;
 }
 
 /*
    get type name
 */
-char *str_type(enum TYPE type)
+char *str_type(TYPE type)
 {
-    return str_types[type];
+	return get_type(type)->str_type;
+}
+
+/*
+   get type size
+*/
+long size_type(TYPE type)
+{
+	return get_type(type)->size_type;
+}
+
+/*
+ * Get type isa
+ */
+bool isa_type(TYPE type, TYPE isa)
+{
+	return get_type(type)->bin_type & get_type(isa)->bin_type &&
+	       get_type(type)->bin_type <= get_type(isa)->bin_type;
 }
 

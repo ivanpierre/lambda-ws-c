@@ -76,7 +76,8 @@ void stack_print()
     while(walk)
     {
         fprintf(stderr, "%s(%d) %s() : %s\n",
-                walk.file, walk.line, walk.func, walk.mess);
+                walk->file, walk->line, walk->func, walk->mess);
+        walk = walk->previous;
     }
 
     fprintf(stderr, "===========");
@@ -91,9 +92,9 @@ void stack_free()
 
     while(walk)
     {
-        Exception *free = walk;
-        walk = walk.previous
-        free(free.mess);
-        free(free);
+        Exception *old = walk;
+        walk = walk->previous;
+        free(old->mess);
+        free(old);
     }
 }

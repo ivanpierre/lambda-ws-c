@@ -12,25 +12,7 @@
 #include "function.h"
 
 /*
-    Functions
-*/
-typedef struct
-{
-    Node                *is_macro;
-    Node                *is_special;
-    Node                *closure; // as a previous Env
-    Node                *args;    // seq of symbols to create local Env
-                                  // for function call manage variadic arguments
-                                  // and to coerce types
-    union
-    {
-        Node            *(*func) (Node *args, Node *values);
-        Node            *body;
-    } func;
-} Function;
-
-/*
-    Access Env from Node
+    Access Environment from Node
 */
 static Function *GET_FUNCTION(Node *node)
 {

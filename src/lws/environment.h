@@ -15,11 +15,11 @@
 */
 typedef struct
 {
-    struct Node     *previous; // Environment
-    struct Node     *map; // map [String Value]
-} Env;
+	struct Node     *previous; // Environment
+	struct Node     *map; // map [String Value]
+} Environment;
 
-Node *env           (Node **var, Node *previous, Node *map);
+Node *environment           (Node **var, Node *previous, Node *map);
 Node *env_free      (Node **var);
 
 Node *env_previous  (Node **var, Node *node);

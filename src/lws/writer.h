@@ -9,6 +9,14 @@
 #ifndef WRITER_H
 #define WRITER_H
 
+/*
+    Writer
+*/
+typedef struct
+{
+    FILE            *file;
+} Writer;
+
 extern Node *(*print_ptr)(Node *node, bool readable);
 
 Node *PRINT(Node *node);

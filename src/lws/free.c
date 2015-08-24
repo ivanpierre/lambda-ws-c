@@ -26,7 +26,7 @@ static Node *FREE(Node **node);
 */
 static bool unlinkable(Node *node)
 {
-    return !node ||  exp_type(node->type) & (BUNLINKABLE);
+    return !node ||  bin_type(node->type) & (BUNLINKABLE);
 }
 
 /*
@@ -111,7 +111,7 @@ bool number_free (Node **var);
 */
 static Node *free_node(Node **node)
 {
-    ASSERT_VAR(node, exp_type((*node)->type));
+    ASSERT_VAR(node, bin_type((*node)->type));
 
     switch((*node)->type)
     {
