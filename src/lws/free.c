@@ -14,8 +14,8 @@
     double linked list of nodes
 */
 #ifdef DEBUG_ALLOC
-    Node *first_node    = NULL;
-    Node *last_node     = NULL;
+Node *first_node = NULL;
+Node *last_node  = NULL;
 #endif
 
 // Forward
@@ -26,7 +26,8 @@ static Node *FREE(Node **node);
 */
 static bool unlinkable(Node *node)
 {
-    return !node ||  bin_type(node->type) & (BUNLINKABLE);
+	return !node ||
+			node->type->bin_type & get_type(IUNLINKABLE)->bin_type;
 }
 
 /*
@@ -36,18 +37,19 @@ static bool unlinkable(Node *node)
 */
 Node *link_node(Node **var, Node *node)
 {
-    TRACE("linking %s", str_type(node->type));
-    if(*var) unlink_node(var);
+	TRACE("linking %s", node->type->str_type);
+	if (*var) unlink_node(var);
+	ASSERT(!*var, ERR_DEALLOC);
+	ASSERT(node, ERR_NULL_PTR);
 
-    ASSERT(node, ERR_NULL_PTR);
-    if(!unlinkable(node))
-        node->occurrences++;
-    *var = node;
-    return *var;
+	if (!unlinkable(node))
+		node->occurrences++;
+	*var = node;
+	return *var;
 
-error_assert:
-    *var = NULL;
-    return *var;
+	error_assert:
+	*var = NULL;
+	return *var;
 }
 
 /*
@@ -57,131 +59,149 @@ error_assert:
 */
 Node *unlink_node(Node **node)
 {
-    TRACE("unlinking %s", str_type(node->type));
-    if(!unlinkable(node))
-    {
-        if(node->occurrences)
-            node->occurrences--;
-        if(!node->occurrences)
-        {
-            TRACE("freeing %s", str_type(node->type));
+	TRACE("unlinking %s", (*node)->type->str_type);
+	ASSERT(node, ERR_VAR);
+	ASSERT(*node, ERR_NODE);
+	if (!unlinkable(*node))
+	{
+		if ((*node)->occurrences)
+			(*node)->occurrences--;
+		if ((*node)->occurrences <= 0)
+		{
+			TRACE("freeing %s", (*node)->type->str_type);
 #ifdef DEBUG_ALLOC
-            if(node == first_node &&
-                node == last_node)
-                first_node = last_node = NULL;
-            else if(first_node == node)
-            {
-                ASSERT(node->next_node, "Error in node memory management");
-                first_node = node->next_node;
-                first_node->previous_node = NULL;
-            }
-            else if(last_node == node)
-            {
-                ASSERT(node->previous_node, "Error in node memory management");
-                last_node = node->previous_node;
-                last_node->next_node = NULL;
-            }
-            else
-            {
-                ASSERT(node->next_node && node->previous_node, "Error in node memory management");
-                node->next_node->previous_node = node->previous_node;
-                node->previous_node->next_node = node->next_node;
-            }
+			if((*node)->next_node == NULL && (*node)->previous_node == NULL)
+			{
+				// unallocated node
+			}
+			if (*node == first_node && *node == last_node)
+				first_node = last_node = NULL;
+			else if (first_node == *node)
+			{
+				ASSERT((*node)->next_node, "Error in node memory management");
+				first_node = (*node)->next_node;
+				first_node->previous_node = NULL;
+			}
+			else if (last_node == *node)
+			{
+				ASSERT((*node)->previous_node, "Error in node memory management");
+				last_node = (*node)->previous_node;
+				last_node->next_node = NULL;
+			}
+			else
+			{
+				ASSERT((*node)->next_node && (*node)->previous_node, "Error in node memory management");
+				(*node)->next_node->previous_node = (*node)->previous_node;
+				(*node)->previous_node->next_node = (*node)->next_node;
+			}
 #endif
-            FREE(node);
-            node = NULL;
-        }
-    }
-    return node;
+			FREE(node);
+			*node = NULL;
+		}
+	}
+	return *node;
+
+	error_assert:
+	return NULL;
 }
 
-bool collection_free (Node **var);
-bool named_free (Node **var);
-bool string_free (Node **var);
-bool env_free (Node **var);
-bool seq_free (Node **var);
-bool keyval_free (Node **var);
-bool function_free (Node **var);
-bool reader_free (Node **var);
-bool writer_free (Node **var);
-bool number_free (Node **var);
+Node *collection_free(Node **var);
+Node *named_free(Node **var);
+Node *string_free(Node **var);
+Node *env_free(Node **var);
+Node *seq_free(Node **var);
+Node *keyval_free(Node **var);
+Node *function_free(Node **var);
+Node *reader_free(Node **var);
+Node *writer_free(Node **var);
+Node *number_free(Node **var);
 
 /*
     Free all nodes according to type
 */
 static Node *free_node(Node **node)
 {
-    ASSERT_VAR(node, bin_type((*node)->type));
+	ASSERT(node, ERR_VAR);
+	if(!*node) return NULL;
+	switch ((*node)->type->int_type)
+	{
+		case INIL :
+		case ITRUE :
+		case IFALSE :
+			return *node;
 
-    switch((*node)->type)
-    {
-        case INIL :
-        case ITRUE :
-        case IFALSE :
-            return *node;
+		case IKEYWORD :
+		case ISYMBOL :
+			named_free(node);
+	        break;
 
-        case IKEYWORD :
-        case ISYMBOL :
-            node = named_free(node);
-            break;
+		case ISTRING :
+			string_free(node);
+	        break;
 
-        case ISTRING :
-            node = string_free(node);
-            break;
+		case IENV_STACK :
+			break;
 
-        case IENV_STACK :
-            break;
+		case IENVIRONMENT :
+			env_free(node);
+	        break;
 
-        case IENVIRONMENT :
-            node = env_free(node);
-            break;
+		case ILIST :
+		case IARRAY :
+		case IMAP :
+		case ISET :
+			collection_free(node);
+	        break;
 
-        case ILIST :
-        case IARRAY :
-        case IMAP :
-        case ISET :
-            node = collection_free(node);
-            break;
+		case ISEQ :
+			seq_free(node);
+	        break;
 
-    	case ISEQ :
-    	    node = seq_free(node);
-    	    break;
+		case IKEYVAL :
+			keyval_free(node);
+	        break;
 
-        case IKEYVAL :
-            node = keyval_free(node);
-            break;
-
-        case IFUNCTION :
-        case ILAMBDA :
-            node = function_free(node);
-            break;
+		case IFUNCTION :
+		case ILAMBDA :
+			function_free(node);
+	        break;
 
 
-        case IVAR :
-            node = FREE(node->val.compl);
-            break;
+		case IVAR :
+			// FREE(node->val.compl);
+	        break;
 
-        case IREADER :
-            node = reader_free(node);
-            break;
+		case IREADER :
+			reader_free(node);
+	        break;
 
-        case IWRITER :
-            node = writer_free(node);
-            break;
+		case IWRITER :
+			writer_free(node);
+	        break;
 
-        case IINTEGER :
-        case IDECIMAL :
-            node = number_free(node);
-            break;
+		case IINTEGER :
+		case IDECIMAL :
+			number_free(node);
+	        break;
 
-        case FRACTION :
-        case REF:
-        case ATOM:
-        case AGENT:
-        case FUTURE:
-            break;
-    }
-    return NULL;
+		case IFRACTION :
+		case IREF:
+		case IAGENT:
+		case IFUTURE:
+		case INODES:
+		case ICONS:
+		case ILAZY:
+		case INAMESPACE:
+		case IAPI:
+		case ITYPE:
+			break;
+		default:
+			break;
+	}
+	return NULL;
+
+	error_assert:
+	return NULL;
 }
 
 /*
@@ -194,44 +214,50 @@ Node *(*free_ptr)(Node **node) = &free_node;
 */
 static Node *FREE(Node **node)
 {
-    return (*free_ptr)(node);
+	return (*free_ptr)(node);
 }
 
 /*
     completely unlink and init node list
 */
-bool init_node_list()
+void init_node_list()
 {
 #ifdef DEBUG_ALLOC
-    while(first_node)
-    {
-        Node *node = first_node;
-        first_node = node->next_node;
+	while (first_node)
+	{
+		Node *node = first_node;
+		first_node = node->next_node;
 
-        // empty allocation
-        while(node)
-            node = unlink_node(node);
-    }
-    last_node = NULL;
+		// empty allocation
+		while (node)
+		{
+			Node *old = node;
+			node = node->next_node;
+			unlink_node(&old);
+		}
+	}
+	last_node = NULL;
 #endif
-    return TRUE;
 }
 
+/*
+ * Print current stack state
+ */
 void print_node_stack()
 {
-    TRACE("Stack trace");
-    TRACE("-----------");
+	TRACE("Stack trace");
+	TRACE("-----------");
 #ifdef DEBUG_ALLOC
-    Node *walk = first_node;
-    int i = 1;
-    while(walk)
-    {
-        TRACE("%d) %s %ld", i++, str_type(walk->type), walk->occurrences);
-        fflush(stderr);
-        walk = walk->next_node;
-    }
+	Node *walk = first_node;
+	int  i     = 1;
+	while (walk)
+	{
+		TRACE("%d) %s %ld", i++, walk->type->str_type, walk->occurrences);
+		fflush(stderr);
+		walk = walk->next_node;
+	}
 #endif
-    TRACE("-----------");
-    fflush(stderr);
+	TRACE("-----------");
+	fflush(stderr);
 }
 

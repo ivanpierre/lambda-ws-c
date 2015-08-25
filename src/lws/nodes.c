@@ -16,15 +16,15 @@
 #include "writer.h"
 
 #ifdef DEBUG_ALLOC
-#define NEW_CONST(type) {type, 0l, NULL, NULL, {0}}
+#define NEW_CONST {NULL, 0l, NULL, NULL}
 #else
-    #define NEW_CONST(type) {type, 0l, {0}}
+    #define NEW_CONST {type, 0l}
 #endif
 
 // global values
-static Node nil_val   = NEW_CONST(INIL);
-static Node true_val  = NEW_CONST(ITRUE);
-static Node false_val = NEW_CONST(IFALSE);
+static Node nil_val   = NEW_CONST;
+static Node true_val  = NEW_CONST;
+static Node false_val = NEW_CONST;
 Node        *NIL      = &nil_val;
 Node        *FALSE    = &false_val;
 Node        *TRUE     = &true_val;
@@ -46,9 +46,9 @@ static Node *init_node(Node *node, enum TYPE type)
 	}
 	else
 	{
-		node->previous_node = last_node;
-		node->next_node     = NULL;
-		last_node->next_node  = node;
+		node->previous_node  = last_node;
+		node->next_node      = NULL;
+		last_node->next_node = node;
 		last_node = node;
 	}
 #endif
@@ -62,22 +62,25 @@ static Node *init_node(Node *node, enum TYPE type)
     Create a node
     Constructor, return linked
 */
-bool new_node(enum TYPE type_of_node)
+bool new_node(TYPE type_of_node)
 {
 	TRACE("fait nouveau node %s %ld", str_type(type_of_node), type_of_node);
 
-	Node *node = malloc(sizeof(Node) + );
-	ASSERT(*var, ERR_ALLOC, str_type(type_of_node));
+	Node *node = malloc(sizeof(Node) + size_type(type_of_node));
+	ASSERT_NODE(node, type_of_node);
 
-	ASSERT(init_node(var, type_of_node), ERR_INIT);
+	ASSERT(init_node(node, type_of_node), ERR_INIT, str_type(type_of_node);
 
-	TRACE("Node %s créé", str_type((*var)->type));
-	return BOOL_TRUE;
+	TRACE("Node %s créé", str_type(type_of_node));
+	return node;
 
 	error_assert:
-	free(*var);
+	unlink_node(&node);
 	*var = NULL;
 	return BOOL_FALSE;
+
+	error_assert:
+
 }
 
 /*
@@ -158,7 +161,6 @@ bool true_Q_(Node *node)
  */
 bool node_isa_type(Node *node, TYPE isa)
 {
-	return node_>type->bin_type & get_type(isa)->bin_type &&
-	       node->type->bin_type <= get_type(isa)->bin_type;
+	return node_ > type->bin_type & get_type(isa)->bin_type && node->type->bin_type <= get_type(isa)->bin_type;
 }
 

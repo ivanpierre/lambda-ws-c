@@ -13,7 +13,7 @@ Node *link_node(Node **var, Node *node);
 Node *unlink_node(Node **var);
 void print_node_stack();
 
-extern Node *(*free_ptr)(Node *node);
+extern Node *(*free_ptr)(Node **node);
 /*
     double linked list of nodes
 */

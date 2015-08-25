@@ -11,7 +11,7 @@ Rewriting and adapting the whole thing.
 
 Adding Type structure and Node. So all the internal bakery in encapsulated in it.
 
-Problems with GitHub... :(
+Problems with GitHub... :( OK, t'was only a missed push...
 
 #### 23 aug 2015
 Testing various data models. Big problem, ensure that all bind Node will be traced.

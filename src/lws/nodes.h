@@ -10,6 +10,7 @@
 #define NODES_H
 
 #include "type.h"
+#include "error.h"
 
 #define BOOL_FALSE 0
 #define BOOL_TRUE (!BOOL_FALSE)
@@ -30,7 +31,7 @@ struct Node; // forward
 */
 typedef struct Node
 {
-	void        *type;
+	Type        *type;
 	long        occurrences;
 #ifdef DEBUG_ALLOC
 	struct Node *previous_node;
@@ -47,22 +48,22 @@ extern Node *TRUE;
 extern Node *FALSE;
 
 // public function for nodes
-extern Node *link_node(Node **var, Node *);
-extern Node *unlink_node(Node **var);
+extern Node *link_node      (Node **var, Node *);
+extern Node *unlink_node    (Node **var);
 
-extern Node *new_node(TYPE type);
-extern Node *false_Q_(Node *node);
-extern Node *true_Q_(Node *node);
+extern Node *new_node       (TYPE type);
+extern Node *false_Q_       (Node *node);
+extern Node *true_Q_        (Node *node);
 
 // Non-standard functions
-extern void *NODE_STRUCT(Node *node, TYPE type);
-extern bool FALSE_Q_(Node *node);
-extern bool TRUE_Q_(Node *node);
-extern void *THREAD_NODE(Node *init, ...);
+extern void *NODE_STRUCT    (Node *node, TYPE type);
+extern bool FALSE_Q_        (Node *node);
+extern bool TRUE_Q_         (Node *node);
+extern void *THREAD_NODE    (Node *init, ...);
 extern bool node_isa_type   (Node *node, TYPE isa);
 
 // DEBUG_ALLOC functions
-extern bool init_node_list();
-extern void print_node_list();
+extern void init_node_list  ();
+extern void print_node_list ();
 
 #endif

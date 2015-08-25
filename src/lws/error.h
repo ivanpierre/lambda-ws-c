@@ -14,6 +14,7 @@
 /* standard error texts */
 #define ERR_NULL_PTR    "Null pointer assignement."
 #define ERR_ALLOC       "Allocation error."
+#define ERR_DEALLOC     "Deallocation error."
 #define ERR_NEG_ALLOC   "Allocation cannot be negative %ld."
 #define ERR_LINK        "Linking error."
 #define ERR_CREATE_NEW  "cannot create new %s."

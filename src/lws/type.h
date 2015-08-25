@@ -15,6 +15,7 @@
 */
 typedef enum TYPE
 {
+	INODES          = 0,    // All nodes
 	INIL            = 1,    // Constant nil value
 	ITRUE           = 2,    // Constant true value
 	IFALSE          = 3,    // Constant FALSE value
@@ -60,6 +61,7 @@ typedef enum TYPE
 typedef struct
 {
 	char        *str_type;
+	TYPE        int_type;
 	long        bin_type;
 	long        size_type;
 } Type;
