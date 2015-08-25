@@ -51,7 +51,7 @@ typedef enum TYPE
 	INAMED          = 33,   // Symbols
 	IITERABLE       = 34,   // Taking next
 	IMAPPED         = 35,   // Maps and sets
-	ICOLLECTIONS    = 36,   // All collections
+	ICOLLECTION     = 36,   // All collections
 	ISEQUABLE       = 37,   // Can be sequed
 	IINDEXED        = 38,   // STRING and arrays
 	ICALLABLE       = 39,   // Function of lambda

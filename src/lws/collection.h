@@ -30,6 +30,16 @@ Node *array(Node *arg, ...);
 Node *set(Node *arg, ...);
 Node *map(Node *arg, ...);
 
+// Constructor
+Node *empty_list();
+Node *empty_transient_list();
+Node *empty_arrray();
+Node *empty_transient_array();
+Node *empty_map();
+Node *empty_transient_map();
+Node *empty_set();
+Node *empty_transient_set();
+
 // allocation
 Node *collection_resize(Node *coll, Node *size);
 Node *collection_clone(Node *coll);

@@ -19,11 +19,11 @@ typedef struct
 	double decimal;
 } Decimal;
 
-Node    *integer(Integer value);
+Node    *integer(long value);
 Integer number_integer(Node * node);
 Node    *integer_Q_(Node * node);
 
-Node    *decimal(Decimal value);
+Node    *decimal(double value);
 Decimal number_decimal(Node * node);
 Node    *decimal_Q_(Node * node);
 

@@ -100,7 +100,16 @@ Type type_array[] = {{"Node",       INODES,         BNODES, 0},
 					{"Writer",      IWRITER,        BWRITER, sizeof(Writer)},
 					{"Type",        ITYPE,          BTYPE, sizeof(NodeType)},
 					{"Keyval",      IKEYVAL,        BKEYVAL, sizeof(KeyVal)},
-					{"Invalid",     IINVALID,       BINVALID, 0}};
+					{"Invalid",     IINVALID,       BINVALID, 0},
+					{"Number",      INUMBER,        BNUMBER, 0},
+					{"Named",       INAMED,         BNAMED, 0},
+					{"Iterable",    IITERABLE,      BITERABLE, 0},
+					{"Mapped",      IMAPPED,        BMAPPED, 0},
+					{"Collection",  ICOLLECTION,    BCOLLECTION, 0},
+					{"Sequable",    ISEQUABLE,      BSEQUABLE, 0},
+					{"Indexed",     IINDEXED,       BINDEXED, 0},
+					{"Callable",    ICALLABLE,      BCALLABLE, 0},
+					{"Unlikable",   IUNLINKABLE,    BUNLINKABLE, 0}};
 
 /*
  * get type from an TYPE

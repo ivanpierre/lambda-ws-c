@@ -161,6 +161,7 @@ bool true_Q_(Node *node)
  */
 bool node_isa_type(Node *node, TYPE isa)
 {
-	return node_ > type->bin_type & get_type(isa)->bin_type && node->type->bin_type <= get_type(isa)->bin_type;
+	return node->type->bin_type & get_type(isa)->bin_type &&
+			node->type->bin_type <= get_type(isa)->bin_type;
 }
 

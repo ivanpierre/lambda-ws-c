@@ -23,6 +23,7 @@
 #define ERR_INDEX       "Index %ld out of bound."
 #define ERR_VAR         "Null pointer on var."
 #define ERR_NODE        "Null pointer on node."
+#define ERR_ARG         "Bad argument %s."
 
 /*
  * Manage the stack
@@ -42,16 +43,13 @@ extern Exception *stack;
     Errors and assertions
 */
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
-
 void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
 
 /*
  * trace management
  */
 void stack_push(const char file[], int line, const char func[], char *mess);
-
 void stack_print();
-
 void stack_free();
 
 #define TRACE(fmt, ...) \
@@ -70,13 +68,13 @@ void stack_free();
         goto error_assert; \
     }
 
-#define ASSERT_TYPE(node, type) \
-    if(!((node) && node_isa_type(node, type))) \
-        ABORT(ERR_TYPE, (node)->type->str_type, str_type(type))
+#define ASSERT_TYPE(node, typ) \
+    if(!((node) && node_isa_type(node, typ))) \
+        ABORT(ERR_TYPE, (node)->type->str_type, str_type(typ))
 
 #define ASSERT_NODE(node, tmpnode, type) \
     ASSERT(node, ERR_NODE); \
     ASSERT_TYPE(node, type); \
-    tmpnode = link_node(node)
+    link_node(&tmpnode, node);
 
 #endif

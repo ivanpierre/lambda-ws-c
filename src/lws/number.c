@@ -15,7 +15,7 @@
 /*
 	Create an integer
 */
-Node *integer(Integer value)
+Node *integer(long value)
 {
 	TRACE("Va faire %s", str_type(IINTEGER));
 	Node *node = NEW(IINTEGER);
@@ -45,7 +45,7 @@ Node *integer_Q_(Node *node)
 /*
 	Create a decimal
 */
-Node *decimal(Decimal value)
+Node *decimal(double value)
 {
 	TRACE("Va faire %s", str_type(IDECIMAL));
 	Node *node = NEW(IDECIMAL);

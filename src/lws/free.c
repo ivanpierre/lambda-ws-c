@@ -37,18 +37,26 @@ static bool unlinkable(Node *node)
 */
 Node *link_node(Node **var, Node *node)
 {
+	/*
+	 * First we link value to tmpnode.
+	 * If node is part of future unlinked variable, we have to save it :D
+	 */
 	TRACE("linking %s", node->type->str_type);
-	if (*var) unlink_node(var);
-	ASSERT(!*var, ERR_DEALLOC);
-	ASSERT(node, ERR_NULL_PTR);
+	Node *tmpnode = node;
+	ASSERT(tmpnode, ERR_NODE);
+	if (!unlinkable(*node))
+		tmpnode->occurrences++;
 
-	if (!unlinkable(node))
-		node->occurrences++;
-	*var = node;
+	// Unlink underlying value
+	if (*var) unlink_node(var);
+
+	*var = tmpnode;
+	unlink_node(&node);
 	return *var;
 
 	error_assert:
-	*var = NULL;
+	unlink_node(&tmpnode);
+	unlink_node(var);
 	return *var;
 }
 
