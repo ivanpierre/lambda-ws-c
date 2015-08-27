@@ -19,11 +19,9 @@
 */
 Node *eval_node(Node *node, Node *environment)
 {
-    ASSERT(node, "eval_node : NULL node");
-
     Node *res = NULL;
 
-    switch(node->type)
+    switch(node->type->int_type)
     {
         case ISYMBOL :
             res = symbol_eval(node, environment);
@@ -61,14 +59,19 @@ Node *eval_node(Node *node, Node *environment)
 		case IREF :
         case IREADER :
         case INAMESPACE :
-            return node;
+            res = link_node(&res, node);
+            break;
 
         case IINVALID :
         default:
-            ERROR("cannot evaluate '%s' of type '%s'", GET_STRING(pr(node)), str_type(node->type));
+            ABORT("cannot evaluate '%s' of type '%s'",
+                  GET_STRING(pr(node)), node->type->str_type);
             break;
     }
-    unlink_node(node);
+
+    //************
+    error_assert:
+    unlink_node(&node);
     return res;
 }
 

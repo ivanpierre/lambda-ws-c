@@ -1,9 +1,9 @@
 /****
-    Errors
+	Errors
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #ifndef ERROR_H
@@ -40,7 +40,7 @@ typedef struct Exception
 extern Exception *stack;
 
 /*
-    Errors and assertions
+	Errors and assertions
 */
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
 void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
@@ -53,28 +53,30 @@ void stack_print();
 void stack_free();
 
 #define TRACE(fmt, ...) \
-        TRACE_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
+		TRACE_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
 
 #define ABORT(fmt, ...) \
-    { \
-        ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
-        goto error_assert; \
-    }
+	{ \
+		ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+		goto error_assert; \
+	}
 
 #define ASSERT(cond, fmt, ...) \
-    if(!(cond)) \
-    { \
-        ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
-        goto error_assert; \
-    }
+	if(!(cond)) \
+	{ \
+		ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+		goto error_assert; \
+	}
 
 #define ASSERT_TYPE(node, typ) \
-    if(!((node) && node_isa_type(node, typ))) \
-        ABORT(ERR_TYPE, (node)->type->str_type, str_type(typ))
+	if(!((node) && node_isa_type(node, typ))) \
+		ABORT(ERR_TYPE, (node)->type->str_type, str_type(typ))
 
 #define ASSERT_NODE(node, tmpnode, type) \
-    ASSERT(node, ERR_NODE); \
-    ASSERT_TYPE(node, type); \
-    link_node(&tmpnode, node);
+	{ \
+		ASSERT(node, ERR_NODE); \
+		ASSERT_TYPE(node, type); \
+		link_node(&tmpnode, node); \
+	}
 
 #endif

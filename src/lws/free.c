@@ -44,7 +44,7 @@ Node *link_node(Node **var, Node *node)
 	TRACE("linking %s", node->type->str_type);
 	Node *tmpnode = node;
 	ASSERT(tmpnode, ERR_NODE);
-	if (!unlinkable(*node))
+	if (!unlinkable(node))
 		tmpnode->occurrences++;
 
 	// Unlink underlying value

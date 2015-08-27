@@ -6,8 +6,8 @@
     Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#ifndef ENV_H
-#define ENV_H
+#ifndef ENVIRONMENT_H
+#define ENVIRONMENT_H
 
 /*
     Environment. There is only uninterned (local) symbol, so we can
@@ -15,14 +15,16 @@
 */
 typedef struct
 {
-	struct Node     *previous; // Environment
-	struct Node     *map; // map [String Value]
+	struct Node *previous; // Environment
+	struct Node *map; // map [Symbol Value]
 } Environment;
 
-Node *environment           (Node **var, Node *previous, Node *map);
-Node *env_free      (Node **var);
 
-Node *env_previous  (Node **var, Node *node);
-Node *env_map       (Node **var, Node *node);
+// Constructor
+Node *environment           (Node *previous, Node *map);
+
+// Accessors
+Node *environment_previous  (Node *node);
+Node *environment_map       (Node *node);
 
 #endif
