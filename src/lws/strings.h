@@ -10,9 +10,9 @@
 #define STRINGS_H
 
 // Strings
-bool string(Node * *var, char * value);
-bool string_sprintf(Node * *var, char * fmt, ...);
-bool string_Q_(Node * *var, Node * node);
+bool string(Node **var, char *value);
+bool string_sprintf(Node **var, char *fmt, ...);
+bool string_Q_(Node **var, Node *node);
 
 typedef struct
 {
@@ -22,7 +22,7 @@ typedef struct
 /*
     Access string from Node
 */
-char *GET_STRING(Node * node);
+char *GET_STRING(Node *node);
 char *GET_ELEM_STRING(Node *elem, bool (*func)(Node **, Node *));
 
 #endif

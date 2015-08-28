@@ -11,68 +11,166 @@
 #include "nodes.h"
 #include "function.h"
 
-/*
-    Access Environment from Node
-*/
-static Function *GET_FUNCTION(Node *node)
-{
-    return (Function *)node ? (node->val.compl) : NULL;
-}
-
 Node *function_is_macro(Node *node)
 {
-    return GET_FUNCTION(node)->is_macro ? true : FALSE;
+	Node *tmp_node = NULL;
+	Node *res = NULL;
+	ASSERT_NODE(node, tmp_node, ICALLABLE);
+	unlink_node(&node);
+
+	Function *func = STRUCT(tmp_node);
+	res = func->is_macro ? TRUE : NIL;
+
+	unlink_node(&tmp_node);
+	return res;
+
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	unlink_node(&res);
+	return NULL;
 }
 
 Node *function_is_special(Node *node)
 {
-    return GET_FUNCTION(node)->is_special ? true : FALSE;
+	Node *tmp_node = NULL;
+	Node *res = NULL;
+	ASSERT_NODE(node, tmp_node, ICALLABLE);
+	unlink_node(&node);
+
+	Function *func = STRUCT(tmp_node);
+	res = func->is_special ? TRUE : NIL;
+
+	unlink_node(&tmp_node);
+	return res;
+
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	unlink_node(&res);
+	return NULL;
 }
 
 Node *function_closure(Node *node)
 {
-    Node *res = GET_FUNCTION(node)->closure;
-    if(!res)
-        return nil;
-    return link_node(res);
+	Node *tmp_node = NULL;
+	Node *res = NULL;
+
+	ASSERT_NODE(node, tmp_node, ICALLABLE);
+	unlink_node(&node);
+
+	Function *func = STRUCT(tmp_node);
+	link_node(&res, func->closure);
+	unlink_node(&tmp_node);
+
+	if (!res)
+		res = NIL;
+	if (res != NIL)
+		ASSERT_TYPE(res, IENVIRONMENT);
+
+	return res;
+
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	unlink_node(&res);
+	return NULL;
 }
 
 Node *function_args(Node *node)
 {
-    Node *res = GET_FUNCTION(node)->args;
-    if(!res)
-        return nil;
-    return link_node(res);
+	Node *tmp_node = NULL;
+	Node *res = NULL;
+
+	ASSERT_NODE(node, tmp_node, ICALLABLE);
+	unlink_node(&node);
+
+	Function *func = STRUCT(tmp_node);
+	link_node(&res, func->args);
+	unlink_node(&tmp_node);
+
+	if (!res)
+		res = NIL;
+	if (res != NIL)
+		ASSERT_TYPE(res, IARRAY);
+
+	return res;
+
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	unlink_node(&res);
+	return NULL;
 }
 
 Node *function_body(Node *node)
 {
-    Node *res = GET_FUNCTION(node)->func.body;
-    if(!res)
-        return nil;
-    return link_node(res);
+	Node *tmp_node = NULL;
+	Node *res = NULL;
+
+	ASSERT_NODE(node, tmp_node, ILAMBDA);
+	unlink_node(&node);
+
+	Function *func = STRUCT(tmp_node);
+	link_node(&res, func->args);
+	unlink_node(&tmp_node);
+
+	if (!res)
+		res = NIL;
+	if (res != NIL)
+	ASSERT_TYPE(res, ILIST);
+
+	return res;
+
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	unlink_node(&res);
+	return NULL;
 }
 
 void *function_func(Node *node)
 {
-    void *res = GET_FUNCTION(node)->func.func;
-    if(!res)
-        return nil;
-    return res;
+	Node *tmp_node = NULL;
+	Node *res = NULL;
+
+	ASSERT_NODE(node, tmp_node, ILAMBDA);
+	unlink_node(&node);
+
+	Function *func = STRUCT(tmp_node);
+	link_node(&res, func->args);
+	unlink_node(&tmp_node);
+
+	if (!res)
+		res = NIL;
+	if (res != NIL)
+	ASSERT_TYPE(res, ILIST);
+
+	return res;
+
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	unlink_node(&res);
+	return NULL;
 }
 
 /*
     Unalloc function
 */
-Node *function_free(Node *node)
+Node *function_free(Node **node)
 {
-    ASSERT(node, ERR_NULL_TYPE);
-    ASSERT_TYPE(node, BFUNCTION, str_type(node->type));
-    unlink_node(GET_FUNCTION(node)->args);
-    unlink_node(GET_FUNCTION(node)->closure);
-    unlink_node(GET_FUNCTION(node)->func.body);
-    free(node->val.compl);
-    free(node);
-    return node;
+	Function *func = STRUCT(*node);
+	ASSERT_TYPE(*node, ICALLABLE);
+	unlink_node(&func->is_macro);
+	unlink_node(&func->is_special);
+	unlink_node(&func->args);
+	unlink_node(&func->closure);
+	unlink_node(&func->func.body);
+	free(*node);
+	*node = NULL;
+
+	error_assert:
+	return *node;
 }
 

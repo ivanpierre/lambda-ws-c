@@ -22,7 +22,7 @@ typedef struct
     // and to coerce types
     union
     {
-        Node            *(*func) (Node *args, Node *values);
+        Node            *(*func) (Node *args, ...);
         Node            *body;
     } func;
 } Function;
