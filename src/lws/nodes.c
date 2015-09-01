@@ -16,7 +16,7 @@
 #include "writer.h"
 
 #ifdef DEBUG_ALLOC
-#define NEW_CONST {NULL, 0l, NULL, NULL}
+	#define NEW_CONST {NULL, 0l, NULL, NULL}
 #else
     #define NEW_CONST {type, 0l}
 #endif
@@ -116,8 +116,8 @@ void *THREAD_NODE(Node *init, ...)
 */
 bool FALSE_Q_(Node *node)
 {
-	bool res =  node->type->int_type == INIL ||
-				node->type->int_type == IFALSE;
+	bool res =  node == NIL ||
+				node == FALSE;
 	unlink_node(&node);
 	return res;
 }

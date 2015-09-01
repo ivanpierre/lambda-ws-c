@@ -20,11 +20,11 @@ typedef struct
 } Decimal;
 
 Node    *integer(long value);
-Integer number_integer(Node * node);
+long    number_integer(Node * node);
 Node    *integer_Q_(Node * node);
 
 Node    *decimal(double value);
-Decimal number_decimal(Node * node);
+double  number_decimal(Node * node);
 Node    *decimal_Q_(Node * node);
 
 #endif

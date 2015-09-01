@@ -8,8 +8,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "nodes.h"
+#include "number.h"
 
 /////// Integers
 /*
@@ -17,20 +17,26 @@
 */
 Node *integer(long value)
 {
-	TRACE("Va faire %s", str_type(IINTEGER));
-	Node *node = NEW(IINTEGER);
-	ASSERT(node, "Error creating integer");
-	node->val.integer = value;
-	TRACE("%s fait !", str_type(node->type));
+	Node *node = new_node(IINTEGER);
+	ASSERT(node, ERR_CREATE_NEW, str_type(IINTEGER));
+	Integer *integer = STRUCT(node);
+	integer->integer = value;
 	return node; // already linked
+
+	error_assert:
+	unlink_node(&node);
+	return NULL;
 }
 
 /*
 	Return value of integer
 */
-Integer number_integer(Node *node)
+long number_integer(Node *node)
 {
-	return node->val.integer;
+	Integer *integer = STRUCT(node);
+	long res = integer->integer;
+	unlink_node(&node);
+	return res;
 }
 
 /*
@@ -38,7 +44,9 @@ Integer number_integer(Node *node)
 */
 Node *integer_Q_(Node *node)
 {
-	return (node && node->type == IINTEGER) ? true : FALSE;
+	Node *res = (node && node->type->int_type == IINTEGER) ? TRUE : FALSE;
+	unlink_node(&node);
+	return res;
 }
 
 ////// Decimals
@@ -47,20 +55,26 @@ Node *integer_Q_(Node *node)
 */
 Node *decimal(double value)
 {
-	TRACE("Va faire %s", str_type(IDECIMAL));
-	Node *node = NEW(IDECIMAL);
-	ASSERT(node, "Error creating decimal");
-	node->val.decimal = value;
-	TRACE("%s fait !", str_type(node->type));
-	return node;
+	Node *node = new_node(IDECIMAL);
+	ASSERT(node, ERR_CREATE_NEW, str_type(IDECIMAL));
+	Decimal *decimal = STRUCT(node);
+	decimal->decimal = value;
+	return node; // already linked
+
+	error_assert:
+	unlink_node(&node);
+	return NULL;
 }
 
 /*
 	Return value of integer
 */
-Decimal number_decimal(Node *node)
+double number_decimal(Node *node)
 {
-	return node->val.decimal;
+	Decimal *decimal = STRUCT(node);
+	double res = decimal->decimal;
+	unlink_node(&node);
+	return res;
 }
 
 /*
@@ -68,14 +82,17 @@ Decimal number_decimal(Node *node)
 */
 Node *decimal_Q_(Node *node)
 {
-	return (node && node->type == IDECIMAL) ? true : FALSE;
+	Node *res = (node && node->type->int_type == IINTEGER) ? TRUE : FALSE;
+	unlink_node(&node);
+	return res;
 }
 
 /*
     unalloc number
 */
-Node *number_free(Node *node)
+Node *number_free(Node **node)
 {
-    free(node);
+    free(*node);
+	*node = NULL;
     return NULL;
 }

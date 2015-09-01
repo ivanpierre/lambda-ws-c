@@ -136,7 +136,7 @@ static Node *free_node(Node **node)
 		case INIL :
 		case ITRUE :
 		case IFALSE :
-			return *node;
+			break;
 
 		case IKEYWORD :
 		case ISYMBOL :
