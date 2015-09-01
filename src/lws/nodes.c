@@ -37,7 +37,7 @@ static Node *init_node(Node *node, enum TYPE type)
 {
 	ASSERT(node, ERR_NULL_PTR);
 	node->type        = type;
-	node->occurrences = 0; // will be incremented on link
+	node->occurrences = 1; // will be incremented on link
 #ifdef DEBUG_ALLOC
 	if (!last_node)
 	{
@@ -62,25 +62,20 @@ static Node *init_node(Node *node, enum TYPE type)
     Create a node
     Constructor, return linked
 */
-bool new_node(TYPE type_of_node)
+Node new_node(TYPE type_of_node)
 {
 	TRACE("fait nouveau node %s %ld", str_type(type_of_node), type_of_node);
 
 	Node *node = malloc(sizeof(Node) + size_type(type_of_node));
-	ASSERT_NODE(node, type_of_node);
-
 	ASSERT(init_node(node, type_of_node), ERR_INIT, str_type(type_of_node);
 
 	TRACE("Node %s créé", str_type(type_of_node));
-	return node;
+	return BOOL_TRUE;
 
 	error_assert:
 	unlink_node(&node);
 	*var = NULL;
 	return BOOL_FALSE;
-
-	error_assert:
-
 }
 
 /*

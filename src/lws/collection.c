@@ -163,29 +163,27 @@ Node *collection_free(Node **node)
 }
 
 /*
+	Mutable coll
+*/
+Node *collection_mut_Q_(Node *node)
+{
+	ACCESS_BOOL(Collection, mut, ICollection);
+}
+
+/*
 Size of coll
 */
 Node *collection_size(Node *node)
 {
-	Node *tmpnode = NULL;
-	ASSERT_NODE(node, tmpnode, ISEQUABLE);
+	ACCESS_BOOL(Collection, size, ICollection);
+}
 
-	Node *res = NULL;
-	if (node->type->int_type == INIL)
-		res = integer(0l);
-	else
-	{
-		Collection *coll = STRUCT(node);
-		res = integer(coll->size);
-	}
-
-	unlink_node(&tmpnode);
-	return res;
-
-	//************
-	error_assert:
-	unlink_node(&tmpnode);
-	return NULL;
+/*
+Max allocation of coll
+*/
+Node *collection_max(Node *node)
+{
+	ACCESS_BOOL(Collection, max, ICollection);
 }
 
 /*
@@ -193,20 +191,18 @@ Node *collection_size(Node *node)
 */
 Node *collection_first(Node *node)
 {
+	Collection *coll = STRUCT(node);
 	Node *tmpnode = NULL;
+	Node       *res  = NULL;
+
 	ASSERT_NODE(node, tmpnode, ISEQUABLE);
 
-	Node *res = NULL;
-	Collection *coll = STRUCT(node);
-
-	if (node->type->int_type == INIL || coll->size <= 0)
+	if (tmpnode->type->int_type == INIL || coll->size <= 0)
 		res = NIL;
-	else if (node->type->int_type == ILIST)
+	else if (tmpnode->type->int_type == ILIST)
 		link_node(&res, coll->nodes[coll->size - 1]);
 	else
 		link_node(&res, coll->nodes[0]);
-
-	unlink_node(&node);
 	return res;
 
 	error_assert:
@@ -220,20 +216,19 @@ Node *collection_first(Node *node)
 */
 Node *collection_last(Node *node)
 {
+	Collection *coll = STRUCT(node);
 	Node *tmpnode = NULL;
+	Node       *res  = NULL;
+
 	ASSERT_NODE(node, tmpnode, ISEQUABLE);
 
-	Node *res = NULL;
-	Collection *coll = STRUCT(node);
-
-	if (node->type->int_type == INIL || coll->size <= 0)
+	if (tmpnode->type->int_type == INIL || coll->size <= 0)
 		res = NIL;
-	else if (node->type->int_type == ILIST)
+	else if (tmpnode->type->int_type == ILIST)
 		link_node(&res, coll->nodes[0]);
 	else
 		link_node(&res, coll->nodes[coll->size - 1]);
 
-	unlink_node(&node);
 	return res;
 
 	error_assert:
@@ -257,12 +252,12 @@ Node *collection_nth(Node *node, Node *index)
 	long idx = i->integer;
 
 	// get indexed value
-	Node *res = NULL;
+	Node       *res  = NULL;
 	Collection *coll = STRUCT(node);
 	if (node->type->int_type == INIL)
 		res = NIL;
-	else if(coll->size == 0 || (idx >= coll->size && idx < 0))
-		ABORT(ERR_INDEX, idx);
+	else if (coll->size == 0 || (idx >= coll->size && idx < 0))
+	ABORT(ERR_INDEX, idx);
 	if (node->type->int_type == ILIST)
 		link_node(&res, coll->nodes[coll->size - idx - 1]);
 	else

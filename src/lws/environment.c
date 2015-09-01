@@ -26,16 +26,12 @@ Node *environment(Node *previous, Node *map)
 	}
 	ASSERT_NODE(map, tmp_map, IMAP);
 
-	unlink_node(&previous);
-	unlink_node(&map);
-
 	res = new_node(IENVIRONMENT);
-	ASSERT(res, ERR_CREATE_NEW, str_type(IENVIRONMENT))
+	ASSERT(res, ERR_CREATE_NEW, str_type(IENVIRONMENT));
 
 	Environment *env = STRUCT(res);
 	env->previous = link_node(&env->previous, tmp_previous);
 	env->map = link_node(&env->map, tmp_map);
-
 	unlink_node(&tmp_previous);
 	unlink_node(&tmp_map);
 	return res;
@@ -59,13 +55,10 @@ Node *environment_map(Node *node)
 	Node *res      = NULL;
 
 	ASSERT_NODE(node, tmp_node, IENVIRONMENT);
-	unlink_node(&node);
-
 	Environment *env = STRUCT(tmp_node);
 
 	link_node(&res, env->map);
 	unlink_node(&tmp_node);
-
 	return res;
 
 	//**********
@@ -85,8 +78,6 @@ Node *environment_previous(Node *node)
 	Node *res      = NULL;
 
 	ASSERT_NODE(node, tmp_node, IENVIRONMENT);
-	unlink_node(&node);
-
 	Environment *env = STRUCT(tmp_node);
 
 	link_node(&res, env->previous);

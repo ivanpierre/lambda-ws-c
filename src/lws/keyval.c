@@ -12,18 +12,11 @@
 #include "keyval.h"
 
 /*
-    Access Keyval from Node
-*/
-#define KEYVAL(node) ((KeyVal *)(node->val.compl))
-
-/*
     Get the key of keyval
 */
 Node *keyval_key(Node *node)
 {
-	Node *res = link_node(KEYVAL(node)->key);
-	unlink_node(node);
-	return res;
+	ACCESS_NODE(KeyVal, key, IKEYVAL, INODES);
 }
 
 /*
@@ -31,9 +24,7 @@ Node *keyval_key(Node *node)
 */
 Node *keyval_value(Node *node)
 {
-	Node *res = link_node(KEYVAL(node)->value);
-	unlink_node(node);
-	return res;
+	ACCESS_NODE(KeyVal, value, IKEYVAL, INODES);
 }
 
 /*
@@ -47,15 +38,14 @@ Node *keyval_eval(Node *node, Node *environment)
 /*
     Free keyval
 */
-Node *keyval_free(Node *node)
+Node *keyval_free(Node **node)
 {
-	ASSERT_TYPE(node, KEYVAL, str_type(node->type));
-
-	unlink_node(keyval_key(node));
-	unlink_node(keyval_value(node));
-	free(node->val.compl);
-	free(node);
-	return node;
+	KeyVal *kv = STRUCT(*node);
+	unlink_node(&kv->key);
+	unlink_node(&kv->value);
+	free(*node);
+	*node = NULL;
+	return *node;
 }
 
 /*
@@ -63,11 +53,23 @@ Node *keyval_free(Node *node)
 */
 Node *keyval(Node *key, Node *value)
 {
-	Node *node          = NEW(IKEYVAL); // Create linked node
+	Node *res          = NULL;
+	Node *tmp_key      = NULL;
+	Node *tmp_value    = NULL;
 
-	ASSERT(node, ERR_CREATE_NEW, IKEYVAL);
-	KEYVAL(node)->key   = key; // don't unlink, it's assigned to keyval
-	KEYVAL(node)->value = value;
+	ASSERT_NODE(key, tmp_key, INODES);
+	ASSERT_NODE(value, tmp_value, INODES);
 
-	return node; // Node is already linked
+	res = new_node(IKEYVAL);
+	KeyVal *kv = STRUCT(res);
+	link_node(&kv->key, tmp_key);
+	link_node(&kv->value, tmp_value);
+
+	error_assert:
+	unlink_node(&key);
+	unlink_node(&value);
+	unlink_node(&tmp_key);
+	unlink_node(&tmp_value);
+
+	return res; // Node is already linked
 }

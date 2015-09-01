@@ -13,146 +13,32 @@
 
 Node *function_is_macro(Node *node)
 {
-	Node *tmp_node = NULL;
-	Node *res = NULL;
-	ASSERT_NODE(node, tmp_node, ICALLABLE);
-	unlink_node(&node);
-
-	Function *func = STRUCT(tmp_node);
-	res = func->is_macro ? TRUE : NIL;
-
-	unlink_node(&tmp_node);
-	return res;
-
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&tmp_node);
-	unlink_node(&res);
-	return NULL;
+	ACCESS_BOOL(Function, is_macro, ICALLABLE);
 }
 
 Node *function_is_special(Node *node)
 {
-	Node *tmp_node = NULL;
-	Node *res = NULL;
-	ASSERT_NODE(node, tmp_node, ICALLABLE);
-	unlink_node(&node);
-
-	Function *func = STRUCT(tmp_node);
-	res = func->is_special ? TRUE : NIL;
-
-	unlink_node(&tmp_node);
-	return res;
-
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&tmp_node);
-	unlink_node(&res);
-	return NULL;
+	ACCESS_BOOL(Function, is_special, ICALLABLE);
 }
 
 Node *function_closure(Node *node)
 {
-	Node *tmp_node = NULL;
-	Node *res = NULL;
-
-	ASSERT_NODE(node, tmp_node, ICALLABLE);
-	unlink_node(&node);
-
-	Function *func = STRUCT(tmp_node);
-	link_node(&res, func->closure);
-	unlink_node(&tmp_node);
-
-	if (!res)
-		res = NIL;
-	if (res != NIL)
-		ASSERT_TYPE(res, IENVIRONMENT);
-
-	return res;
-
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&tmp_node);
-	unlink_node(&res);
-	return NULL;
+	ACCESS_NODE(Function, closure, ICALLABLE, IENVIRONMENT);
 }
 
 Node *function_args(Node *node)
 {
-	Node *tmp_node = NULL;
-	Node *res = NULL;
-
-	ASSERT_NODE(node, tmp_node, ICALLABLE);
-	unlink_node(&node);
-
-	Function *func = STRUCT(tmp_node);
-	link_node(&res, func->args);
-	unlink_node(&tmp_node);
-
-	if (!res)
-		res = NIL;
-	if (res != NIL)
-		ASSERT_TYPE(res, IARRAY);
-
-	return res;
-
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&tmp_node);
-	unlink_node(&res);
-	return NULL;
+	ACCESS_NODE(Function, args, ICALLABLE, IARRAY);
 }
 
 Node *function_body(Node *node)
 {
-	Node *tmp_node = NULL;
-	Node *res = NULL;
-
-	ASSERT_NODE(node, tmp_node, ILAMBDA);
-	unlink_node(&node);
-
-	Function *func = STRUCT(tmp_node);
-	link_node(&res, func->args);
-	unlink_node(&tmp_node);
-
-	if (!res)
-		res = NIL;
-	if (res != NIL)
-	ASSERT_TYPE(res, ILIST);
-
-	return res;
-
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&tmp_node);
-	unlink_node(&res);
-	return NULL;
+	ACCESS_NODE(Function, func.body, ILAMBDA, ILIST);
 }
 
 void *function_func(Node *node)
 {
-	Node *tmp_node = NULL;
-	Node *res = NULL;
-
-	ASSERT_NODE(node, tmp_node, ILAMBDA);
-	unlink_node(&node);
-
-	Function *func = STRUCT(tmp_node);
-	link_node(&res, func->args);
-	unlink_node(&tmp_node);
-
-	if (!res)
-		res = NIL;
-	if (res != NIL)
-	ASSERT_TYPE(res, ILIST);
-
-	return res;
-
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&tmp_node);
-	unlink_node(&res);
-	return NULL;
+	ACCESS_PTR(Function, func.func, IFUNCTION);
 }
 
 /*
@@ -160,13 +46,14 @@ void *function_func(Node *node)
 */
 Node *function_free(Node **node)
 {
-	Function *func = STRUCT(*node);
 	ASSERT_TYPE(*node, ICALLABLE);
+	Function *func = STRUCT(*node);
 	unlink_node(&func->is_macro);
 	unlink_node(&func->is_special);
 	unlink_node(&func->args);
 	unlink_node(&func->closure);
-	unlink_node(&func->func.body);
+	if((*node)->type->int_type == ILAMBDA)
+		unlink_node(&func->func.body);
 	free(*node);
 	*node = NULL;
 

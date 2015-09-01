@@ -49,7 +49,7 @@ Collection *GET_COLLECTION(Node *node);
 
 Node *collection_size(Node *coll);
 Node *collection_max(Node *coll);
-Node *collection_mut(Node *coll);
+Node *collection_mut_Q_(Node *coll);
 
 // nodes accessors
 Node *collection_first(Node *coll);

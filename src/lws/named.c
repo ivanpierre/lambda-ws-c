@@ -16,45 +16,46 @@
 #include "named.h"
 
 /*
-    Access named data
+    Create a named object
 */
-static Named *GET_NAMED(Node *node)
+static Node *named_base(Node *ns, Node *name, TYPE type)
 {
-    return  (Named *)(node->val.compl);
-}
+    ASSERT(ns, ERR_ARG, "namespace");
+    ASSERT(name, ERR_ARG, "name");
+    if(ns != NIL)
+    {
+	    ASSERT_TYPE(ns, INAMESPACE);
+    }
+	ASSERT_TYPE(name, ISTRING);
 
-/*
-    Create a linked string, don't allocate space for the string
-*/
-static Node *named_base(Node *ns, Node *name, enum TYPE type)
-{
-    ASSERT(ns, "namespace is null");
-    ASSERT(name, "name is null");
-    ASSERT_TYPE(ns, SYMBOL | STRING | NAMESPACE | NIL, "namespace bad type %s", str_type(ns->type));
-    ASSERT_TYPE(name, SYMBOL | STRING, "name bad type %s", str_type(name->type));
+    Node *node = new_node(type);
 
-    Node *node = NEW(type);
+    ASSERT(node, ERR_CREATE_NEW, str_type(type));
 
-    ASSERT(node, "Cannot create %s", str_type(node->type));
-
-    node->val.compl = malloc(sizeof(Named));
-
-    GET_NAMED(node)->ns = ns;
-    switch(name->type)
+	Named *named = STRUCT(node);
+    named->ns = ns;
+	unlink_node(&ns);
+    switch(name->type->int_type)
     {
         case ISYMBOL:
-            GET_NAMED(node)->name = link_node(named_name(name)); // allocate place for the string
+            link_node(&named->name, named_name(name)); // allocate place for the string
             break;
 
         case ISTRING:
-            GET_NAMED(node)->name = link_node(name); // allocate place for the string
+            link_node(&named->name,name); // allocate place for the string
             break;
 
         default:
             ABORT("name bad type");
     }
-
+	unlink_node(&name);
     return node; // create node does the link
+
+	error_assert:
+	unlink_node(&ns);
+	unlink_node(&name);
+	unlink_node(&node);
+	return NULL;
 }
 
 /*
@@ -78,7 +79,9 @@ Node *keyword(Node *ns, Node *name)
 */
 Node *symbol_Q_(Node *node)
 {
-    return (node && node->type == ISYMBOL) ? true : FALSE;
+    Node *res = (node && node->type->int_type == ISYMBOL) ? TRUE : FALSE;
+	unlink_node(&node);
+	return res;
 }
 
 /*
@@ -86,7 +89,9 @@ Node *symbol_Q_(Node *node)
 */
 Node *keyword_Q_(Node *node)
 {
-    return (node && node->type == IKEYWORD) ? true : FALSE;
+	Node *res = (node && node->type->int_type == IKEYWORD) ? TRUE : FALSE;
+	unlink_node(&node);
+	return res;
 }
 
 /*
@@ -94,8 +99,7 @@ Node *keyword_Q_(Node *node)
 */
 Node *named_name(Node *node)
 {
-    ASSERT_TYPE(node, NAMED, "node is neither a symbol nor keyword");
-    return GET_NAMED(node)->name; // alloc node
+    ACCESS_NODE(Named, name, INAMED, ISTRING);
 }
 
 /*
@@ -103,8 +107,7 @@ Node *named_name(Node *node)
 */
 Node *named_ns(Node *node)
 {
-    ASSERT_TYPE(node, NAMED, "node is neither a symbol nor keyword");
-    return GET_NAMED(node)->ns; // alloc node
+	ACCESS_NODE(Named, ns, INAMED, INAMESPACE);
 }
 
 /*
@@ -119,15 +122,12 @@ Node *symbol_eval(Node *node, Node *environment)
 /*
     Unalloc named elements : ns and name
 */
-Node *named_free(Node *node)
+Node *named_free(Node **node)
 {
-    ASSERT_TYPE(node, NAMED,
-                "error unallocatig bad type : %s",
-                str_type(node->type));
-
-    unlink_node(named_ns(node));
-    unlink_node(named_name(node));
-    free(node->val.compl);
-    free(node);
-    return NULL;
+	Named *named = STRUCT(*node);
+    unlink_node(&named->ns);
+    unlink_node(&named->name);
+    free(*node);
+	*node = NULL;
+    return *node;
 }

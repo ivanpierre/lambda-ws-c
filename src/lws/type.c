@@ -56,15 +56,18 @@ const long BTYPE        = (1l << ITYPE);         // Type of nodes
 const long BKEYVAL      = (1l << IKEYVAL);       // Binding of key / values for MAP
 const long BINVALID     = IINVALID;              // Self explaining... used not to go too far... :D
 
-const long BNUMBER     = BINTEGER | BDECIMAL;
-const long BNAMED      = BSYMBOL | BKEYWORD;
-const long BITERABLE   = BLIST | BARRAY | BSEQ;
-const long BMAPPED     = BMAP | BSET;
-const long BCOLLECTION = BITERABLE | BMAPPED;
-const long BSEQUABLE   = BCOLLECTION | BNIL;
-const long BINDEXED    = BSTRING | BARRAY;
-const long BCALLABLE   = BFUNCTION | BLAMBDA;
-const long BUNLINKABLE = BNIL | BTRUE | BFALSE | BTYPE;
+const long BNUMBER      = BINTEGER | BDECIMAL;
+const long BNAMED       = BSYMBOL | BKEYWORD;
+const long BITERABLE    = BLIST | BARRAY | BSEQ;
+const long BMAPPED      = BMAP | BSET;
+const long BCOLLECTION  = BITERABLE | BMAPPED;
+const long BSEQUABLE    = BCOLLECTION | BNIL;
+const long BINDEXED     = BSTRING | BARRAY;
+const long BCALLABLE    = BFUNCTION | BLAMBDA;
+const long BUNLINKABLE  = BNIL | BTRUE | BFALSE | BTYPE;
+const long BBOOLEAN     = BTRUE | BFALSE;
+const long BNSDESC      = BSYMBOL | BSTRING | BNAMESPACE | BNIL;
+const long BSYMDESC     = BSYMBOL | BSTRING;
 
 /*
 	Representation of types
@@ -109,7 +112,10 @@ Type type_array[] = {{"Node",       INODES,         BNODES, 0},
 					{"Sequable",    ISEQUABLE,      BSEQUABLE, 0},
 					{"Indexed",     IINDEXED,       BINDEXED, 0},
 					{"Callable",    ICALLABLE,      BCALLABLE, 0},
-					{"Unlikable",   IUNLINKABLE,    BUNLINKABLE, 0}};
+					{"Unlikable",   IUNLINKABLE,    BUNLINKABLE, 0}},
+					{"Boolean",     IBOOLEAN,       BBOOLEAN, 0},
+					{"Namespace description",  INSDESC,        BNSDESC, 0},
+					{"Symbol description",     ISYMDESC,       BSYMDESC, 0}};
 
 /*
  * get type from an TYPE
@@ -148,7 +154,8 @@ long size_type(TYPE type)
  */
 bool isa_type(TYPE type, TYPE isa)
 {
-	return get_type(type)->bin_type & get_type(isa)->bin_type &&
-	       get_type(type)->bin_type <= get_type(isa)->bin_type;
+	return  isa == INODES || // INODES accept anything, even a non node pointer
+			(get_type(type)->bin_type & get_type(isa)->bin_type &&
+	       get_type(type)->bin_type <= get_type(isa)->bin_type);
 }
 

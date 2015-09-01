@@ -77,6 +77,7 @@ void stack_free();
 		ASSERT(node, ERR_NODE); \
 		ASSERT_TYPE(node, type); \
 		link_node(&tmpnode, node); \
+		unlink_node(&node); \
 	}
 
 #endif

@@ -55,7 +55,10 @@ typedef enum TYPE
 	ISEQUABLE       = 37,   // Can be sequed
 	IINDEXED        = 38,   // STRING and arrays
 	ICALLABLE       = 39,   // Function of lambda
-	IUNLINKABLE     = 40    // Can't be linked
+	IUNLINKABLE     = 40,   // Can't be linked
+	IBOOLEAN        = 41,   // TRUE, FALSE
+	INSDESC         = 42,   // Namespace description
+	ISYMDESC        = 42    // Symbol description
 } TYPE;
 
 typedef struct
