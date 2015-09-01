@@ -33,10 +33,10 @@ Node        *TRUE     = &true_val;
     First initialisation of an allocated node, first link to the data segment
     Return linked node or NIL
 */
-static Node *init_node(Node *node, enum TYPE type)
+static Node *init_node(Node *node, TYPE type)
 {
 	ASSERT(node, ERR_NULL_PTR);
-	node->type        = type;
+	node->type        = get_type(type);
 	node->occurrences = 1; // will be incremented on link
 #ifdef DEBUG_ALLOC
 	if (!last_node)
@@ -62,20 +62,19 @@ static Node *init_node(Node *node, enum TYPE type)
     Create a node
     Constructor, return linked
 */
-Node new_node(TYPE type_of_node)
+Node *new_node(TYPE type)
 {
-	TRACE("fait nouveau node %s %ld", str_type(type_of_node), type_of_node);
+	TRACE("fait nouveau node %s %ld", str_type(type), type);
 
-	Node *node = malloc(sizeof(Node) + size_type(type_of_node));
-	ASSERT(init_node(node, type_of_node), ERR_INIT, str_type(type_of_node);
+	Node *node = malloc(sizeof(Node) + size_type(type));
+	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
 
-	TRACE("Node %s créé", str_type(type_of_node));
-	return BOOL_TRUE;
+	TRACE("Node %s créé", str_type(type));
+	return node;
 
 	error_assert:
 	unlink_node(&node);
-	*var = NULL;
-	return BOOL_FALSE;
+	return node;
 }
 
 /*
@@ -85,24 +84,31 @@ Node new_node(TYPE type_of_node)
      Last value can be anything and should be considered as allocated
      Function list should finish with a NULL, else.... :D
 */
-void *THREAD_NODE(void **var, Node *init, ...)
+void *THREAD_NODE(Node *init, ...)
 {
-	bool        (*func)(void **node, Node *arg) = NULL;
+	void *(*func)(Node *arg) = NULL;
 	va_list funp;
+	Node *node = NULL;
 
-	if (var)
-		unlink_node(*var);
-	ASSERT(link_node(var, init), ERR_INIT);
+	link_node(&node, init);
+	unlink_node(&init);
+	ASSERT(node, ERR_INIT);
 
 	va_start(funp, init);
-	while ((func = va_arg(funp, void *(*)(void **var, Node *arg))))
-		ASSERT((*func)(var, *res), ERR_INIT);
+	while ((func = va_arg(funp, void *(*)(Node *arg))))
+	{
+		Node *res = (*func)(node);
+		link_node(&node, res);
+		unlink_node(&res);
+		ASSERT(node, ERR_INIT);
+	}
 
-	return BOOL_TRUE;
+	return node;
 
 	error_assert:
-	unlink_node(var);
-	return BOOL_FALSE;
+	unlink_node(&node);
+	unlink_node(&init);
+	return node;
 }
 
 /*
@@ -110,7 +116,10 @@ void *THREAD_NODE(void **var, Node *init, ...)
 */
 bool FALSE_Q_(Node *node)
 {
-	return node->type == INIL || node->type == IFALSE;
+	bool res =  node->type->int_type == INIL ||
+				node->type->int_type == IFALSE;
+	unlink_node(&node);
+	return res;
 }
 
 /*
@@ -118,37 +127,25 @@ bool FALSE_Q_(Node *node)
 */
 bool TRUE_Q_(Node *node)
 {
-	return !FALSE(node);
+	bool res = !FALSE_Q_(node);
+	unlink_node(&node);
+	return res;
 }
 
 /*
     Test falsey
 */
-bool false_Q_(Node **var, Node *node)
+Node *false_Q_(Node *node)
 {
-	Node *arg = NULL;
-	link_node(&arg, node);
-	if (*var)
-		unlink_node(*var);
-
-	*var = (arg->type == NIL || arg->type == IFALSE) ? TRUE : NIL;
-	unlink_node(&arg);
-	return BOOL_TRUE;
+	return FALSE_Q_(node) ? TRUE : FALSE;
 }
 
 /*
     Test truthey
 */
-bool true_Q_(Node *node)
+Node *true_Q_(Node *node)
 {
-	Node *arg = NULL;
-	link_node(&arg, node);
-	if (*var)
-		unlink_node(*var);
-
-	*var = (arg->type == NIL || arg->type == IFALSE) ? NIL : TRUE;
-	unlink_node(&arg);
-	return BOOL_TRUE;
+	return TRUE_Q_(node) ? TRUE : FALSE;
 }
 
 /*
@@ -160,3 +157,7 @@ bool node_isa_type(Node *node, TYPE isa)
 			node->type->bin_type <= get_type(isa)->bin_type;
 }
 
+void *STRUCT(Node *node)
+{
+	return ((char *)node) + sizeof(Node);
+}
