@@ -1,9 +1,9 @@
 /****
-    Seq : sequence on a collection
+	Seq : sequence on a collection
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #include <stdio.h>
@@ -13,103 +13,125 @@
 #include "collection.h"
 
 /*
-    Walker on a collection act as a list
-*/
-typedef struct
-{
-    long            index;
-    struct Node     *coll;
-} Seq;
-
-/*
-    Access named data
-*/
-static Seq *GET_SEQ(Node *node)
-{
-    return  (Seq *)(node->val.compl);
-}
-
-/*
-    Constructor
+	Constructor
 */
 Node *seq(long index, Node *coll)
 {
-    Node *new_coll = NULL;
-    // loop across seq if we make a seq from a seq until we find a collection
-    while(coll->type == ISEQ)
-    {
-        /*
-            We will manage the CONS, BUNDLE, etc. types
-        */
-        switch(coll->type)
-        {
-            case ISEQ:
-                new_coll = seq_coll(coll);
-                index += seq_index(coll);
-                unlink_node(coll);
-                coll = new_coll;
-                break;
+	Node *new_coll = NULL;
+	Seq *seq = NULL;
 
-            default:
-                break;
-        }
-    }
+	// loop across seq if we make a seq from a seq until we find a collection
+	while(coll->type->int_type == ISEQ)
+	{
+		/*
+			We will manage the CONS, BUNDLE, etc. types
+		*/
+		switch(coll->type->int_type)
+		{
+			case ISEQ:
+				seq = STRUCT(coll);
+				link_node(&new_coll, seq->coll);
+				index += seq->index;
+				link_node(&coll, new_coll);
+				unlink_node(&new_coll);
+		        break;
 
-    // (seq ()) => nil
-    if(collection_size(coll) - index <= 0)
-    {
-        unlink_node(coll);
-        return nil;
-    }
+			default:
+				break;
+		}
+	}
 
-    // create seq
-    Node *node = NEW(ISEQ);
-    ASSERT(node, "Creation of new seq");
-    GET_SEQ(node)->index = index;
-    GET_SEQ(node)->coll = coll;
-    return(node);
+	// (seq ()) => nil
+	Collection *collection = STRUCT(coll);
+	index = collection->size - index;
+	if(index <= 0)
+	{
+		unlink_node(&coll);
+		return NIL;
+	}
+
+	// create seq
+	Node *node = new_node(ISEQ);
+	ASSERT(node, "Creation of new seq", str_type(ISEQ));
+
+	seq = STRUCT(node);
+	seq->index = index;
+	link_node(&seq->coll, coll);
+	unlink_node(&coll);
+	return node;
+
+	// ******************
+	error_assert:
+	unlink_node(&coll);
+	unlink_node(&new_coll);
+	unlink_node(&node);
+	return NULL;
 }
 
 /*
-    length of the sequence
+	length of the sequence
 */
 long seq_size(Node *node)
 {
-    return collection_size(seq_coll(node)) - seq_index(node);
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, ISEQ);
+
+	Seq *seq = STRUCT(tmp_node);
+	Collection *coll = STRUCT(seq->coll);
+	long coll_size = coll->size - seq->index;
+
+	unlink_node(&tmp_node);
+	return coll_size;
+
+	//**********************
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	return -1;
 }
 
 /*
-    Get index
+	Get index
 */
 long seq_index(Node *node)
 {
-    if(!node)
-    {
-        ERROR("Seq null");
-        unlink_node(node);
-        return -1l;
-    }
-    return GET_SEQ(node)->index;
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, ISEQ);
+	Seq *seq = STRUCT(tmp_node);
+	return seq->index;
+
+	// ****************
+	error_assert:
+	unlink_node(&node);
+	return -1;
 }
 
 /*
-    Get collection
+	Get collection
 */
 Node *seq_coll(Node *node)
 {
-    ASSERT(node, "Seq null");
+	ASSERT(node, "Seq null");
+	Seq *seq = STRUCT(node);
+	Node *res = NULL;
 
-    return link_node(GET_SEQ(node)->coll);
+	link_node(&res, seq->coll);
+	unlink_node(&node);
+	return res;
+
+	// ***********
+	error_assert:
+	unlink_node(&node);
+	return NULL;
 }
 
 /*
-    Free sequence
+	Free sequence
 */
 Node *seq_free(Node *node)
 {
-    unlink_node(seq_coll(node));
-    free(GET_SEQ(node));
-    free(node->val.compl);
-    free(node);
-    return NULL;
+	Seq *seq = STRUCT(node);
+	unlink_node(&seq->coll);
+	free(node);
+	return NULL;
 }
