@@ -1,11 +1,11 @@
 /****
-    Strings
+	Strings
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 
-    Warning this implementation is based on C strings
+	Warning this implementation is based on C strings
 */
 
 #include <stdio.h>
@@ -14,97 +14,114 @@
 #include <string.h>
 #include "nodes.h"
 #include "strings.h"
+#include "writer.h"
 
 /*
-    Gives back the string content
+	Gives back the string content
 */
-String GET_STRING(Node *node)
+char *GET_STRING(Node *node)
 {
-    ASSERT(node, "null value")
-    ASSERT_TYPE(node, STRING, "get szring grom non string");
-    return strdup(node->val.compl);
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, ISTRING);
+	String *str = STRUCT(node);
+	char *res = malloc(str->size + 1);
+	ASSERT(res, ERR_ALLOC);
+	memcpy(res, str->string, str->size);
+	res[str->size] = '\0';
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	return res;
+
+	//***************
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	return NULL;
 }
 
 /*
-    Create a linked string, don't allocate space for the string
+	Create a linked string, don't allocate space for the string
 */
-static Node *string_base(String value)
+static Node *string_base(char *value)
 {
-    ASSERT(value, "value is null");
+	Node *node = new_node(ISTRING);
+	String *str = STRUCT(node);
 
-    Node *node = NEW(ISTRING);
-
-    if(!node)
-        return NULL;
-
-    node->val.compl = value;
-    return node; // node did the link
+	str->size = strlen(value);
+	str->string = value;
+	return node; // node did the link
 }
 
 
 /*
-    Create a linked string, allocate space for the string
+	Create a linked string, allocate space for the string
 */
 Node *string(char *value)
 {
-    ASSERT(value, "value is null");
+	ASSERT(value, ERR_NODE);
+	return string_base(value); // new_string_base did the link
 
-    return string_base(value); // new_string_base did the link
+	//***************
+	error_assert:
+	return NULL;
 }
 
 /*
-    Create a linked string, allocate space for the string
+	Create a linked string, allocate space for the string
 */
 Node *string_allocate(char *value)
 {
-    ASSERT(value, "value is null");
+	ASSERT(value, ERR_NODE);
+	return string_base(strdup(value)); // make_string does the link
 
-    return string_base(strdup(value)); // make_string does the link
+	//***************
+	error_assert:
+	return NULL;
 }
 
 /*
-    create a new string node appending another one
+	create a new string node appending another one
 */
 Node *string_sprintf(char *fmt, ...)
 {
-    va_list args;
-    va_start(args, fmt);
-    String formated = NULL;
-    vasprintf(&formated, fmt, args);
-    if(!formated)
-        return string_allocate("cannot format string");
+	va_list args;
+	va_start(args, fmt);
+	char *formated = NULL;
+	vasprintf(&formated, fmt, args);
+	if(!formated)
+		return string_allocate("cannot format string");
 
-    TRACE("Formatt = %s'", fmt);
-    TRACE("Formatted String = %s'", formated);
-    return string(formated);
+	TRACE("Formatt = %s'", fmt);
+	TRACE("Formatted String = %s'", formated);
+	return string(formated);
 }
 
 /*
-    test if node is a string
+	test if node is a string
 */
 Node *string_Q_(Node *node)
 {
-    return (node && node->type == ISTRING) ? true : FALSE;
+	Node *res = (node && node->type->int_type == ISTRING) ? TRUE : FALSE;
+	unlink_node(&node);
+	return res;
 }
 
 /*
-    Unalloc string
+	Unalloc string
 */
 Node *string_free(Node *node)
 {
-    ASSERT_TYPE(node, STRING, "node is not a string");
-    if(node->val.compl)
-        free(node->val.compl);
-    node->val.compl = NULL;
-    free(node);
-    return NULL;
+	String *str = STRUCT(node);
+	free(str->string);
+	free(node);
+	return NULL;
 }
 
 /*
-    Standard string getter for node function to element
+	Standard string getter for node function to element
 */
-String GET_ELEM_STRING(Node *elem, Node *(*func)(void **, Node *))
+char *GET_ELEM_STRING(Node *elem, Node *(*func)(Node *))
 {
-    return thread_node(elem, func, &PRINT, &GET_STRING, NULL);
+	return THREAD_NODE(elem, func, &PRINT, &GET_STRING, NULL);
 }
 

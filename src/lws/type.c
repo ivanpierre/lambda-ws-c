@@ -112,7 +112,7 @@ Type type_array[] = {{"Node",       INODES,         BNODES, 0},
 					{"Sequable",    ISEQUABLE,      BSEQUABLE, 0},
 					{"Indexed",     IINDEXED,       BINDEXED, 0},
 					{"Callable",    ICALLABLE,      BCALLABLE, 0},
-					{"Unlikable",   IUNLINKABLE,    BUNLINKABLE, 0}},
+					{"Unlikable",   IUNLINKABLE,    BUNLINKABLE, 0},
 					{"Boolean",     IBOOLEAN,       BBOOLEAN, 0},
 					{"Namespace description",  INSDESC,        BNSDESC, 0},
 					{"Symbol description",     ISYMDESC,       BSYMDESC, 0}};
