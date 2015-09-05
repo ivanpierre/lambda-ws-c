@@ -12,6 +12,7 @@
 #include "nodes.h"
 #include "number.h"
 #include "collection.h"
+#include "free_internal.h"
 
 /*
 	create a new empty collection
@@ -20,7 +21,6 @@
 static Node *collection(TYPE type, bool mut)
 {
 	// Create node base
-	TRACE("Creating %s", str_type(type));
 	Node *node = new_node(type);
 	ASSERT(node, ERR_INIT, str_type(type));
 
@@ -29,7 +29,6 @@ static Node *collection(TYPE type, bool mut)
 	ASSERT(coll, ERR_ALLOC);
 
 	// init collection nodes
-	TRACE("Allocating %s", str_type(type));
 	coll->mut   = mut;
 	coll->size  = 0;
 	coll->max   = 0;
@@ -135,7 +134,6 @@ Node *collection_realloc(Node *node, long size)
 
 	//************
 	error_assert:
-	unlink_node(&node);
 	return NULL;
 }
 
@@ -146,7 +144,7 @@ Node *collection_free(Node **node)
 {
 	ASSERT_TYPE(*node, ICOLLECTION);
 
-	Collection *coll = GET_COLLECTION(*node);
+	Collection *coll = STRUCT(*node);
 	long       size  = coll->size;
 
 	for (long i = 0; i < size; i++)
@@ -175,7 +173,7 @@ Size of coll
 */
 Node *collection_size(Node *node)
 {
-	ACCESS_BOOL(Collection, size, ICollection);
+	ACCESS_INTEGER(Collection, size, ICollection);
 }
 
 /*
@@ -183,7 +181,7 @@ Max allocation of coll
 */
 Node *collection_max(Node *node)
 {
-	ACCESS_BOOL(Collection, max, ICollection);
+	ACCESS_INTEGER(Collection, max, ICollection);
 }
 
 /*
@@ -191,23 +189,24 @@ Node *collection_max(Node *node)
 */
 Node *collection_first(Node *node)
 {
-	Collection *coll = STRUCT(node);
 	Node *tmpnode = NULL;
-	Node       *res  = NULL;
-
+	Node *res  = NULL;
 	ASSERT_NODE(node, tmpnode, ISEQUABLE);
 
+	Collection *coll = STRUCT(node);
 	if (tmpnode->type->int_type == INIL || coll->size <= 0)
 		res = NIL;
 	else if (tmpnode->type->int_type == ILIST)
 		link_node(&res, coll->nodes[coll->size - 1]);
 	else
 		link_node(&res, coll->nodes[0]);
+
+	unlink_node(&tmpnode);
 	return res;
 
 	error_assert:
 	unlink_node(&tmpnode);
-	unlink_node(&node);
+	unlink_node(&res);
 	return NULL;
 }
 
@@ -216,12 +215,11 @@ Node *collection_first(Node *node)
 */
 Node *collection_last(Node *node)
 {
-	Collection *coll = STRUCT(node);
 	Node *tmpnode = NULL;
-	Node       *res  = NULL;
-
+	Node *res  = NULL;
 	ASSERT_NODE(node, tmpnode, ISEQUABLE);
 
+	Collection *coll = STRUCT(node);
 	if (tmpnode->type->int_type == INIL || coll->size <= 0)
 		res = NIL;
 	else if (tmpnode->type->int_type == ILIST)
@@ -229,11 +227,12 @@ Node *collection_last(Node *node)
 	else
 		link_node(&res, coll->nodes[coll->size - 1]);
 
+	unlink_node(&tmpnode);
 	return res;
 
 	error_assert:
 	unlink_node(&tmpnode);
-	unlink_node(&node);
+	unlink_node(&res);
 	return NULL;
 }
 
@@ -242,32 +241,37 @@ Node *collection_last(Node *node)
 */
 Node *collection_nth(Node *node, Node *index)
 {
-	// managenode node arg
-	ASSERT_TYPE(node, ISEQUABLE);
+	Node *tmpnode = NULL;
+	Node *tmpindex = NULL;
+	Node *res  = NULL;
+	ASSERT_NODE(node, tmpnode, ISEQUABLE);
 
 	// Manage index arg
-	ASSERT_TYPE(index, IINTEGER);
-	Integer *i = STRUCT(index);
+	ASSERT_NODE(index, tmpindex, IINTEGER);
+	Integer *i = STRUCT(tmpindex);
 	ASSERT(i, ERR_ARG, "index");
 	long idx = i->integer;
+	unlink_node(&tmpindex);
 
-	// get indexed value
-	Node       *res  = NULL;
 	Collection *coll = STRUCT(node);
-	if (node->type->int_type == INIL)
+	if (tmpnode->type->int_type == INIL)
 		res = NIL;
 	else if (coll->size == 0 || (idx >= coll->size && idx < 0))
-	ABORT(ERR_INDEX, idx);
-	if (node->type->int_type == ILIST)
+		ABORT(ERR_INDEX, idx);
+	if (tmpnode->type->int_type == ILIST)
 		link_node(&res, coll->nodes[coll->size - idx - 1]);
 	else
 		link_node(&res, coll->nodes[idx]);
 
-	//*************
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&index);
+	unlink_node(&tmpnode);
 	return res;
+
+	error_assert:
+	unlink_node(&tmpnode);
+	unlink_node(&tmpindex);
+	unlink_node(&res);
+	return NULL;
+
 }
 
 /*

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "nodes.h"
 #include "free.h"
+#include "free_internal.h"
 
 /*
     double linked list of nodes
@@ -125,25 +126,14 @@ Node *unlink_new(Node *node)
 	{
 		if (node->occurrences)
 			node->occurrences--;
-		ASSERT(node->occurrences == 1);
+		ASSERT(node->occurrences == 1, ERR_NEW_BIND);
 		node->occurrences--;
 	}
 	return node;
 
 	error_assert:
-	return node;
+	return NULL;
 }
-
-Node *collection_free(Node **var);
-Node *named_free(Node **var);
-Node *string_free(Node **var);
-Node *env_free(Node **var);
-Node *seq_free(Node **var);
-Node *keyval_free(Node **var);
-Node *function_free(Node **var);
-Node *reader_free(Node **var);
-Node *writer_free(Node **var);
-Node *number_free(Node **var);
 
 /*
     Free all nodes according to type
@@ -172,7 +162,7 @@ static Node *free_node(Node **node)
 			break;
 
 		case IENVIRONMENT :
-			env_free(node);
+			environment_free(node);
 	        break;
 
 		case ILIST :

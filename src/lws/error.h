@@ -18,7 +18,7 @@
 #define ERR_NEG_ALLOC   "Allocation cannot be negative %ld."
 #define ERR_LINK        "Linking error."
 #define ERR_CREATE_NEW  "cannot create new %s."
-#define ERR_INIT        "Initialization of %s."
+#define ERR_INIT        "Error in initialization of %s."
 #define ERR_TYPE        "type error %s, expected %s."
 #define ERR_INDEX       "Index %ld out of bound."
 #define ERR__NULL_INDEX "Index %ld is NULL."
@@ -26,6 +26,7 @@
 #define ERR_NODE        "Null pointer on node."
 #define ERR_ARG         "Bad argument %s."
 #define ERR_VAR_UNBOUND "#'%s is unbound."
+#define ERR_NEW_BIND    "Unlinking new '%s witch is linked."
 
 /*
  * Manage the stack

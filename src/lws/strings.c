@@ -15,6 +15,7 @@
 #include "nodes.h"
 #include "strings.h"
 #include "writer.h"
+#include "free_internal.h"
 
 /*
 	Gives back the string content
@@ -108,12 +109,13 @@ Node *string_Q_(Node *node)
 /*
 	Unalloc string
 */
-Node *string_free(Node *node)
+Node *string_free(Node **node)
 {
-	String *str = STRUCT(node);
+	String *str = STRUCT(*node);
 	free(str->string);
-	free(node);
-	return NULL;
+	free(*node);
+	*node = NULL;
+	return *node;
 }
 
 /*

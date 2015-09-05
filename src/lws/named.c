@@ -14,6 +14,7 @@
 #include <string.h>
 #include "nodes.h"
 #include "named.h"
+#include "free_internal.h"
 
 /*
     Create a named object

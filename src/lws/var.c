@@ -11,6 +11,7 @@
 #include "nodes.h"
 #include "var.h"
 #include "strings.h"
+#include "free_internal.h"
 
 /*
     Constructor
@@ -43,12 +44,13 @@ Node *var(Node *symbol, Node *value)
 /*
     Free var data
 */
-Node *var_free(Node *node)
+Node *var_free(Node **node)
 {
-	Var *var = STRUCT(node);
+	Var *var = STRUCT(*node);
 	unlink_node(&var->symbol);
 	unlink_node(&var->value);
-	free(node);
+	free(*node);
+	*node = NULL;
 	return NULL;
 }
 

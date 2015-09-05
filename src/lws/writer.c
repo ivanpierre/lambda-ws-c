@@ -20,6 +20,7 @@
 #include "number.h"
 #include "var.h"
 #include "free.h"
+#include "free_internal.h"
 
 Node *curr = NULL;
 
@@ -119,7 +120,7 @@ Node *writer_curr_close()
 Node *writer_print(Node *node)
 {
 	char *str = GET_STRING(node);
-	FILE *handle = writer_file(get_node(curr));
+	FILE *handle = writer_file(curr);
 	fprintf(handle, "%s", str);
 	free(str);
 	fflush(handle);
@@ -132,7 +133,7 @@ Node *writer_print(Node *node)
 */
 Node *writer_nl()
 {
-	FILE *handle = writer_file(get_node(curr));
+	FILE *handle = writer_file(curr);
 	fprintf(handle, "\n");
 	fflush(handle);
 	return NIL;
@@ -143,7 +144,7 @@ Node *writer_nl()
 */
 Node *writer_flush()
 {
-	FILE *handle = writer_file(get_node(curr));
+	FILE *handle = writer_file(curr);
 	fflush(handle);
 	return NIL;
 }
@@ -151,14 +152,16 @@ Node *writer_flush()
 /*
 	Free writer and close file
 */
-Node *writer_free(Node *node)
+Node *writer_free(Node **node)
 {
-	FILE *file = writer_file(get_node(curr));
+	// TODO clean up that mess
+	FILE *file = writer_file(*node);
 	fflush(file);
 	if(file != stderr && file != stdout)
 		fclose(file);
 
-	free(node);
+	free(*node);
+	*node = NULL;
 	return NULL;
 }
 
@@ -209,7 +212,7 @@ static char **get_array(Node *node)
 
 	for(long i = 0; i < coll->size; i++)
 	{
-		Node *curr = collection_nth(get_node(node), integer(i));
+		Node *curr = collection_nth(node, integer(i));
 		// here we will print the node
 		Node *value;
 		if(!curr)
@@ -424,8 +427,8 @@ static Node *string_function(Node *node)
 		char *body = GET_ELEM_STRING(node, &function_body);
 		res = string_sprintf("<%s macro=%s special=%s args=%s closure=%s body=%s>",
 								str_type(node->type->int_type),
-								TRUE_Q_(function_is_macro(get_node(node))) ? "yes" : "no",
-								TRUE_Q_(function_is_special(get_node(node))) ? "yes" : "no",
+								TRUE_Q_(function_is_macro(node)) ? "yes" : "no",
+								TRUE_Q_(function_is_special(node)) ? "yes" : "no",
 								args, closure, body);
 		free(body);
 	}
@@ -433,8 +436,8 @@ static Node *string_function(Node *node)
 	{
 		res = string_sprintf("<%s macro=%s special=%s args=%s closure=%s>",
 								str_type(node->type->int_type),
-								TRUE_Q_(function_is_macro(get_node(node))) ? "yes" : "no",
-								TRUE_Q_(function_is_special(get_node(node))) ? "yes" : "no",
+								TRUE_Q_(function_is_macro(node)) ? "yes" : "no",
+								TRUE_Q_(function_is_special(node)) ? "yes" : "no",
 								args, closure);
 	}
 
@@ -676,7 +679,7 @@ Node *print_node(Node *node, bool readable)
 	unlink_node(&node);
 	return res;
 
-+	//*****************
+	// *****************
 	error_assert:
 	unlink_node(&node);
 	unlink_node(&res);
@@ -714,9 +717,9 @@ Node *PRINT(Node *node)
 
 	Node *pr_node = print(node);
 	writer_print(pr_node);
-	unlink_node(pr_node);
+	unlink_node(&pr_node);
 
-	return nil;
+	return NIL;
 }
 
 /*
@@ -729,9 +732,9 @@ Node *PR(Node *node)
 
 	Node *pr_node = pr(node);
 	writer_print(pr_node);
-	unlink_node(pr_node);
+	unlink_node(&pr_node);
 
-	return nil;
+	return NIL;
 }
 
 /*
@@ -744,10 +747,10 @@ Node *PRINTLN(Node *node)
 
 	Node *pr_node = print(node);
 	writer_print(pr_node);
-	unlink_node(pr_node);
+	unlink_node(&pr_node);
 
 	writer_nl();
-	return nil;
+	return NIL;
 }
 
 /*
@@ -760,9 +763,9 @@ Node *PRN(Node *node)
 
 	Node *pr_node = pr(node);
 	writer_print(pr_node);
-	unlink_node(pr_node);
+	unlink_node(&pr_node);
 
 	writer_nl();
-	return node;
+	return NIL;
 }
 

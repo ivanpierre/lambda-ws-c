@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "nodes.h"
 #include "environment.h"
+#include "free_internal.h"
 
 /*
     Constructor
@@ -39,8 +40,6 @@ Node *environment(Node *previous, Node *map)
 	//**********
 	error_assert:
 	unlink_node(&res);
-	unlink_node(&previous);
-	unlink_node(&map);
 	unlink_node(&tmp_previous);
 	unlink_node(&tmp_map);
 	return NULL;
@@ -51,22 +50,7 @@ Node *environment(Node *previous, Node *map)
 */
 Node *environment_map(Node *node)
 {
-	Node *tmp_node = NULL;
-	Node *res      = NULL;
-
-	ASSERT_NODE(node, tmp_node, IENVIRONMENT);
-	Environment *env = STRUCT(tmp_node);
-
-	link_node(&res, env->map);
-	unlink_node(&tmp_node);
-	return res;
-
-	//**********
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&res);
-	unlink_node(&tmp_node);
-	return NULL;
+	ACCESS_NODE(Environment, map, IENVIRONMENT, IMAP);
 }
 
 /*
@@ -74,42 +58,26 @@ Node *environment_map(Node *node)
 */
 Node *environment_previous(Node *node)
 {
-	Node *tmp_node = NULL;
-	Node *res      = NULL;
-
-	ASSERT_NODE(node, tmp_node, IENVIRONMENT);
-	Environment *env = STRUCT(tmp_node);
-
-	link_node(&res, env->previous);
-	unlink_node(&tmp_node);
-
-	return res;
-
-	//***********
-	error_assert:
-	unlink_node(&node);
-	unlink_node(&res);
-	unlink_node(&tmp_node);
-	return NULL;
+	ACCESS_NODE(Environment, previous, IENVIRONMENT, IENVIRONMENT);
 }
 
 /*
     Unalloc environment bindings
 */
-Node *environment_free(Node *node)
+Node *environment_free(Node **node)
 {
-	ASSERT(node, ERR_NULL_PTR);
-	ASSERT_TYPE(node, IENVIRONMENT);
+	ASSERT(*node, ERR_NULL_PTR);
+	ASSERT_TYPE(*node, IENVIRONMENT);
 
-	Environment *env = STRUCT(node);
+	Environment *env = STRUCT(*node);
 	unlink_node(&env->map);
 	unlink_node(&env->previous);
 
-	free(node);
+	free(*node);
+	*node = NULL;
 	return NULL;
 
 	error_assert:
-	unlink_node(&node);
 	return NULL;
 }
 

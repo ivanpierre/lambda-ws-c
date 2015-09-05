@@ -9,4 +9,5 @@
 #include <stdio.h>
 #include "nodes.h"
 #include "namespace.h"
+#include "free_internal.h"
 

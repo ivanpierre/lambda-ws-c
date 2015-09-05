@@ -11,6 +11,7 @@
 #include "nodes.h"
 #include "seq.h"
 #include "collection.h"
+#include "free_internal.h"
 
 /*
 	Constructor
@@ -128,10 +129,10 @@ Node *seq_coll(Node *node)
 /*
 	Free sequence
 */
-Node *seq_free(Node *node)
+Node *seq_free(Node **node)
 {
-	Seq *seq = STRUCT(node);
+	Seq *seq = STRUCT(*node);
 	unlink_node(&seq->coll);
-	free(node);
+	free(*node);
 	return NULL;
 }

@@ -49,12 +49,6 @@ extern Node *NIL;
 extern Node *TRUE;
 extern Node *FALSE;
 
-// public function for nodes
-extern Node *get_node       (Node *);
-extern Node *link_node      (Node **var, Node *);
-extern Node *unlink_node    (Node **var);
-extern Node *unlink_new     (Node *var);
-
 extern Node *new_node       (TYPE type);
 extern Node *false_Q_       (Node *node);
 extern Node *true_Q_        (Node *node);
@@ -90,7 +84,7 @@ if (!res) \
 if (res != NIL) \
 	ASSERT_TYPE(res, OType); \
  \
-return res; \
+return unlink_new(res); \
  \
 error_assert: \
 unlink_node(&tmp_node); \
@@ -120,7 +114,7 @@ return res
 // ***************************
 #define ACCESS_NODE(ctype, access, IType, OType) \
 ACCESS_START(ctype, Node *, IType); \
-res = str->access; \
+link_node(&res, str->access); \
 ACCESS_END(OType)
 
 // ***************************
@@ -136,15 +130,21 @@ res = integer(str->access); \
 ACCESS_END_TYPED(IINTEGER)
 
 // ***************************
-#define ACCESS_DIGITAL(ctype, access, IType) \
+#define ACCESS_DECIMAL(ctype, access, IType) \
 ACCESS_START(ctype, Node *, IType); \
-res = digital(str->access); \
-ACCESS_END_TYPED(IINTEGER)
+res = decimal(str->access); \
+ACCESS_END_TYPED(IDECIMAL)
 
 // ***************************
 #define ACCESS_PTR(ctype, access, IType) \
 ACCESS_START(ctype, void *, IType); \
 res = str->access; \
+ACCESS_END_UNTYPED()
+
+// ***************************
+#define ACCESS_STR(ctype, access, IType) \
+ACCESS_START(ctype, char *, IType); \
+res = strdup(str->access); \
 ACCESS_END_UNTYPED()
 
 #define LINK_NODE(to, from) \

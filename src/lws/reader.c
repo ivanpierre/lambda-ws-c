@@ -9,15 +9,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "nodes.h"
+#include "free_internal.h"
 
 /*
 	Unalloc reader
 */
-Node *reader_free(Node *node)
+Node *reader_free(Node **node)
 {
-	ASSERT(node, ERR_NODE);
-	ASSERT_TYPE(node, IREADER);
-	free(node);
+	ASSERT(*node, ERR_NODE);
+	ASSERT_TYPE(*node, IREADER);
+	free(*node);
+
 	error_assert:
 	return NULL;
 }

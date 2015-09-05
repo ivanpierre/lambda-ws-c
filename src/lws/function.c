@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "nodes.h"
 #include "function.h"
+#include "free_internal.h"
 
 Node *function_is_macro(Node *node)
 {

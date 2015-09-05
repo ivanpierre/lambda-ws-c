@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "nodes.h"
 #include "keyval.h"
+#include "free_internal.h"
 
 /*
     Get the key of keyval

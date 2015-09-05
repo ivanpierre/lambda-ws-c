@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "nodes.h"
 #include "number.h"
+#include "free_internal.h"
 
 /////// Integers
 /*
