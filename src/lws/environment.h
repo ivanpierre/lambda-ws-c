@@ -23,7 +23,7 @@ typedef struct
 // Constructor
 Node *environment           (Node *previous, Node *map);
 
-// Accessors
+// Accessor
 Node *environment_previous  (Node *node);
 Node *environment_map       (Node *node);
 

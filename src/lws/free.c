@@ -62,8 +62,8 @@ Node *link_node(Node **var, Node *node)
 
 /*
     Unlink node
-    return return NULL on freeing else return node.
-    Constant nodes are niot unlinked
+    Return NULL on freeing else return node.
+    Constant nodes are not unlinked
 */
 Node *unlink_node(Node **node)
 {
@@ -80,7 +80,7 @@ Node *unlink_node(Node **node)
 #ifdef DEBUG_ALLOC
 			if((*node)->next_node == NULL && (*node)->previous_node == NULL)
 			{
-				// unallocated node
+				// TODO unallocated node
 			}
 			if (*node == first_node && *node == last_node)
 				first_node = last_node = NULL;
@@ -111,6 +111,27 @@ Node *unlink_node(Node **node)
 
 	error_assert:
 	return NULL;
+}
+
+/*
+    Unlink new node
+    Verify we are linked only once and put occurrence to 0
+*/
+Node *unlink_new(Node *node)
+{
+	ASSERT(node, ERR_NODE);
+	TRACE("unlinking new %s", node->type->str_type);
+	if (!unlinkable(node))
+	{
+		if (node->occurrences)
+			node->occurrences--;
+		ASSERT(node->occurrences == 1);
+		node->occurrences--;
+	}
+	return node;
+
+	error_assert:
+	return node;
 }
 
 Node *collection_free(Node **var);

@@ -20,9 +20,22 @@ use. Link and unlink should be done in a same function to avoid memory leaks of 
 not to unlink it is when the node is linked to a persistent value, generally to an environment interning or if used 
 by another node (i.e. lists, array, map, ...) Types manage the release of memory through the `free` function pointer.
 
-The allocation is done by the constructor of each types, arguments for it depends on the type.
+The allocation is done by the constructor of each types, arguments for it depends on the type. Created objects have
+a count to 0. this means that a created object send to a function and not linked to any persistent storage will
+be destroyed when linking and unlinking will occur in the function.
 
-There is only three values that are never linked or unlinked : NIL, TRUE and FALSE. They are equal to themselves.
+In a function all nodes passed should be linked to ancillary variables and unlinked before any exit of the function.
+Even if the underlying value is modified by linking, this should be transparent to programmer and argument should never
+be modified.
+
+Created elements should be linked to ancillary variable and unlinked before exit to ensure created Nodes are cleaned-up.
+
+## Constant unallocatable nodes
+There is three values that are never linked or unlinked : NIL, TRUE and FALSE. They are equal to themselves.
 NIL and FALSE are FALSE boolean values, FALSE is here for disambiguating NIL values than can be pertinent return
-values. 
+values.
+
+Keywords are linked in a keyword map to ensure keywords are unique and keyword equality is identity.
+
+Types will be linked in an array indexed by their's int values.
 

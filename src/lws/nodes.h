@@ -1,9 +1,9 @@
 /****
-    All nodes
+	All nodes
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #ifndef NODES_H
@@ -16,18 +16,18 @@
 #define BOOL_TRUE (!BOOL_FALSE)
 
 /*
-    Define in case of allocation debugging
+	Define in case of allocation debugging
 */
 #define DEBUG_ALLOC
 
 /*
-    Used type definitions
+	Used type definitions
 */
 #define bool            int
 struct Node; // forward
 
 /*
-    Struct of a base node
+	Struct of a base node
 */
 typedef struct Node
 {
@@ -39,6 +39,8 @@ typedef struct Node
 #endif
 } Node;
 
+#include "free.h"
+
 // Get Node internal struct
 void *STRUCT(Node *node);
 
@@ -48,8 +50,10 @@ extern Node *TRUE;
 extern Node *FALSE;
 
 // public function for nodes
+extern Node *get_node       (Node *);
 extern Node *link_node      (Node **var, Node *);
 extern Node *unlink_node    (Node **var);
+extern Node *unlink_new     (Node *var);
 
 extern Node *new_node       (TYPE type);
 extern Node *false_Q_       (Node *node);
@@ -74,7 +78,6 @@ Node *tmp_node = NULL; \
 rtype res; \
  \
 ASSERT_NODE(node, tmp_node, ITYPE); \
-unlink_node(&node); \
  \
 ctype *str = STRUCT(tmp_node)
 
@@ -83,14 +86,13 @@ ctype *str = STRUCT(tmp_node)
 unlink_node(&tmp_node); \
  \
 if (!res) \
-    res = NIL; \
+	res = NIL; \
 if (res != NIL) \
-    ASSERT_TYPE(res, OType); \
+	ASSERT_TYPE(res, OType); \
  \
 return res; \
  \
 error_assert: \
-unlink_node(&node); \
 unlink_node(&tmp_node); \
 return NULL
 
@@ -103,7 +105,6 @@ ASSERT_TYPE(res, OType); \
 return res; \
  \
 error_assert: \
-unlink_node(&node); \
 unlink_node(&tmp_node); \
 return NULL
 
@@ -113,26 +114,31 @@ unlink_node(&tmp_node); \
 return res; \
  \
 error_assert: \
-unlink_node(&node); \
 unlink_node(&tmp_node); \
 return res
 
 // ***************************
 #define ACCESS_NODE(ctype, access, IType, OType) \
 ACCESS_START(ctype, Node *, IType); \
-link_node(&res, str->access); \
+res = str->access; \
 ACCESS_END(OType)
 
 // ***************************
 #define ACCESS_BOOL(ctype, access, IType) \
 ACCESS_START(ctype, Node *, IType); \
-link_node(&res, BOOL(str->access)); \
+res = BOOL(str->access ); \
 ACCESS_END_TYPED(IBOOLEAN)
 
 // ***************************
 #define ACCESS_INTEGER(ctype, access, IType) \
 ACCESS_START(ctype, Node *, IType); \
 res = integer(str->access); \
+ACCESS_END_TYPED(IINTEGER)
+
+// ***************************
+#define ACCESS_DIGITAL(ctype, access, IType) \
+ACCESS_START(ctype, Node *, IType); \
+res = digital(str->access); \
 ACCESS_END_TYPED(IINTEGER)
 
 // ***************************

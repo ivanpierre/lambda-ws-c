@@ -31,7 +31,7 @@ Node *writer(FILE *file);
 Node *writer_stdout();
 Node *writer_stderr();
 Node *writer(FILE *file);
-FILE *writer_file(Node *filename);
+void *writer_file(Node *filename);
 Node *writer_curr(Node *writer);
 Node *writer_curr_close();
 Node *writer_print(Node *node);

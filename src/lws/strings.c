@@ -52,11 +52,10 @@ static Node *string_base(char *value)
 	return node; // node did the link
 }
 
-
 /*
 	Create a linked string, allocate space for the string
 */
-Node *string(char *value)
+Node *string_unalloc(char *value)
 {
 	ASSERT(value, ERR_NODE);
 	return string_base(value); // new_string_base did the link
@@ -69,7 +68,7 @@ Node *string(char *value)
 /*
 	Create a linked string, allocate space for the string
 */
-Node *string_allocate(char *value)
+Node *string(char *value)
 {
 	ASSERT(value, ERR_NODE);
 	return string_base(strdup(value)); // make_string does the link
@@ -89,7 +88,7 @@ Node *string_sprintf(char *fmt, ...)
 	char *formated = NULL;
 	vasprintf(&formated, fmt, args);
 	if(!formated)
-		return string_allocate("cannot format string");
+		return string("cannot format string");
 
 	TRACE("Formatt = %s'", fmt);
 	TRACE("Formatted String = %s'", formated);

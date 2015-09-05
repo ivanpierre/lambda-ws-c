@@ -10,28 +10,34 @@
 #include <stdlib.h>
 #include "nodes.h"
 #include "var.h"
-
-/*
-    Access Collection from Node
-*/
-static Var *GET_VAR(Node *node)
-{
-	return (Var * )(node->val.compl);
-}
+#include "strings.h"
 
 /*
     Constructor
 */
 Node *var(Node *symbol, Node *value)
 {
-	ASSERT(symbol, "Null symbol");
-	ASSERT_TYPE(symbol, SYMBOL, "Var not referencing a Symbol");
+	Node *tmp_symbol= NULL;
+	Node *tmp_value= NULL;
+	ASSERT_NODE(symbol, tmp_symbol, ISYMBOL);
+	ASSERT_NODE(value, tmp_value, INODES);
 
-	Node *node = NEW(IVAR);
-	GET_VAR(node)->symbol = symbol;
-	GET_VAR(node)->value  = value;
+	Node *node = new_node(IVAR);
+	Var *var = STRUCT(node);
+	var->symbol = symbol;
+	var->value  = value;
 
+	unlink_node(&tmp_symbol);
+	unlink_node(&tmp_value);
 	return node;
+
+	//***********
+	error_assert:
+	unlink_node(&symbol);
+	unlink_node(&value);
+	unlink_node(&tmp_symbol);
+	unlink_node(&tmp_value);
+	return NULL;
 }
 
 /*
@@ -39,9 +45,9 @@ Node *var(Node *symbol, Node *value)
 */
 Node *var_free(Node *node)
 {
-	unlink_node(GET_VAR(node)->symbol);
-	unlink_node(GET_VAR(node)->value);
-	free(GET_VAR(node));
+	Var *var = STRUCT(node);
+	unlink_node(&var->symbol);
+	unlink_node(&var->value);
 	free(node);
 	return NULL;
 }
@@ -51,8 +57,7 @@ Node *var_free(Node *node)
 */
 Node *var_symbol(Node *node)
 {
-	ASSERT_TYPE(node, VAR, "Var not referencing a Symbol");
-	return GET_VAR(node)->symbol;
+	ACCESS_NODE(Var, symbol, IVAR, ISYMBOL);
 }
 
 /*
@@ -60,15 +65,28 @@ Node *var_symbol(Node *node)
 */
 Node *var_value(Node *node)
 {
-	ASSERT_TYPE(node, VAR, "Var not referencing a Symbol");
-	Node *value = GET_VAR(node)->symbol;
-	if (!value)
-	{
-		String sym_str = GET_ELEM_STRING(node, &var_symbol);
-		ERROR("%& is unbound", sym_str);
-		free(sym_str);
-	}
-	return link_node(value);
+	Node *res = NULL;
+	Node *tmp_node = NULL;
+	char *sym = NULL;
+
+	ASSERT_NODE(node, tmp_node, IVAR);
+
+	Var *var = STRUCT(tmp_node);
+	sym = GET_STRING(var->symbol);
+	ASSERT(var->value, ERR_VAR_UNBOUND, sym);
+
+	link_node(&res, var->value);
+
+	free(sym);
+	unlink_node(&tmp_node);
+	return res;
+
+	//**********************
+	error_assert:
+	free(sym);
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	return NULL;
 }
 
 /*
@@ -76,17 +94,19 @@ Node *var_value(Node *node)
 */
 Node *var_bound_Q_(Node *node)
 {
-	ASSERT_TYPE(node, VAR, "Var not referencing a Symbol");
-	Node *value = GET_VAR(node)->symbol;
-	if (!value)
-	{
-		String sym_str = GET_ELEM_STRING(node, &var_symbol);
-		ERROR("%& is unbound", sym_str);
-		free(sym_str);
-	}
-	Node *res   = value ? true : FALSE;
-	unlink_node(value);
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, IVAR);
+
+	Var *var = STRUCT(tmp_node);
+	Node *res   = var->value ? TRUE : FALSE;
+	unlink_node(&tmp_node);
 	return res;
+
+	//**********************
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&tmp_node);
+	return NULL;
 }
 
 /*
@@ -94,6 +114,20 @@ Node *var_bound_Q_(Node *node)
 */
 Node *var_set_value(Node *node, Node *value)
 {
-	GET_VAR(node)->value = value;
-	return node;
+	Node *tmp_node = NULL;
+	Node *tmp_value = NULL;
+	ASSERT_NODE(node, tmp_node, IVAR);
+	ASSERT_NODE(value, tmp_value, INODES);
+	Var *var = STRUCT(tmp_node);
+	link_node(&var->value, tmp_value);
+	unlink_node(&tmp_value);
+	return tmp_node;
+
+	//**********************
+	error_assert:
+	unlink_node(&node);
+	unlink_node(&value);
+	unlink_node(&tmp_node);
+	unlink_node(&tmp_value);
+	return NULL;
 }

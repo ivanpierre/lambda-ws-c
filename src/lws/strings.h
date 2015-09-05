@@ -24,7 +24,7 @@ typedef struct
 	Access string from Node
 */
 char *GET_STRING        (Node *node);
-char *GET_ELEM_STRING   (Node *elem, Node *(*func)(Node *));
+char *GET_ELEM_STRING   (Node *elem, Node *(*func)(Node *node));
 Node *STRING_Q_         (Node *node);
 
 #endif
