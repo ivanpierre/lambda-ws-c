@@ -22,21 +22,15 @@
 */
 char *GET_STRING(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, ISTRING);
 	String *str = STRUCT(node);
 	char *res = malloc(str->size + 1);
 	ASSERT(res, ERR_ALLOC);
 	memcpy(res, str->string, str->size);
 	res[str->size] = '\0';
-	unlink_node(&node);
-	unlink_node(&tmp_node);
 	return res;
 
 	//***************
 	error_assert:
-	unlink_node(&node);
-	unlink_node(&tmp_node);
 	return NULL;
 }
 
@@ -91,8 +85,8 @@ Node *string_sprintf(char *fmt, ...)
 	if(!formated)
 		return string("cannot format string");
 
-	TRACE("Formatt = %s'", fmt);
-	TRACE("Formatted String = %s'", formated);
+	// TRACE("Formatt = %s'", fmt);
+	// TRACE("Formatted String = %s'", formated);
 	return string(formated);
 }
 

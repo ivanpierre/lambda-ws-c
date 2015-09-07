@@ -23,7 +23,7 @@
 /*
 	type of nodes
 */
-const long BNODES       = -1;                    // all nodes
+const long BNODES       = (1l << IINVALID) - 1;  // all nodes
 const long BNIL         = (1l << INIL);          // Constant nil value
 const long BTRUE        = (1l << ITRUE);         // Constant true value
 const long BFALSE       = (1l << IFALSE);        // Constant FALSE value

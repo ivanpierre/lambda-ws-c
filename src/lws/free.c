@@ -7,8 +7,12 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "nodes.h"
 #include "free.h"
+#include "writer.h"
+#include "strings.h"
 #include "free_internal.h"
 
 /*
@@ -19,11 +23,12 @@ Node *first_node = NULL;
 Node *last_node  = NULL;
 #endif
 
+
 // Forward
 static Node *FREE(Node **node);
 
 /*
-    test if linking is applyable
+    test if linking is applicable
 */
 static bool unlinkable(Node *node)
 {
@@ -42,7 +47,9 @@ Node *link_node(Node **var, Node *node)
 	 * First we link value to tmpnode.
 	 * If node is part of future unlinked variable, we have to save it :D
 	 */
+#ifdef DEBUG_FREE
 	TRACE("linking %s", node->type->str_type);
+#endif
 	Node *tmpnode = node;
 	ASSERT(tmpnode, ERR_NODE);
 	if (!unlinkable(node))
@@ -52,13 +59,10 @@ Node *link_node(Node **var, Node *node)
 	if (*var) unlink_node(var);
 
 	*var = tmpnode;
-	unlink_node(&node);
 	return *var;
 
 	error_assert:
-	unlink_node(&tmpnode);
-	unlink_node(var);
-	return *var;
+	return NULL;
 }
 
 /*
@@ -68,7 +72,9 @@ Node *link_node(Node **var, Node *node)
 */
 Node *unlink_node(Node **node)
 {
+#ifdef DEBUG_FREE
 	TRACE("unlinking %s", (*node)->type->str_type);
+#endif
 	ASSERT(node, ERR_VAR);
 	ASSERT(*node, ERR_NODE);
 	if (!unlinkable(*node))
@@ -77,7 +83,14 @@ Node *unlink_node(Node **node)
 			(*node)->occurrences--;
 		if ((*node)->occurrences <= 0)
 		{
+#ifdef DEBUG_FREE
 			TRACE("freeing %s", (*node)->type->str_type);
+			if((*node)->printable_version)
+			{
+				free((*node)->printable_version);
+				(*node)->printable_version = NULL;
+			}
+#endif
 #ifdef DEBUG_ALLOC
 			if((*node)->next_node == NULL && (*node)->previous_node == NULL)
 			{
@@ -121,7 +134,9 @@ Node *unlink_node(Node **node)
 Node *unlink_new(Node *node)
 {
 	ASSERT(node, ERR_NODE);
+#ifdef DEBUG_FREE
 	TRACE("unlinking new %s", node->type->str_type);
+#endif
 	if (!unlinkable(node))
 	{
 		if (node->occurrences)
@@ -271,8 +286,10 @@ void print_node_stack()
 	int  i     = 1;
 	while (walk)
 	{
-		TRACE("%d) %s %ld", i++, walk->type->str_type, walk->occurrences);
-		fflush(stderr);
+		TRACE("%d) %s %ld %s", i++,
+		      walk->type->str_type,
+		      walk->occurrences,
+		      print(walk));
 		walk = walk->next_node;
 	}
 #endif

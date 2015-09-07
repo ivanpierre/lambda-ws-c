@@ -19,6 +19,7 @@
 	Define in case of allocation debugging
 */
 #define DEBUG_ALLOC
+#define DEBUG_FREE
 
 /*
 	Used type definitions
@@ -33,6 +34,9 @@ typedef struct Node
 {
 	Type        *type;
 	long        occurrences;
+#ifdef DEBUG_FREE
+	char        *printable_version;
+#endif
 #ifdef DEBUG_ALLOC
 	struct Node *previous_node;
 	struct Node *next_node;
@@ -136,8 +140,8 @@ res = decimal(str->access); \
 ACCESS_END_TYPED(IDECIMAL)
 
 // ***************************
-#define ACCESS_PTR(ctype, access, IType) \
-ACCESS_START(ctype, void *, IType); \
+#define ACCESS_PTR(ctype, access, itype) \
+ACCESS_START(ctype, void *, itype); \
 res = str->access; \
 ACCESS_END_UNTYPED()
 

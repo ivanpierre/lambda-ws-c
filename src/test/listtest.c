@@ -1,9 +1,9 @@
 /****
-    Test on string function
+	Test on string function
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #include <stdio.h>
@@ -18,51 +18,51 @@
 
 void test_list1()
 {
-    TRACE("-----------------------test_list1()----------------------------------------");
-    print_stack_trace();
+	TRACE("-----------------------test_list1()----------------------------------------");
+	print_node_stack();
 
-    Node *list = NULL;
-    Node *array = NULL;
-    Node *map = NULL;
-    Node *set = NULL;
+	Node *list = NULL;
+	Node *array = NULL;
+	Node *map = NULL;
+	Node *set = NULL;
 
-    ASSERT(collection(&list, ILIST, 0));
-    print_stack_trace();
+	link_node(&list, empty_list());
+	print_node_stack();
 
-    ASSERT(collection(&array, IARRAY, 0));
-    print_stack_trace();
+	link_node(&array, empty_array());
+	print_node_stack();
 
-    ASSERT(collection(&map, IMAP, 0));
-    print_stack_trace();
+	link_node(&map, empty_map());
+	print_node_stack();
 
-    ASSERT(collection(&set, ISET, 0));
-    print_stack_trace();
+	link_node(&set, empty_set());
+	print_node_stack();
 
-    PRINT(list);
-    PRINT(array);
-    PRINT(map);
-    PRINT(set);
+	PRINT(list);
+	PRINT(array);
+	PRINT(map);
+	PRINT(set);
 
 dealloc:
-    unlink_node(&list);
-    print_stack_trace();
+	unlink_node(&list);
+	print_node_stack();
 
-    unlink_node(&array);
-    print_stack_trace();
+	unlink_node(&array);
+	print_node_stack();
 
-    unlink_node(&map);
-    print_stack_trace();
+	unlink_node(&map);
+	print_node_stack();
 
-    unlink_node(&set);
-    print_stack_trace();
+	unlink_node(&set);
+	print_node_stack();
 
-    writer_curr_close();
-    print_stack_trace();
+	writer_curr_close();
+	print_node_stack();
 }
 
 
 void test_list()
 {
-    test_list1();
+	test_list1();
 }
 

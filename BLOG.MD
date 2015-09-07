@@ -1,4 +1,13 @@
 # BLOG (just what happens)
+#### 07 sept 2015
+Ok, big tests and rewrites on allocation problems. I'll manage the explanations on
+[GABAGE.MD](GARBAGE.MD). It begins to seem obvious, but it's not a simple problem.
+In fact, it's simple but sooooo long time we have the habit to have one's own garbage
+collector, we don't even think about allocation problems :D
+
+On the other side string representation of object is primary and not a Node ISTRING
+representation... else it goes to awful loops on creating objects, especially for
+debug purposes... :D
 #### 24 aug 2015
 Core functions will have this general format :
 

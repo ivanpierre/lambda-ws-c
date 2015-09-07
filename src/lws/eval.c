@@ -65,7 +65,7 @@ Node *eval_node(Node *node, Node *environment)
         case IINVALID :
         default:
             ABORT("cannot evaluate '%s' of type '%s'",
-                  GET_STRING(pr(node)), node->type->str_type);
+                  pr(node), node->type->str_type);
             break;
     }
 

@@ -74,6 +74,7 @@ typedef struct
 	Type        *type;
 } NodeType;
 
+extern Type type_array[];
 
 // public function for types
 extern long     bin_type        (TYPE type);

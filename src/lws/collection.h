@@ -21,10 +21,6 @@ typedef struct
 } Collection;
 
 // Collections 
-Node *empty_list();
-Node *empty_array();
-Node *empty_set();
-Node *empty_map();
 Node *list(Node *arg, ...);
 Node *array(Node *arg, ...);
 Node *set(Node *arg, ...);
@@ -33,7 +29,7 @@ Node *map(Node *arg, ...);
 // Constructor
 Node *empty_list();
 Node *empty_transient_list();
-Node *empty_arrray();
+Node *empty_array();
 Node *empty_transient_array();
 Node *empty_map();
 Node *empty_transient_map();

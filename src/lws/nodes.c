@@ -18,7 +18,7 @@
 #ifdef DEBUG_ALLOC
 	#define NEW_CONST {NULL, 0l, NULL, NULL}
 #else
-    #define NEW_CONST {type, 0l}
+    #define NEW_CONST {NULL, 0l}
 #endif
 
 // global values
@@ -37,7 +37,7 @@ static Node *init_node(Node *node, TYPE type)
 {
 	ASSERT(node, ERR_NULL_PTR);
 	node->type        = get_type(type);
-	node->occurrences = 1; // will be incremented on link
+	node->occurrences = 0; // will be incremented on link
 #ifdef DEBUG_ALLOC
 	if (!last_node)
 	{
@@ -46,10 +46,10 @@ static Node *init_node(Node *node, TYPE type)
 	}
 	else
 	{
-		node->previous_node  = last_node;
-		node->next_node      = NULL;
-		last_node->next_node = node;
-		last_node = node;
+		node->previous_node  = NULL;
+		node->next_node      = first_node;
+		first_node->previous_node = node;
+		first_node = node;
 	}
 #endif
 	return node;
@@ -64,12 +64,12 @@ static Node *init_node(Node *node, TYPE type)
 */
 Node *new_node(TYPE type)
 {
-	TRACE("fait nouveau node %s %ld", str_type(type), type);
-
+	// TRACE("fait nouveau node %s", str_type(type));
 	Node *node = malloc(sizeof(Node) + size_type(type));
+#ifdef DEBUG_FREE
+	node->printable_version = NULL;
+#endif
 	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
-
-	TRACE("Node %s créé", str_type(type));
 	return node;
 
 	error_assert:

@@ -1,9 +1,9 @@
 /****
-    Test on string function
+	Test on string function
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #include <stdio.h>
@@ -17,150 +17,175 @@
 
 void test_string1()
 {
-    TRACE("-----------------------test_string1()----------------------------------------");
-    print_stack_trace();
+	TRACE("-----------------------test_string1()----------------------------------------");
+	print_node_stack();
 
-    // creation string
+	// creation string
 
-    // Dont work: not allocated
-    // node = string("hgfjhgfjhgfjhgfjhgfhj"); // The string will be deallocated
+	// Dont work: not allocated
+	// node = string("hgfjhgfjhgfjhgfjhgfhj"); // The string will be deallocated
 
-    // marche
-    Node *node = string_allocate("hgfjhgfjhgfjhgfjhgfhj");        // this do the strdup internally
-    Node *node2 = string(strdup("hgfjhgfjhgfjhgfjhgfhj"));          // ok nice
-    Node *node3 = string_allocate(strdup("hgfjhgfjhgfjhgfjhgfhj")); // Two time allocated
-    print_stack_trace();
+	// marche
+	Node *node = NULL;
+	Node *node2 = NULL;
+	Node *node3 = NULL;
 
-    PRINTLN(node);
-    print_stack_trace();
+	link_node(&node, string("hgfjhgfjhgfjhgfjhgfhj"));
+	print_node_stack();
 
-    PRINT(node3);
-    print_stack_trace();
+	link_node(&node2, string("hgfjhgfjhgfjhgfjhgfhj"));
+	print_node_stack();
 
-    PR(node2);
-    print_stack_trace();
+	link_node(&node3, string("hgfjhgfjhgfjhgfjhgfhj"));
+	print_node_stack();
 
-    PRN(node3);
-    print_stack_trace();
+	PRINTLN(node);
+	print_node_stack();
 
-    PRINTLN(node2);
-    print_stack_trace();
+	PRINT(node3);
+	print_node_stack();
 
-    PRINT(node);
-    print_stack_trace();
+	PR(node2);
+	print_node_stack();
 
-    PR(node3);
-    print_stack_trace();
+	PRN(node3);
+	print_node_stack();
 
-    PRN(node);
-    print_stack_trace();
+	PRINTLN(node2);
+	print_node_stack();
 
-    unlink_node(node2);
-    unlink_node(node);
-    unlink_node(node3);
-    print_stack_trace();
+	PRINT(node);
+	print_node_stack();
 
-    writer_curr_close();
-    print_stack_trace();
+	PR(node3);
+	print_node_stack();
+
+	PRN(node);
+	print_node_stack();
+
+	unlink_node(&node2);
+	unlink_node(&node);
+	unlink_node(&node3);
+	print_node_stack();
+
+	writer_curr_close();
+	print_node_stack();
 }
 
 /*
-    Multiple linking
-    Three instances on the same string object
+	Multiple linking
+	Three instances on the same string object
 */
 void test_string2()
 {
-    TRACE("-----------------------test_string2()----------------------------------------");
-    print_stack_trace();
+	TRACE("-----------------------test_string2()----------------------------------------");
+	print_node_stack();
 
-    // creation string
-    // workse
-    Node *node = string_allocate("hgfjhgfjhgfjhgfjhgfhj");
-    Node *node2 = link_node(node);
-    Node *node3 = link_node(node);
-    print_stack_trace();
+	// creation string
+	// works
+	Node *node = NULL;
+	Node *node2 = NULL;
+	Node *node3 = NULL;
 
-    PRINTLN(node3);
-    print_stack_trace();
+	link_node(&node, string("hgfjhgfjhgfjhgfjhgfhj"));
+	print_node_stack();
 
-    PRINTLN(node);
-    print_stack_trace();
+	link_node(&node2, node);
+	print_node_stack();
 
-    PRN(node2);
-    print_stack_trace();
+	link_node(&node3, node);
+	print_node_stack();
 
-    PR(node3);
-    print_stack_trace();
+	PRINTLN(node3);
+	print_node_stack();
 
-    PRINTLN(node);
-    print_stack_trace();
+	PRINTLN(node);
+	print_node_stack();
 
-    PRINTLN(node2);
-    print_stack_trace();
+	PRN(node2);
+	print_node_stack();
 
-    PRN(node3);
-    print_stack_trace();
+	PR(node3);
+	print_node_stack();
 
-    PR(node);
-    print_stack_trace();
+	PRINTLN(node);
+	print_node_stack();
 
-    unlink_node(node3);
-    unlink_node(node);
-    unlink_node(node2);
-    print_stack_trace();
+	PRINTLN(node2);
+	print_node_stack();
 
-    writer_curr_close();
-    print_stack_trace();
+	PRN(node3);
+	print_node_stack();
+
+	PR(node);
+	print_node_stack();
+
+	unlink_node(&node3);
+	unlink_node(&node);
+	unlink_node(&node2);
+	print_node_stack();
+
+	writer_curr_close();
+	print_node_stack();
 }
 
 /*
-    Multiple linking
-    Three instances on the same string object
+	Multiple linking
+	Three instances on the same string object
 */
 void test_string3()
 {
-    TRACE("-----------------------test_string3()----------------------------------------");
-    print_stack_trace();
+	TRACE("-----------------------test_string3()----------------------------------------");
+	print_node_stack();
 
-    // creation string
-    // workse
-    Node *node = string_allocate("hgfjhgfjhgfjhgfjhgfhj");
-    Node *node2 = link_node(node);
-    Node *node3 = link_node(node2);
+	// creation string
+	// workse
+	Node *node = NULL;
+	Node *node2 = NULL;
+	Node *node3 = NULL;
 
-    print_stack_trace();
+	link_node(&node, string("hgfjhgfjhgfjhgfjhgfhj"));
+	link_node(&node2, node);
+	link_node(&node3, node2);
 
-    PRINTLN(node);
-    print_stack_trace();
+	print_node_stack();
 
-    PRN(node2);
-    print_stack_trace();
+	PRINTLN(node);
+	print_node_stack();
 
-    PRN(node3);
-    print_stack_trace();
+	PRN(node2);
+	print_node_stack();
 
-    PRINTLN(nil);
-    print_stack_trace();
+	PRN(node3);
+	print_node_stack();
 
-    PRINTLN(FALSE);
-    print_stack_trace();
+	TRACE("we will manage NIL");
 
-    PRINTLN(true);
-    print_stack_trace();
+	PRINTLN(NIL);
 
-    unlink_node(node3);
-    unlink_node(node);
-    unlink_node(node2);
-    print_stack_trace();
+	TRACE("we have managed NIL");
 
-    writer_curr_close();
-    print_stack_trace();
+	print_node_stack();
+
+	PRINTLN(FALSE);
+	print_node_stack();
+
+	PRINTLN(TRUE);
+	print_node_stack();
+
+	unlink_node(&node3);
+	unlink_node(&node);
+	unlink_node(&node2);
+	print_node_stack();
+
+	writer_curr_close();
+	print_node_stack();
 }
 
 void test_string()
 {
-    test_string1();
-    test_string2();
-    test_string3();
+	test_string1();
+	test_string2();
+	test_string3();
 }
 
