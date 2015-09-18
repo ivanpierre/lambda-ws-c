@@ -39,14 +39,13 @@ Node *keyval_eval(Node *node, Node *environment)
 /*
     Free keyval
 */
-Node *keyval_free(Node **node)
+Node *keyval_free(Node *node)
 {
-	KeyVal *kv = STRUCT(*node);
-	unlink_node(&kv->key);
-	unlink_node(&kv->value);
-	free(*node);
-	*node = NULL;
-	return *node;
+	KeyVal *kv = STRUCT(node);
+	unlink_node(kv->key);
+	unlink_node(kv->value);
+	free(node);
+	return NULL;
 }
 
 /*
@@ -55,22 +54,18 @@ Node *keyval_free(Node **node)
 Node *keyval(Node *key, Node *value)
 {
 	Node *res          = NULL;
-	Node *tmp_key      = NULL;
-	Node *tmp_value    = NULL;
 
-	ASSERT_NODE(key, tmp_key, INODES);
-	ASSERT_NODE(value, tmp_value, INODES);
+	ASSERT_NODE(key, INODES);
+	ASSERT_NODE(value, INODES);
 
 	res = new_node(IKEYVAL);
 	KeyVal *kv = STRUCT(res);
-	link_node(&kv->key, tmp_key);
-	link_node(&kv->value, tmp_value);
+	ASSIGN(kv->key, key);
+	ASSIGN(kv->value, value);
 
 	error_assert:
-	unlink_node(&key);
-	unlink_node(&value);
-	unlink_node(&tmp_key);
-	unlink_node(&tmp_value);
+	unlink_node(key);
+	unlink_node(value);
 
 	return res; // Node is already linked
 }

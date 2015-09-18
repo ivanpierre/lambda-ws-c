@@ -22,20 +22,19 @@
 */
 char *GET_STRING(Node *node)
 {
-	Node *tmp_node = NULL;
 	String *str = NULL;
-	ASSERT_NODE(node, tmp_node, ISTRING)
-	str = STRUCT(tmp_node);
+	ASSERT_NODE(node, ISTRING)
+	str = STRUCT(node);
 	char *res = malloc(str->size + 1);
 	ASSERT(res, ERR_ALLOC);
 	memcpy(res, str->string, str->size);
 	res[str->size] = '\0';
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return res;
 
 	//***************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	free(res);
 	return NULL;
 }
@@ -115,21 +114,26 @@ Node *STRING_SPRINTF(char *fmt, ...)
 */
 Node *string_Q_(Node *node)
 {
+    ASSERT_NODE(node, INODES);
 	Node *res = (node && node->type->int_type == ISTRING) ? TRUE : FALSE;
-	unlink_node(&node);
+	unlink_node(node);
 	return res;
+
+	//***************
+	error_assert:
+	unlink_node(node);
+	return NULL;
 }
 
 /*
 	Unalloc string
 */
-Node *string_free(Node **node)
+Node *string_free(Node *node)
 {
-	String *str = STRUCT(*node);
+	String *str = STRUCT(node);
 	free(str->string);
-	free(*node);
-	*node = NULL;
-	return *node;
+	free(node);
+	return NULL;
 }
 
 /*

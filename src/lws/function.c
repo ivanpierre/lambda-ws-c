@@ -46,21 +46,20 @@ void *function_func(Node *node)
 /*
     Unalloc function
 */
-Node *function_free(Node **node)
+Node *function_free(Node *node)
 {
-	ASSERT_TYPE(*node, ICALLABLE);
-	Function *func = STRUCT(*node);
-	unlink_node(&func->is_macro);
-	unlink_node(&func->is_special);
-	unlink_node(&func->args);
-	unlink_node(&func->closure);
-	if((*node)->type->int_type == ILAMBDA)
-		unlink_node(&func->func.body);
-	free(*node);
-	*node = NULL;
+	ASSERT_TYPE(node, ICALLABLE);
+	Function *func = STRUCT(node);
+	unlink_node(func->is_macro);
+	unlink_node(func->is_special);
+	unlink_node(func->args);
+	unlink_node(func->closure);
+	if(node->type->int_type == ILAMBDA)
+		unlink_node(func->func.body);
+	free(node);
 
 	error_assert:
-	return *node;
+	return NULL;
 }
 
 /*

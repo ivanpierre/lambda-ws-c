@@ -74,8 +74,8 @@ Node *new_node(TYPE type)
 	return node;
 
 	error_assert:
-	unlink_node(&node);
-	return node;
+	unlink_node(node);
+	return NULL;
 }
 
 /*
@@ -94,14 +94,14 @@ void *THREAD_NODE(Node *init, ...)
 	ASSERT(init, ERR_INIT);
 
 	// Last previous result is init
-	link_node(&res, init);
+	ASSIGN(res, init);
 
 	// We will trampoline on function call values. fun(res) -> res,
 	// with unlink on previous res
 	va_start(funp, init);
 	while ((func = va_arg(funp, void *(*)(Node *arg))))
 	{
-		link_node(&res, (*func)(res));
+		ASSIGN(res, (*func)(res));
 		ASSERT(res, ERR_INIT);
 	}
 
@@ -109,8 +109,8 @@ void *THREAD_NODE(Node *init, ...)
 
 	//****************
 	error_assert:
-	unlink_node(&init);
-	unlink_node(&res);
+	unlink_node(init);
+	unlink_node(res);
 	return NULL;
 }
 
@@ -119,16 +119,15 @@ void *THREAD_NODE(Node *init, ...)
 */
 bool FALSE_Q_(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
+	ASSERT_NODE(node, INODES);
 	bool res =  node == NIL ||
 				node == FALSE;
-	unlink_node(&node);
+	unlink_node(node);
 	return res;
 
 	//****************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return BOOL_FALSE;
 }
 
@@ -137,15 +136,14 @@ bool FALSE_Q_(Node *node)
 */
 bool TRUE_Q_(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
+	ASSERT_NODE(node, INODES);
 	bool res = !FALSE_Q_(node);
-	unlink_node(&node);
+	unlink_node(node);
 	return res;
 
 	//****************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return BOOL_FALSE;
 }
 
@@ -154,15 +152,14 @@ bool TRUE_Q_(Node *node)
 */
 Node *false_Q_(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
-	Node *res = FALSE_Q_(tmp_node) ? TRUE : FALSE;
-	unlink_node(&tmp_node);
+	ASSERT_NODE(node, INODES);
+	Node *res = FALSE_Q_(node) ? TRUE : FALSE;
+	unlink_node(node);
 	return res;
 
 	//****************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -171,15 +168,14 @@ Node *false_Q_(Node *node)
 */
 Node *true_Q_(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
-	Node *res = TRUE_Q_(tmp_node) ? TRUE : FALSE;
-	unlink_node(&tmp_node);
+	ASSERT_NODE(node, INODES);
+	Node *res = TRUE_Q_(node) ? TRUE : FALSE;
+	unlink_node(node);
 	return res;
 
 	//****************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return NULL;
 }
 

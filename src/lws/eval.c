@@ -59,7 +59,7 @@ Node *eval_node(Node *node, Node *environment)
 		case IREF :
 		case IREADER :
 		case INAMESPACE :
-			res = link_node(&res, node);
+			ASSIGN(res, node);
 			break;
 
 		case IINVALID :
@@ -85,22 +85,20 @@ Node *(*eval_ptr)(Node *node, Node *environment) = &eval_node;
 Node *EVAL(Node *node, Node *environment)
 {
 	Node *res = NULL;
-	Node *tmp_node = NULL;
-	Node *tmp_environment = NULL;
 
-	ASSERT_NODE(node, tmp_node, ICOLLECTION);
-	ASSERT_NODE(environment, tmp_environment, ICOLLECTION);
+	ASSERT_NODE(node, ICOLLECTION);
+	ASSERT_NODE(environment, ICOLLECTION);
 
 	res = (*eval_ptr)(node, environment);
 
-	unlink_node(&tmp_node);
-	unlink_node(&tmp_environment);
+	unlink_node(node);
+	unlink_node(environment);
 	return res;
 
 	//************
 	error_assert:
-	unlink_node(&tmp_node);
-	unlink_node(&tmp_environment);
-	unlink_node(&res);
+	unlink_node(node);
+	unlink_node(environment);
+	unlink_node(res);
 	return res;
 }

@@ -27,9 +27,9 @@ Node *api()
 
 	//**************
 	error_assert:
-	unlink_node(&res);
+	unlink_node(res);
 	if(functions)
-		unlink_node(&functions->functions);
+		unlink_node(functions->functions);
 	return NULL;
 }
 

@@ -14,12 +14,8 @@
 /*
 	Unalloc reader
 */
-Node *reader_free(Node **node)
+Node *reader_free(Node *node)
 {
-	ASSERT(*node, ERR_NODE);
-	ASSERT_TYPE(*node, IREADER);
-	free(*node);
-
-	error_assert:
+	free(node);
 	return NULL;
 }

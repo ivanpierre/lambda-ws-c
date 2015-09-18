@@ -75,11 +75,11 @@ void stack_free();
 	if(!((node) && node_isa_type(node, typ))) \
 		ABORT(ERR_TYPE, (node)->type->str_type, str_type(typ))
 
-#define ASSERT_NODE(node, tmpnode, typ) \
+#define ASSERT_NODE(node, typ) \
 	{ \
 		ASSERT(node, ERR_NODE); \
 		ASSERT_TYPE(node, typ); \
-		link_node(&tmpnode, node); \
+		link_node(node); \
 	}
 
 #endif

@@ -37,7 +37,7 @@ Node *writer(FILE *file)
 
 	//*************
 	error_assert:
-	unlink_node(&node);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -46,10 +46,9 @@ Node *writer(FILE *file)
 */
 Node *writer_open_file(Node *name)
 {
-	Node *tmpname = NULL;
-	ASSERT_NODE(name, tmpname, ISTRING);
-	char *filename = GET_STRING(tmpname);
-	unlink_node(&tmpname);
+	ASSERT_NODE(name, ISTRING);
+	char *filename = GET_STRING(name);
+	unlink_node(name);
 	FILE *handle = fopen(filename, "w");
 	ASSERT(handle, "cannot open file %s for write", filename);
 	free(filename);
@@ -57,7 +56,7 @@ Node *writer_open_file(Node *name)
 
 	//************
 	error_assert:
-	unlink_node(&tmpname);
+	unlink_node(name);
 	free(filename);
 	return NULL;
 }
@@ -110,7 +109,7 @@ void *WRITER_FILE(Node *node)
 */
 Node *writer_curr(Node *node)
 {
-	link_node(&curr, node);
+	ASSIGN(curr, node);
 	return curr;
 }
 
@@ -119,7 +118,7 @@ Node *writer_curr(Node *node)
 */
 Node *writer_curr_close()
 {
-	unlink_node(&curr);
+	unlink_node(curr);
 	return NIL;
 }
 
@@ -155,16 +154,15 @@ static void writer_flush()
 /*
 	Free writer and close file
 */
-Node *writer_free(Node **node)
+Node *writer_free(Node *node)
 {
-	Writer *wr = STRUCT(*node);
+	Writer *wr = STRUCT(node);
 	FILE *file = wr->file;
 	fflush(file);
 	if (file != stderr && file != stdout)
 		fclose(file);
 
-	free(*node);
-	*node = NULL;
+	free(node);
 	return NULL;
 }
 
@@ -173,11 +171,10 @@ Node *writer_free(Node **node)
 */
 static char *string_keyval(Node *node, bool map)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, IKEYVAL);
+    ASSERT_NODE(node, IKEYVAL);
 	char *res = NULL;
-	char *k   = GET_ELEM_STRING(tmp_node, &keyval_key);
-	char *v   = GET_ELEM_STRING(tmp_node, &keyval_value);
+	char *k   = GET_ELEM_STRING(node, &keyval_key);
+	char *v   = GET_ELEM_STRING(node, &keyval_value);
 	if (map)
 		asprintf(&res, "%s %s", k, v);
 	else
@@ -186,7 +183,7 @@ static char *string_keyval(Node *node, bool map)
 	free(k);
 	k = v = NULL;
 	ASSERT(res, "Error printing keyval");
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return res;
 
 	//*****************
@@ -194,7 +191,7 @@ static char *string_keyval(Node *node, bool map)
 	free(k);
 	free(v);
 	free(res);
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -232,7 +229,7 @@ static char **get_array(Node *node)
 	//*****************
 	error_assert:
 	free(str_res);
-	unlink_node(&curr);
+	unlink_node(curr);
 	return NULL;
 }
 
@@ -635,22 +632,21 @@ char *pr(Node *node)
 */
 Node *PRINT(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
+	ASSERT_NODE(node, INODES);
 
 	char *str = NULL;
 	// If no current output is selectioned : stdout
 	if (!curr)
 		writer_curr(writer_stdout());
-	str = print(tmp_node);
-	unlink_node(&tmp_node);
+	str = print(node);
+	unlink_node(node);
 	writer_print(str);
 	free(str);
 	return NIL;
 
 	// *****************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -659,23 +655,22 @@ Node *PRINT(Node *node)
 */
 Node *PR(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
+	ASSERT_NODE(node, INODES);
 
 	char *str = NULL;
 	// If no current output is selectioned : stdout
 	if (!curr)
 		writer_curr(writer_stdout());
 
-	str = pr(tmp_node);
-	unlink_node(&tmp_node);
+	str = pr(node);
+	unlink_node(node);
 	writer_print(str);
 	free(str);
 	return NIL;
 
 	// *****************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -684,16 +679,15 @@ Node *PR(Node *node)
 */
 Node *PRINTLN(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
+	ASSERT_NODE(node, INODES);
 
 	char *str = NULL;
 	// If no current output is selectioned : stdout
 	if (!curr)
 		writer_curr(writer_stdout());
 
-	str = print(tmp_node);
-	unlink_node(&tmp_node);
+	str = print(node);
+	unlink_node(node);
 	writer_print(str);
 	free(str);
 
@@ -702,7 +696,7 @@ Node *PRINTLN(Node *node)
 
 	// *****************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -711,16 +705,15 @@ Node *PRINTLN(Node *node)
 */
 Node *PRN(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
+	ASSERT_NODE(node, INODES);
 
 	char *str = NULL;
 	// If no current output is selectioned : stdout
 	if (!curr)
 		writer_curr(writer_stdout());
 
-	str = pr(tmp_node);
-	unlink_node(&tmp_node);
+	str = pr(node);
+	unlink_node(node);
 	writer_print(str);
 	free(str);
 
@@ -729,7 +722,7 @@ Node *PRN(Node *node)
 
 	// *****************
 	error_assert:
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return NULL;
 }
 

@@ -31,10 +31,10 @@ Node *seq(long index, Node *coll)
 		{
 			case ISEQ:
 				seq = STRUCT(coll);
-				link_node(&new_coll, seq->coll);
+				ASSIGN(new_coll, seq->coll);
 				index += seq->index;
-				link_node(&coll, new_coll);
-				unlink_node(&new_coll);
+				ASSIGN(coll, new_coll);
+				unlink_node(new_coll);
 		        break;
 
 			default:
@@ -47,7 +47,7 @@ Node *seq(long index, Node *coll)
 	index = collection->size - index;
 	if(index <= 0)
 	{
-		unlink_node(&coll);
+		unlink_node(coll);
 		return NIL;
 	}
 
@@ -57,15 +57,15 @@ Node *seq(long index, Node *coll)
 
 	seq = STRUCT(node);
 	seq->index = index;
-	link_node(&seq->coll, coll);
-	unlink_node(&coll);
+	ASSIGN(seq->coll, coll);
+	unlink_node(coll);
 	return node;
 
 	// ******************
 	error_assert:
-	unlink_node(&coll);
-	unlink_node(&new_coll);
-	unlink_node(&node);
+	unlink_node(coll);
+	unlink_node(new_coll);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -74,20 +74,18 @@ Node *seq(long index, Node *coll)
 */
 long seq_size(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, ISEQ);
+	ASSERT_NODE(node, ISEQ);
 
-	Seq *seq = STRUCT(tmp_node);
+	Seq *seq = STRUCT(node);
 	Collection *coll = STRUCT(seq->coll);
 	long coll_size = coll->size - seq->index;
 
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return coll_size;
 
 	//**********************
 	error_assert:
-	unlink_node(&node);
-	unlink_node(&tmp_node);
+	unlink_node(node);
 	return -1;
 }
 
@@ -96,14 +94,13 @@ long seq_size(Node *node)
 */
 long seq_index(Node *node)
 {
-	Node *tmp_node = NULL;
-	ASSERT_NODE(node, tmp_node, ISEQ);
-	Seq *seq = STRUCT(tmp_node);
+	ASSERT_NODE(node, ISEQ);
+	Seq *seq = STRUCT(node);
 	return seq->index;
 
 	// ****************
 	error_assert:
-	unlink_node(&node);
+	unlink_node(node);
 	return -1;
 }
 
@@ -112,27 +109,27 @@ long seq_index(Node *node)
 */
 Node *seq_coll(Node *node)
 {
-	ASSERT(node, "Seq null");
+	ASSERT_NODE(node, ISEQ);
 	Seq *seq = STRUCT(node);
 	Node *res = NULL;
 
-	link_node(&res, seq->coll);
-	unlink_node(&node);
+	ASSIGN(res, seq->coll);
+	unlink_node(node);
 	return res;
 
 	// ***********
 	error_assert:
-	unlink_node(&node);
+	unlink_node(node);
 	return NULL;
 }
 
 /*
 	Free sequence
 */
-Node *seq_free(Node **node)
+Node *seq_free(Node *node)
 {
-	Seq *seq = STRUCT(*node);
-	unlink_node(&seq->coll);
-	free(*node);
+	Seq *seq = STRUCT(node);
+	unlink_node(seq->coll);
+	free(node);
 	return NULL;
 }

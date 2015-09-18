@@ -25,7 +25,7 @@ Node *last_node  = NULL;
 
 
 // Forward
-static Node *FREE(Node **node);
+static Node *FREE(Node *node);
 
 /*
     test if linking is applicable
@@ -40,7 +40,7 @@ static bool unlinkable(Node *node)
     Return Linked node
     Constant elements are not lonked
 */
-Node *link_node(Node **var, Node *node)
+Node *link_node(Node *node)
 {
 	/*
 	 * First we link value to tmpnode.
@@ -49,26 +49,15 @@ Node *link_node(Node **var, Node *node)
 #ifdef DEBUG_FREE
 	TRACE("linking %s", node->type->str_type);
 #endif
-	Node *tmpnode = node;
-	ASSERT(tmpnode, ERR_NODE);
+	ASSERT(node, ERR_NODE);
 	if (!unlinkable(node))
-		tmpnode->occurrences++;
+		node->occurrences++;
 
-	// Unlink underlying value
-	if (*var)
-	{
-#ifdef DEBUG_FREE
-		TRACE("unlinking previous %s", (*var)->type->str_type);
-#endif
-		unlink_node(var);
-	}
-
-	*var = tmpnode;
 
 #ifdef DEBUG_FREE
 	TRACE("linked %s", node->type->str_type);
 #endif
-	return *var;
+	return node;
 
 	error_assert:
 	return NULL;
@@ -79,53 +68,53 @@ Node *link_node(Node **var, Node *node)
     Return NULL on freeing else return node.
     Constant nodes are not unlinked
 */
-Node *unlink_node(Node **node)
+Node *unlink_node(Node *node)
 {
 	ASSERT(node, ERR_VAR);
-	if(!*node) return NULL;
+	if(!node) return NULL;
 #ifdef DEBUG_FREE
-	TRACE("unlinking %s", (*node)->type->str_type);
+	TRACE("unlinking %s", node->type->str_type);
 #endif
-	if (!unlinkable(*node))
+	if (!unlinkable(node))
 	{
-		if ((*node)->occurrences)
-			(*node)->occurrences--;
-		if ((*node)->occurrences <= 0)
+		if (node->occurrences)
+			node->occurrences--;
+		if (node->occurrences <= 0)
 		{
 #ifdef DEBUG_FREE
 			TRACE("freeing %s", (*node)->type->str_type);
 #endif
 #ifdef DEBUG_ALLOC
-			if ((*node)->next_node == NULL && (*node)->previous_node == NULL)
+			if (node->next_node == NULL && node->previous_node == NULL)
 			{
 				TRACE("unlink last node");
 			}
-			if (*node == first_node && *node == last_node)
+			if (node == first_node && node == last_node)
 				first_node = last_node = NULL;
-			else if (first_node == *node)
+			else if (first_node == node)
 			{
-				ASSERT((*node)->next_node, "Error in node memory management");
-				first_node = (*node)->next_node;
+				ASSERT(node->next_node, "Error in node memory management");
+				first_node = node->next_node;
 				first_node->previous_node = NULL;
 			}
-			else if (last_node == *node)
+			else if (last_node == node)
 			{
-				ASSERT((*node)->previous_node, "Error in node memory management");
-				last_node = (*node)->previous_node;
+				ASSERT(node->previous_node, "Error in node memory management");
+				last_node = node->previous_node;
 				last_node->next_node = NULL;
 			}
 			else
 			{
-				ASSERT((*node)->next_node && (*node)->previous_node, "Error in node memory management");
-				(*node)->next_node->previous_node = (*node)->previous_node;
-				(*node)->previous_node->next_node = (*node)->next_node;
+				ASSERT(node->next_node && node->previous_node, "Error in node memory management");
+				node->next_node->previous_node = node->previous_node;
+				node->previous_node->next_node = node->next_node;
 			}
 #endif
 			FREE(node);
-			*node = NULL;
+			node = NULL;
 		}
 	}
-	return *node;
+	return node;
 
 	error_assert:
 	return NULL;
@@ -157,11 +146,11 @@ Node *unlink_new(Node *node)
 /*
     Free all nodes according to type
 */
-static Node *free_node(Node **node)
+static Node *free_node(Node *node)
 {
 	ASSERT(node, ERR_VAR);
-	if (!*node) return NULL;
-	switch ((*node)->type->int_type)
+	if (!node) return NULL;
+	switch (node->type->int_type)
 	{
 		case INIL :
 		case ITRUE :
@@ -245,12 +234,12 @@ static Node *free_node(Node **node)
 /*
     def pointer for free
 */
-Node *(*free_ptr)(Node **node) = &free_node;
+Node *(*free_ptr)(Node *node) = &free_node;
 
 /*
     FREE unalloc node using pointer
 */
-static Node *FREE(Node **node)
+static Node *FREE(Node *node)
 {
 	return (*free_ptr)(node);
 }
@@ -271,7 +260,7 @@ void init_node_list()
 		{
 			Node *old = node;
 			node = node->next_node;
-			unlink_node(&old);
+			unlink_node(old);
 		}
 	}
 	last_node = NULL;

@@ -69,86 +69,94 @@ extern void print_node_list ();
 
 // ***************************
 #define ACCESS_START(ctype, rtype, itype) \
-Node *tmp_node = NULL; \
-rtype res; \
- \
-ASSERT_NODE(node, tmp_node, itype); \
- \
-ctype *str = STRUCT(tmp_node)
+    rtype res; \
+    ASSERT_NODE(node, itype); \
+    ctype *str = STRUCT(node)
 
 // ***************************
 #define ACCESS_END(otype) \
-unlink_node(&tmp_node); \
+    unlink_node(node); \
  \
-if (!res) \
-	res = NIL; \
-if (res != NIL) \
-	ASSERT_TYPE(res, otype); \
+    if (!res) \
+	    res = NIL; \
+    if (res != NIL) \
+	    ASSERT_TYPE(res, otype); \
+    return unlink_new(res); \
  \
-return unlink_new(res); \
- \
-error_assert: \
-unlink_node(&tmp_node); \
-return NULL
+    error_assert: \
+    unlink_node(node); \
+    return NULL
 
 // ***************************
 #define ACCESS_END_TYPED(otype) \
-unlink_node(&tmp_node); \
+    unlink_node(node); \
+    ASSERT_TYPE(res, otype); \
+    return res; \
  \
-ASSERT_TYPE(res, otype); \
- \
-return res; \
- \
-error_assert: \
-unlink_node(&tmp_node); \
-return NULL
+    error_assert: \
+    unlink_node(node); \
+    return NULL
 
 // ***************************
 #define ACCESS_END_UNTYPED() \
-unlink_node(&tmp_node); \
-return res; \
+    unlink_node(node); \
+    return res; \
  \
-error_assert: \
-unlink_node(&tmp_node); \
-return res
+    error_assert: \
+    unlink_node(node); \
+    return res
 
 // ***************************
 #define ACCESS_NODE(ctype, access, itype, otype) \
-ACCESS_START(ctype, Node *, itype); \
-link_node(&res, str->access); \
-ACCESS_END(otype)
+    ACCESS_START(ctype, Node *, itype); \
+    res = link_node(str->access); \
+    ACCESS_END(otype)
+
+// ***************************
+#define ACCESS_VALUE(ctype, access, itype, def) \
+    itype res = def; \
+    link_node(node); \
+	ctype *coll = STRUCT(node); \
+	res = coll->access; \
+	unlink_node(node); \
+	return res
 
 // ***************************
 #define ACCESS_BOOL(ctype, access, itype) \
-ACCESS_START(ctype, Node *, itype); \
-res = BOOL(str->access ); \
-ACCESS_END_TYPED(IBOOLEAN)
+    ACCESS_START(ctype, Node *, itype); \
+    res = BOOL(str->access ); \
+    ACCESS_END_TYPED(IBOOLEAN)
 
 // ***************************
 #define ACCESS_INTEGER(ctype, access, itype) \
-ACCESS_START(ctype, Node *, itype); \
-res = integer(str->access); \
-ACCESS_END_TYPED(IINTEGER)
+    ACCESS_START(ctype, Node *, itype); \
+    res = integer(str->access); \
+    ACCESS_END_TYPED(IINTEGER)
 
 // ***************************
 #define ACCESS_DECIMAL(ctype, access, itype) \
-ACCESS_START(ctype, Node *, itype); \
-res = decimal(str->access); \
-ACCESS_END_TYPED(IDECIMAL)
+    ACCESS_START(ctype, Node *, itype); \
+    res = decimal(str->access); \
+    ACCESS_END_TYPED(IDECIMAL)
 
 // ***************************
 #define ACCESS_PTR(ctype, access, itype) \
-ACCESS_START(ctype, void *, itype); \
-res = str->access; \
-ACCESS_END_UNTYPED()
+    ACCESS_START(ctype, void *, itype); \
+    res = str->access; \
+    ACCESS_END_UNTYPED()
 
 // ***************************
 #define ACCESS_STR(ctype, access, itype) \
-ACCESS_START(ctype, char *, itype); \
-res = strdup(str->access); \
-ACCESS_END_UNTYPED()
+    ACCESS_START(ctype, char *, itype); \
+    res = strdup(str->access); \
+    ACCESS_END_UNTYPED()
 
-#define LINK_NODE(to, from) \
-
+// ***************************
+#define ASSIGN(to, from) \
+    if(to != from) \
+    { \
+        unlink_node(to); \
+        to = link_node(from); \
+    }
 
 #endif

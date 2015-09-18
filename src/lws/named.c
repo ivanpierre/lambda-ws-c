@@ -21,8 +21,8 @@
 */
 static Node *named_base(Node *ns, Node *name, TYPE type)
 {
-    ASSERT(ns, ERR_ARG, "namespace");
-    ASSERT(name, ERR_ARG, "name");
+    link_node(ns);
+    link_node(name);
     if(ns != NIL)
     {
 	    ASSERT_TYPE(ns, INAMESPACE);
@@ -34,28 +34,28 @@ static Node *named_base(Node *ns, Node *name, TYPE type)
     ASSERT(node, ERR_CREATE_NEW, str_type(type));
 
 	Named *named = STRUCT(node);
-    named->ns = ns;
-	unlink_node(&ns);
+    ASSIGN(named->ns, ns);
+	unlink_node(ns);
     switch(name->type->int_type)
     {
         case ISYMBOL:
-            link_node(&named->name, named_name(name)); // allocate place for the string
+            ASSIGN(named->name, named_name(name)); // allocate place for the string
             break;
 
         case ISTRING:
-            link_node(&named->name,name); // allocate place for the string
+            ASSIGN(named->name,name); // allocate place for the string
             break;
 
         default:
             ABORT("name bad type");
     }
-	unlink_node(&name);
+	unlink_node(name);
     return node; // create node does the link
 
 	error_assert:
-	unlink_node(&ns);
-	unlink_node(&name);
-	unlink_node(&node);
+	unlink_node(ns);
+	unlink_node(name);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -80,8 +80,9 @@ Node *keyword(Node *ns, Node *name)
 */
 Node *symbol_Q_(Node *node)
 {
+    link_node(node);
     Node *res = (node && node->type->int_type == ISYMBOL) ? TRUE : FALSE;
-	unlink_node(&node);
+	unlink_node(node);
 	return res;
 }
 
@@ -90,8 +91,9 @@ Node *symbol_Q_(Node *node)
 */
 Node *keyword_Q_(Node *node)
 {
+    link_node(node);
 	Node *res = (node && node->type->int_type == IKEYWORD) ? TRUE : FALSE;
-	unlink_node(&node);
+	unlink_node(node);
 	return res;
 }
 
@@ -123,12 +125,11 @@ Node *symbol_eval(Node *node, Node *environment)
 /*
     Unalloc named elements : ns and name
 */
-Node *named_free(Node **node)
+Node *named_free(Node *node)
 {
-	Named *named = STRUCT(*node);
-    unlink_node(&named->ns);
-    unlink_node(&named->name);
-    free(*node);
-	*node = NULL;
-    return *node;
+	Named *named = STRUCT(node);
+    unlink_node(named->ns);
+    unlink_node(named->name);
+    free(node);
+    return node;
 }

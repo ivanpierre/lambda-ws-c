@@ -24,8 +24,9 @@ Node *integer(long value)
 	integer->integer = value;
 	return node; // already linked
 
+    //*********************
 	error_assert:
-	unlink_node(&node);
+	unlink_node(node);
 	return NULL;
 }
 
@@ -34,10 +35,16 @@ Node *integer(long value)
 */
 long number_integer(Node *node)
 {
+    ASSERT_NODE(node, IINTEGER);
 	Integer *integer = STRUCT(node);
 	long res = integer->integer;
-	unlink_node(&node);
+	unlink_node(node);
 	return res;
+
+    //*********************
+	error_assert:
+	unlink_node(node);
+	return 0l;
 }
 
 /*
@@ -45,9 +52,15 @@ long number_integer(Node *node)
 */
 Node *integer_Q_(Node *node)
 {
+    ASSERT_NODE(node, INODES);
 	Node *res = (node && node->type->int_type == IINTEGER) ? TRUE : FALSE;
-	unlink_node(&node);
+	unlink_node(node);
 	return res;
+
+    //*******************
+	error_assert:
+	unlink_node(node);
+	return NULL;
 }
 
 ////// Decimals
@@ -62,20 +75,27 @@ Node *decimal(double value)
 	decimal->decimal = value;
 	return node; // already linked
 
+    //*******************
 	error_assert:
-	unlink_node(&node);
+	unlink_node(node);
 	return NULL;
 }
 
 /*
-	Return value of integer
+	Return value of decimal
 */
 double number_decimal(Node *node)
 {
+    ASSERT_NODE(node, IDECIMAL);
 	Decimal *decimal = STRUCT(node);
 	double res = decimal->decimal;
-	unlink_node(&node);
+	unlink_node(node);
 	return res;
+
+    //*********************
+	error_assert:
+	unlink_node(node);
+	return 0.0;
 }
 
 /*
@@ -83,17 +103,22 @@ double number_decimal(Node *node)
 */
 Node *decimal_Q_(Node *node)
 {
-	Node *res = (node && node->type->int_type == IINTEGER) ? TRUE : FALSE;
-	unlink_node(&node);
+    ASSERT_NODE(node, IDECIMAL);
+	Node *res = (node && node->type->int_type == IDECIMAL) ? TRUE : FALSE;
+	unlink_node(node);
 	return res;
+
+    //*******************
+	error_assert:
+	unlink_node(node);
+	return NULL;
 }
 
 /*
     unalloc number
 */
-Node *number_free(Node **node)
+Node *number_free(Node *node)
 {
-    free(*node);
-	*node = NULL;
+    free(node);
     return NULL;
 }

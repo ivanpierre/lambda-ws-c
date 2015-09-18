@@ -17,31 +17,29 @@
 */
 Node *environment(Node *previous, Node *map)
 {
-	Node *tmp_previous = NIL;
-	Node *tmp_map      = NULL;
 	Node *res          = NULL;
 
 	if (!node_isa_type(previous, INIL))
 	{
-		ASSERT_NODE(previous, tmp_previous, IENVIRONMENT);
+		ASSERT_NODE(previous, IENVIRONMENT);
 	}
-	ASSERT_NODE(map, tmp_map, IMAP);
+	ASSERT_NODE(map, IMAP);
 
 	res = new_node(IENVIRONMENT);
 	ASSERT(res, ERR_CREATE_NEW, str_type(IENVIRONMENT));
 
 	Environment *env = STRUCT(res);
-	env->previous = link_node(&env->previous, tmp_previous);
-	env->map = link_node(&env->map, tmp_map);
-	unlink_node(&tmp_previous);
-	unlink_node(&tmp_map);
+	ASSIGN(env->previous, previous);
+	ASSIGN(env->map, map);
+	unlink_node(previous);
+	unlink_node(map);
 	return res;
 
 	//**********
 	error_assert:
-	unlink_node(&res);
-	unlink_node(&tmp_previous);
-	unlink_node(&tmp_map);
+	unlink_node(res);
+	unlink_node(previous);
+	unlink_node(map);
 	return NULL;
 }
 
@@ -64,18 +62,16 @@ Node *environment_previous(Node *node)
 /*
     Unalloc environment bindings
 */
-Node *environment_free(Node **node)
+Node *environment_free(Node *node)
 {
-	ASSERT(*node, ERR_NULL_PTR);
-	ASSERT_TYPE(*node, IENVIRONMENT);
+	ASSERT(node, ERR_NULL_PTR);
+	ASSERT_TYPE(node, IENVIRONMENT);
 
-	Environment *env = STRUCT(*node);
-	unlink_node(&env->map);
-	unlink_node(&env->previous);
+	Environment *env = STRUCT(node);
+	unlink_node(env->map);
+	unlink_node(env->previous);
 
-	free(*node);
-	*node = NULL;
-	return NULL;
+	free(node);
 
 	error_assert:
 	return NULL;
