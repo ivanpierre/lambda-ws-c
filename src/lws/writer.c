@@ -95,8 +95,14 @@ Node *writer_stderr()
 */
 void *WRITER_FILE(Node *node)
 {
+	ASSERT_TYPE(node, IWRITER);
 	Writer *wr = STRUCT(node);
-	return wr->file;
+	FILE *handle = wr->file;
+	return handle;
+
+	//************
+	error_assert:
+	return NULL;
 }
 
 /*
@@ -104,8 +110,7 @@ void *WRITER_FILE(Node *node)
 */
 Node *writer_curr(Node *node)
 {
-	if(curr != node)
-		return link_node(&curr, node);
+	link_node(&curr, node);
 	return curr;
 }
 
@@ -121,36 +126,30 @@ Node *writer_curr_close()
 /*
 	Write string to current output
 */
-static Node *writer_print(Node *node)
+static void writer_print(char *str)
 {
-	char *str = GET_STRING(node);
 	FILE *handle = WRITER_FILE(curr);
 	fprintf(handle, "%s", str);
-	free(str);
 	fflush(handle);
-
-	return NIL;
 }
 
 /*
 	Write newline to current output
 */
-static Node *writer_nl()
+static void writer_nl()
 {
 	FILE *handle = WRITER_FILE(curr);
 	fprintf(handle, "\n");
 	fflush(handle);
-	return NIL;
 }
 
 /*
 	Flush current output
 */
-Node *writer_flush()
+static void writer_flush()
 {
 	FILE *handle = WRITER_FILE(curr);
 	fflush(handle);
-	return NIL;
 }
 
 /*
@@ -158,10 +157,10 @@ Node *writer_flush()
 */
 Node *writer_free(Node **node)
 {
-	// TODO clean up that mess
-	FILE *file = WRITER_FILE(*node);
+	Writer *wr = STRUCT(*node);
+	FILE *file = wr->file;
 	fflush(file);
-	if(file != stderr && file != stdout)
+	if (file != stderr && file != stdout)
 		fclose(file);
 
 	free(*node);
@@ -174,12 +173,12 @@ Node *writer_free(Node **node)
 */
 static char *string_keyval(Node *node, bool map)
 {
-	ASSERT(node, "null pointer");
-	ASSERT_TYPE(node, IKEYVAL);
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, IKEYVAL);
 	char *res = NULL;
-	char *k = GET_ELEM_STRING(node, &keyval_key);
-	char *v = GET_ELEM_STRING(node, &keyval_value);
-	if(map)
+	char *k   = GET_ELEM_STRING(tmp_node, &keyval_key);
+	char *v   = GET_ELEM_STRING(tmp_node, &keyval_value);
+	if (map)
 		asprintf(&res, "%s %s", k, v);
 	else
 		asprintf(&res, "[%s %s]", k, v);
@@ -187,6 +186,7 @@ static char *string_keyval(Node *node, bool map)
 	free(k);
 	k = v = NULL;
 	ASSERT(res, "Error printing keyval");
+	unlink_node(&tmp_node);
 	return res;
 
 	//*****************
@@ -194,6 +194,7 @@ static char *string_keyval(Node *node, bool map)
 	free(k);
 	free(v);
 	free(res);
+	unlink_node(&tmp_node);
 	return NULL;
 }
 
@@ -202,34 +203,36 @@ static char *string_keyval(Node *node, bool map)
 */
 static char **get_array(Node *node)
 {
-	Node *sn = collection_size(node);
 	Collection *coll = STRUCT(node);
+	Node *curr = NULL;
 	if(coll->size <= 0)
-		return NULL;
+		goto error_assert; // no argument
 
 	char **str_res = malloc(coll->size * sizeof(char *));
 	ASSERT(str_res, "Error allocationg string array");
 
-	for(long i = 0; i < coll->size; i++)
+	for (long i = 0; i < coll->size; i++)
 	{
 		Node *curr = collection_nth(node, integer(i));
 		// here we will print the node
 		char *value;
-		if(!curr)
+		if (!curr)
 			value = strdup("(null)");
-		else if(curr->type->int_type == IKEYVAL )
-			value = string_keyval(curr, node->type->int_type == IMAP);
+		else if (curr->type->int_type == IKEYVAL)
+			if(node->type->int_type == IMAP)
+				value = string_keyval(curr, BOOL_TRUE);
+			else
+				value = string_keyval(curr, BOOL_FALSE);
 		else
 			value = print(curr);
 		str_res[i] = value;
-		free(value);
-		free(curr);
 	}
 	return str_res;
 
 	//*****************
 	error_assert:
 	free(str_res);
+	unlink_node(&curr);
 	return NULL;
 }
 
@@ -239,8 +242,8 @@ static char **get_array(Node *node)
 */
 static long list_size(long size, char *arr[])
 {
-	long res = 0;
-	for(int i = 0; i < size; i++)
+	long     res = 0;
+	for (int i   = 0; i < size; i++)
 		res += strlen(arr[i]) + 1; // space
 	return res; // '\0' on the last space
 }
@@ -250,10 +253,10 @@ static long list_size(long size, char *arr[])
 */
 static char *collection_get_inner_content(Node *node)
 {
-	bool rev = node->type->int_type == ILIST; // LIST is growing from head
+	bool       rev   = node->type->int_type == ILIST; // LIST is growing from head
 	Collection *coll = STRUCT(node);
-	long size = coll->size;
-	if(size <= 0)
+	long       size  = coll->size;
+	if (size <= 0)
 		return strdup("");
 
 	char **str_res = get_array(node);
@@ -263,13 +266,12 @@ static char *collection_get_inner_content(Node *node)
 	char *string_res = malloc(sizeof(char) * str_size);
 	string_res[0] = '\0';
 
-	for(long i = rev ? size - 1 : 0;
-				 rev ? i >=0 : i < size;
-				 rev ? i-- : i++)
+	for (long i = 0; i < size; i++)
 	{
-		strcat(string_res, str_res[i]);
-		if(i < size - 1)
+		// TRACE("cating '%s'", str_res[i]);
+		if (i > 0)
 			strcat(string_res, " ");
+		strcat(string_res, str_res[i]);
 		free(str_res[i]); // free each allocated string node
 	}
 
@@ -288,31 +290,32 @@ static char *string_collection(Node *coll)
 {
 	// get back inner content
 	char *inner_content = collection_get_inner_content(coll);
-	char *res = NULL;
-	if(!inner_content)
-		ABORT("Error getting inner content of collection");
+	char *res           = NULL;
+	if (!inner_content)
+	ABORT("Error getting inner content of collection");
 
-	switch(coll->type->int_type)
+	switch (coll->type->int_type)
 	{
 		case ILIST:
 			asprintf(&res, "(%s)", inner_content);
-			break;
+	        break;
 
 		case IARRAY:
 			asprintf(&res, "[%s]", inner_content);
-			break;
+	        break;
 
 		case ISET:
 			asprintf(&res, "#{%s}", inner_content);
-			break;
+	        break;
 
 		case IMAP:
 			asprintf(&res, "{%s}", inner_content);
-			break;
+	        break;
 
 		default :
 			free(inner_content);
-			ABORT("string_coll : bad type for collection %s", coll->type->str_type);
+			inner_content = NULL;
+	        ABORT("string_coll : bad type for collection %s", coll->type->str_type);
 	}
 	free(inner_content);
 	return res;
@@ -354,12 +357,13 @@ static char *string_var(Node *node)
 	char *res = NULL;
 
 	char *sym = GET_ELEM_STRING(node, &var_symbol);
-	if(FALSE_Q_(var_bound_Q_(node)))
-		res = asprintf("<%s symbol*=%s unbound>", sym);
+	char *typ = node->type->str_type;
+	if (FALSE_Q_(var_bound_Q_(node)))
+		asprintf(&res, "<%s symbol*=%s unbound>", typ, sym);
 	else
 	{
-		char* val = GET_ELEM_STRING(node, &var_value);
-		res = asprintf("<%s symbol*=%s value=%s>", sym);
+		char *val = GET_ELEM_STRING(node, &var_value);
+		asprintf(&res, "<%s symbol*=%s value=%s>", typ, sym, val);
 		free(val);
 	}
 	free(sym);
@@ -374,15 +378,17 @@ static char *string_var(Node *node)
 static char *string_env(Node *node)
 {
 	Environment *env = STRUCT(node);
+	char        *res = NULL;
 	if (env->map)
 	{
 		char *map_str = string_collection(env->map);
-		char *res = asprintf("<%s map=%s>", str_type(IENVIRONMENT), map_str);
+		asprintf(&res, "<%s map=%s>", str_type(IENVIRONMENT), map_str);
 		free(map_str);
-		return res;
 	}
+	else
+		asprintf(&res, "<%s map=nil>", str_type(IENVIRONMENT));
 
-	return asprintf("<%s map=null>", str_type(IENVIRONMENT));
+	return res;
 }
 
 
@@ -392,27 +398,24 @@ static char *string_env(Node *node)
 */
 static char *string_function(Node *node)
 {
-	Node *res = NULL;
+	// TODO suppress GET_ELEM_STRING
+	char *res     = NULL;
 	char *closure = GET_ELEM_STRING(node, &function_closure);
-	char *args = GET_ELEM_STRING(node, &function_args);
+	char *args    = GET_ELEM_STRING(node, &function_args);
 
-	if(node->type->int_type == ILAMBDA)
+	if (node->type->int_type == ILAMBDA)
 	{
 		char *body = GET_ELEM_STRING(node, &function_body);
-		res = asprintf("<%s macro=%s special=%s args=%s closure=%s body=%s>",
-						str_type(node->type->int_type),
-						TRUE_Q_(function_is_macro(node)) ? "yes" : "no",
-						TRUE_Q_(function_is_special(node)) ? "yes" : "no",
-						args, closure, body);
+		asprintf(&res, "<%s macro=%s special=%s args=%s closure=%s body=%s>", str_type(node->type->int_type),
+		         TRUE_Q_(function_is_macro(node)) ? "yes" : "no", TRUE_Q_(function_is_special(node)) ? "yes" : "no",
+		         args, closure, body);
 		free(body);
 	}
 	else
 	{
-		res = asprintf("<%s macro=%s special=%s args=%s closure=%s>",
-						str_type(node->type->int_type),
-						TRUE_Q_(function_is_macro(node)) ? "yes" : "no",
-						TRUE_Q_(function_is_special(node)) ? "yes" : "no",
-						args, closure);
+		asprintf(&res, "<%s macro=%s special=%s args=%s closure=%s>", str_type(node->type->int_type),
+		         TRUE_Q_(function_is_macro(node)) ? "yes" : "no", TRUE_Q_(function_is_special(node)) ? "yes" : "no",
+		         args, closure);
 	}
 
 	free(args);
@@ -426,17 +429,17 @@ static char *string_function(Node *node)
 static char *string_named_interned(Node *node)
 {
 	char *complete = NULL;
-	Node *name = named_name(node);
-	Node *ns = named_ns(node);
+	Node *name     = named_name(node);
+	Node *ns       = named_ns(node);
 
-	if(FALSE_Q_(ns))
+	if (FALSE_Q_(ns))
 		complete = GET_STRING(name);
 	else
 	{
-		char *ns_str = GET_STRING(ns);
+		char *ns_str   = GET_STRING(ns);
 		char *name_str = GET_STRING(name);
 
-		complete = asprintf("%s/%s", ns_str, name_str);
+		asprintf(&complete, "%s/%s", ns_str, name_str);
 		free(ns_str);
 		free(name_str);
 	}
@@ -449,16 +452,18 @@ static char *string_named_interned(Node *node)
 */
 static char *string_named_formated(Node *node)
 {
-	Node *formated = NULL;
+	char *formated  = NULL;
 	char *compl_str = string_named_interned(node);
-	switch(node->type->int_type)
+	switch (node->type->int_type)
 	{
 		case IKEYWORD :
-			formated = string_sprintf(":%s", compl_str);
-			break;
+			asprintf(&formated, ":%s", compl_str);
+	        break;
+
 		case ISYMBOL :
-			formated = string_sprintf("%s", compl_str);
-			break;
+			asprintf(&formated, "%s", compl_str);
+	        break;
+
 		default:
 			break;;
 	}
@@ -469,7 +474,8 @@ static char *string_named_formated(Node *node)
 
 	//*****************
 	error_assert:
-	unlink_node(&formated);
+	free(formated);
+	free(compl_str);
 	return NULL;
 }
 
@@ -502,11 +508,11 @@ static char *string_decimal(Node *node)
 /*
 	Return allocated string node of string formatted according to type
 */
-static string *string_formated(Node *node)
+static char *string_formated(Node *node)
 {
-	String *str = STRUCT(node);
-	char *formated = NULL;
-	asprintf(&formated"\"%s\"",str->string);
+	String *str      = STRUCT(node);
+	char   *formated = NULL;
+	asprintf(&formated, "\"%s\"", str->string);
 	return formated;
 }
 
@@ -516,91 +522,90 @@ static string *string_formated(Node *node)
 char *print_node(Node *node, bool readable)
 {
 	char *res = NULL;
-	ASSERT_NODE(node, tmp_node, INODES);
-	switch(tmp_node->type->int_type)
+	// TRACE("pruint_node(%s)", node->type->str_type);
+	ASSERT_TYPE(node, INODES);
+	// TRACE("print_node(%s) after assert", node->type->str_type);
+
+	switch (node->type->int_type)
 	{
 		case INIL :
 			res = strdup("nil");
-			break;
+	        break;
 
 		case ITRUE :
 			res = strdup("true");
-			break;
+	        break;
 
 		case IFALSE :
 			res = strdup("false");
-			break;
+	        break;
 
 		case IKEYWORD :
 		case ISYMBOL :
-			res = string_named_formated(tmp_node);
-			break;
+			res = string_named_formated(node);
+	        break;
 
 		case ISTRING :
-			if(readable)
-				res = string_formated(tmp_node);
+			if (readable)
+				res = string_formated(node);
 			else
 				// res will be node and this node will be unlinked...
-				res = GET_STRING(tmp_node);
-			break;
+				res = GET_STRING(node);
+	        break;
 
 		case ILIST :
 		case IARRAY :
 		case IMAP :
 		case ISET :
-			res = string_collection(tmp_node);
-			break;
-
-
-//      case ENV_STACK :
+			// TRACE("Entring string_collection");
+			res = string_collection(node);
+	        break;
 
 		case IENVIRONMENT :
-			res = string_env(tmp_node);
-			break;
+			res = string_env(node);
+	        break;
 
 		case IKEYVAL :
-			res = string_keyval(tmp_node, BOOL_FALSE);
-			break;
+			res = string_keyval(node, BOOL_FALSE);
+	        break;
 
 		case IFUNCTION :
 		case ILAMBDA :
-			res = string_function(tmp_node);
-			break;
+			res = string_function(node);
+	        break;
 
 		case IVAR :
-			res = string_var(tmp_node);
-			break;
+			res = string_var(node);
+	        break;
 
-//    	case REF :
-//    	case FUTURE :
+	        //    	case REF :
+	        //    	case FUTURE :
 
 		case IREADER :
-			res = string_reader(tmp_node);
+			res = string_reader(node);
 	        break;
 
 		case IWRITER :
-			res = string_writer(tmp_node);
+			res = string_writer(node);
 	        break;
 
 		case IINTEGER :
-			res = string_integer(tmp_node);
-			break;
+			res = string_integer(node);
+	        break;
 
 		case IDECIMAL :
-			res = string_decimal(tmp_node);
-			break;
+			res = string_decimal(node);
+	        break;
 
 		default :
-			TRACE("Unable to write %s", tmp_node->type->str_type);
-			break;
+			TRACE("Unable to write %s", node->type->str_type);
+	        break;
 	}
-	unlink_node(&tmp_node);
 	return res;
 
 	// *****************
 	error_assert:
-	unlink_node(&res);
-	unlink_node(&tmp_node);
+	free(&res);
 	return NULL;
 }
 
@@ -612,7 +617,7 @@ char *(*print_ptr)(Node *node, bool readable) = &print_node;
 /*
 	PRINT node using pointer readable
 */
-string *print(Node *node)
+char *print(Node *node)
 {
 	return (*print_ptr)(node, BOOL_FALSE);
 }
@@ -620,7 +625,7 @@ string *print(Node *node)
 /*
 	PR node using pointer, non readable
 */
-string *pr(Node *node)
+char *pr(Node *node)
 {
 	return (*print_ptr)(node, BOOL_TRUE);
 }
@@ -630,12 +635,23 @@ string *pr(Node *node)
 */
 Node *PRINT(Node *node)
 {
-	// If no current output is selectioned : stdout
-	if(!curr)
-		writer_curr(writer_stdout());
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, INODES);
 
-	writer_print(print(node));
+	char *str = NULL;
+	// If no current output is selectioned : stdout
+	if (!curr)
+		writer_curr(writer_stdout());
+	str = print(tmp_node);
+	unlink_node(&tmp_node);
+	writer_print(str);
+	free(str);
 	return NIL;
+
+	// *****************
+	error_assert:
+	unlink_node(&tmp_node);
+	return NULL;
 }
 
 /*
@@ -643,12 +659,24 @@ Node *PRINT(Node *node)
 */
 Node *PR(Node *node)
 {
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, INODES);
+
+	char *str = NULL;
 	// If no current output is selectioned : stdout
-	if(!curr)
+	if (!curr)
 		writer_curr(writer_stdout());
 
-	writer_print(pr(node));
+	str = pr(tmp_node);
+	unlink_node(&tmp_node);
+	writer_print(str);
+	free(str);
 	return NIL;
+
+	// *****************
+	error_assert:
+	unlink_node(&tmp_node);
+	return NULL;
 }
 
 /*
@@ -656,14 +684,26 @@ Node *PR(Node *node)
 */
 Node *PRINTLN(Node *node)
 {
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, INODES);
+
+	char *str = NULL;
 	// If no current output is selectioned : stdout
-	if(!curr)
+	if (!curr)
 		writer_curr(writer_stdout());
 
-	writer_print(print(node));
+	str = print(tmp_node);
+	unlink_node(&tmp_node);
+	writer_print(str);
+	free(str);
 
 	writer_nl();
 	return NIL;
+
+	// *****************
+	error_assert:
+	unlink_node(&tmp_node);
+	return NULL;
 }
 
 /*
@@ -671,13 +711,25 @@ Node *PRINTLN(Node *node)
 */
 Node *PRN(Node *node)
 {
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, INODES);
+
+	char *str = NULL;
 	// If no current output is selectioned : stdout
-	if(!curr)
+	if (!curr)
 		writer_curr(writer_stdout());
 
-	writer_print(pr(node));
+	str = pr(tmp_node);
+	unlink_node(&tmp_node);
+	writer_print(str);
+	free(str);
 
 	writer_nl();
 	return NIL;
+
+	// *****************
+	error_assert:
+	unlink_node(&tmp_node);
+	return NULL;
 }
 

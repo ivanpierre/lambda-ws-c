@@ -8,10 +8,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include "nodes.h"
 #include "number.h"
 #include "collection.h"
+#include "function.h"
+#include "writer.h"
+#include "eval.h"
 #include "free_internal.h"
 
 /*
@@ -20,6 +24,7 @@
 */
 static Node *collection(TYPE type, bool mut)
 {
+	TRACE("collection...");
 	// Create node base
 	Node *node = new_node(type);
 	ASSERT(node, ERR_INIT, str_type(type));
@@ -34,6 +39,8 @@ static Node *collection(TYPE type, bool mut)
 	coll->max   = 0;
 	coll->nodes = malloc(sizeof(Node *));
 	coll->nodes[0] = NULL;
+
+	TRACE("collection return...");
 	return node;
 
 	//************
@@ -110,7 +117,7 @@ Node *empty_transient_set()
 Reallocate nodes
 We will alloc one more block to put a NULL for usage with varargs
 */
-Node *collection_realloc(Node *node, long size)
+static Node *collection_realloc(Node *node, long size)
 {
 	ASSERT(node, ERR_NODE);
 	ASSERT_TYPE(node, ICOLLECTION);
@@ -165,23 +172,53 @@ Node *collection_free(Node **node)
 */
 Node *collection_mut_Q_(Node *node)
 {
-	ACCESS_BOOL(Collection, mut, ICollection);
+	if(node->type->int_type == INIL)
+		return FALSE;
+	ACCESS_BOOL(Collection, mut, ICOLLECTION);
 }
 
-/*
-Size of coll
-*/
-Node *collection_size(Node *node)
+bool COLLECTION_MUT_Q_(Node *node)
 {
-	ACCESS_INTEGER(Collection, size, ICollection);
+	if(node->type->int_type == INIL)
+		return BOOL_FALSE;
+	Collection *coll = STRUCT(node);
+	return coll->mut;
 }
 
 /*
-Max allocation of coll
+	Size of coll
+*/
+Node *collection_count(Node *node)
+{
+	if(node->type->int_type == INIL)
+		return integer(0);
+	ACCESS_INTEGER(Collection, size, ICOLLECTION);
+}
+
+long COLLECTION_COUNT(Node *node)
+{
+	if(node->type->int_type == INIL)
+		return 0l;
+	Collection *coll = STRUCT(node);
+	return coll->size;
+}
+
+/*
+	Max allocation of coll
 */
 Node *collection_max(Node *node)
 {
-	ACCESS_INTEGER(Collection, max, ICollection);
+	if(node->type->int_type == INIL)
+		return integer(0);
+	ACCESS_INTEGER(Collection, max, ICOLLECTION);
+}
+
+long COLLECTION_MAX(Node *node)
+{
+	if(node->type->int_type == INIL)
+		return 0l;
+	Collection *coll = STRUCT(node);
+	return coll->max;
 }
 
 /*
@@ -192,22 +229,29 @@ Node *collection_first(Node *node)
 	Node *tmpnode = NULL;
 	Node *res  = NULL;
 	ASSERT_NODE(node, tmpnode, ISEQUABLE);
+	if(node->type->int_type == INIL)
+	{
+		res = NIL;
+		goto end_assert;
+	}
 
 	Collection *coll = STRUCT(node);
 	if (tmpnode->type->int_type == INIL || coll->size <= 0)
 		res = NIL;
 	else if (tmpnode->type->int_type == ILIST)
-		link_node(&res, coll->nodes[coll->size - 1]);
+		res = coll->nodes[coll->size - 1];
 	else
-		link_node(&res, coll->nodes[0]);
+		res = coll->nodes[0];
 
 	unlink_node(&tmpnode);
 	return res;
 
+	//******************
+	end_assert:
 	error_assert:
 	unlink_node(&tmpnode);
 	unlink_node(&res);
-	return NULL;
+	return res;
 }
 
 /*
@@ -218,22 +262,29 @@ Node *collection_last(Node *node)
 	Node *tmpnode = NULL;
 	Node *res  = NULL;
 	ASSERT_NODE(node, tmpnode, ISEQUABLE);
+	if(node->type->int_type == INIL)
+	{
+		res = NIL;
+		goto end_assert;
+	}
 
 	Collection *coll = STRUCT(node);
 	if (tmpnode->type->int_type == INIL || coll->size <= 0)
 		res = NIL;
 	else if (tmpnode->type->int_type == ILIST)
-		link_node(&res, coll->nodes[0]);
+		res = coll->nodes[0];
 	else
-		link_node(&res, coll->nodes[coll->size - 1]);
+		res = coll->nodes[coll->size - 1];
 
 	unlink_node(&tmpnode);
 	return res;
 
+	//****************
+	end_assert:
 	error_assert:
 	unlink_node(&tmpnode);
 	unlink_node(&res);
-	return NULL;
+	return res;
 }
 
 /*
@@ -242,11 +293,16 @@ Node *collection_last(Node *node)
 Node *collection_nth(Node *node, Node *index)
 {
 	Node *tmpnode = NULL;
-	Node *tmpindex = NULL;
 	Node *res  = NULL;
 	ASSERT_NODE(node, tmpnode, ISEQUABLE);
+	if(node->type->int_type == INIL)
+	{
+		res = NIL;
+		goto end_assert;
+	}
 
 	// Manage index arg
+	Node *tmpindex = NULL;
 	ASSERT_NODE(index, tmpindex, IINTEGER);
 	Integer *i = STRUCT(tmpindex);
 	ASSERT(i, ERR_ARG, "index");
@@ -258,20 +314,106 @@ Node *collection_nth(Node *node, Node *index)
 		res = NIL;
 	else if (coll->size == 0 || (idx >= coll->size && idx < 0))
 		ABORT(ERR_INDEX, idx);
+
 	if (tmpnode->type->int_type == ILIST)
-		link_node(&res, coll->nodes[coll->size - idx - 1]);
+		res = coll->nodes[coll->size - idx - 1];
 	else
-		link_node(&res, coll->nodes[idx]);
+		res = coll->nodes[idx];
 
 	unlink_node(&tmpnode);
 	return res;
 
+	//********************
+	end_assert:
 	error_assert:
 	unlink_node(&tmpnode);
 	unlink_node(&tmpindex);
 	unlink_node(&res);
-	return NULL;
+	return res;
+}
 
+/*
+ * list function
+ */
+Node *list(Node *arg, ...)
+{
+	va_list args, save;
+	Node *node = empty_list();
+
+	if(arg == NULL)
+		return node;
+
+	va_copy(save, args);
+	va_start(save, arg);
+
+	long count = count_args(save);
+	Collection *coll = STRUCT(node);
+	node = collection_realloc(node, count + 1);
+	link_node(&coll->nodes[count], arg);
+	TRACE("Last element = '%s'", print(arg));
+
+	va_start(args, arg);
+	Node *walk = va_arg(args, Node *);
+	for(long i = count - 1; walk; i--)
+	{
+		coll->nodes[i] = NULL;
+		link_node(&coll->nodes[i], walk);
+		TRACE("Element #%ld = '%s'", i, print(coll->nodes[i]));
+		walk = va_arg(args, Node *);
+	}
+	coll->size = count + 1;
+	va_end(args);
+	return node;
+}
+
+/*
+ *
+ */
+Node *array(Node *arg, ...)
+{
+	va_list args, save;
+	Node *node = empty_array();
+
+	if(arg == NULL)
+		return node;
+
+	va_copy(save, args);
+	va_start(save, arg);
+
+	long count = count_args(save);
+	Collection *coll = STRUCT(node);
+	node = collection_realloc(node, count + 1);
+	link_node(&coll->nodes[0], arg);
+	TRACE("First element = '%s'", print(arg));
+
+	va_start(args, arg);
+	Node *walk = va_arg(args, Node *);
+	for(long i = 1; walk; i++)
+	{
+		coll->nodes[i] = NULL;
+		link_node(&coll->nodes[i], walk);
+		TRACE("Element #%ld = '%s'", i, print(coll->nodes[i]));
+		walk = va_arg(args, Node *);
+	}
+	coll->size = count + 1;
+	va_end(args);
+	return node;
+}
+
+/*
+ *
+ */
+Node *set(Node *arg, ...)
+{
+	return NIL;
+}
+
+/*
+ *
+ */
+Node *map(Node *arg, ...)
+{
+	return NIL;
 }
 
 /*
@@ -288,6 +430,30 @@ Node *list_eval(Node *node, Node *environment)
 */
 Node *collection_eval(Node *node, Node *environment)
 {
-	// TODO implement evaluation
-	return node;
+	Node *tmp_node = NULL;
+	Node *tmp_environment = NULL;
+	ASSERT_NODE(node, tmp_node, ICOLLECTION);
+	ASSERT_NODE(environment, tmp_environment, ICOLLECTION);
+	Collection *org = STRUCT(tmp_node);
+	Node *res = NULL;
+	res = collection_realloc(new_node(tmp_node->type->int_type), org->size);
+
+	Collection *dest = STRUCT(res);
+	dest->mut = org->mut;
+	for(long i = 0; i < org->size; i++)
+	{
+		link_node(&dest->nodes[i], EVAL(org->nodes[i], environment));
+	}
+
+	unlink_node(&tmp_node);
+	unlink_node(&tmp_environment);
+	return res;
+
+	//********************
+	end_assert:
+	error_assert:
+	unlink_node(&tmp_node);
+	unlink_node(&tmp_environment);
+	unlink_node(&res);
+	return res;
 }

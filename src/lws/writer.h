@@ -17,7 +17,7 @@ typedef struct
     FILE            *file;
 } Writer;
 
-extern Node *(*print_ptr)(Node *node, bool readable);
+extern char *(*print_ptr)(Node *node, bool readable);
 
 // to current printer
 Node *PRINT(Node *node);

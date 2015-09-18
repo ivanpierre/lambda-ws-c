@@ -1,9 +1,9 @@
 /****
-    General evaluator of nodes
+	General evaluator of nodes
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #include <stdio.h>
@@ -15,63 +15,92 @@
 #include "writer.h"
 
 /*
-    return evaluation of nodes according to type
+	return evaluation of nodes according to type
 */
 Node *eval_node(Node *node, Node *environment)
 {
-    Node *res = NULL;
+	Node *res = NULL;
 
-    switch(node->type->int_type)
-    {
-        case ISYMBOL :
-            res = symbol_eval(node, environment);
-            break;
+	switch(node->type->int_type)
+	{
+		case ISYMBOL :
+			res = symbol_eval(node, environment);
+			break;
 
-        case ILIST :
-        case ISEQ :
-            res = list_eval(node, environment);
-            break;
+		case ILIST :
+		case ISEQ :
+			res = list_eval(node, environment);
+			break;
 
-        case IARRAY :
-        case IMAP :
-        case ISET :
-            res = collection_eval(node, environment);
-            break;
+		case IARRAY :
+		case IMAP :
+		case ISET :
+			res = collection_eval(node, environment);
+			break;
 
-        case IKEYVAL :
-            res = keyval_eval(node, environment);
-            break;
+		case IKEYVAL :
+			res = keyval_eval(node, environment);
+			break;
 
-        case INIL :
-        case ITRUE :
-        case IFALSE :
-        case IKEYWORD :
-        case IINTEGER :
+		case INIL :
+		case ITRUE :
+		case IFALSE :
+		case IKEYWORD :
+		case IINTEGER :
 //		case IFRACTION :
-        case IDECIMAL :
-        case ISTRING :
-        case IENV_STACK :
-        case IENVIRONMENT :
-        case IAPI :
-        case IFUNCTION :
-        case ILAMBDA :
-        case IVAR :
+		case IDECIMAL :
+		case ISTRING :
+		case IENV_STACK :
+		case IENVIRONMENT :
+		case IAPI :
+		case IFUNCTION :
+		case ILAMBDA :
+		case IVAR :
 		case IREF :
-        case IREADER :
-        case INAMESPACE :
-            res = link_node(&res, node);
-            break;
+		case IREADER :
+		case INAMESPACE :
+			res = link_node(&res, node);
+			break;
 
-        case IINVALID :
-        default:
-            ABORT("cannot evaluate '%s' of type '%s'",
-                  pr(node), node->type->str_type);
-            break;
-    }
+		case IINVALID :
+		default:
+			ABORT("cannot evaluate '%s' of type '%s'",
+				  pr(node), node->type->str_type);
+			break;
+	}
 
-    //************
-    error_assert:
-    unlink_node(&node);
-    return res;
+	//************
+	error_assert:
+	return res;
 }
 
+/*
+ * Evaluation function pointer
+ */
+Node *(*eval_ptr)(Node *node, Node *environment) = &eval_node;
+
+/*
+ * evaluation function
+ */
+Node *EVAL(Node *node, Node *environment)
+{
+	Node *res = NULL;
+	Node *tmp_node = NULL;
+	Node *tmp_environment = NULL;
+
+	ASSERT_NODE(node, tmp_node, ICOLLECTION);
+	ASSERT_NODE(environment, tmp_environment, ICOLLECTION);
+
+	res = (*eval_ptr)(node, environment);
+
+	unlink_node(&tmp_node);
+	unlink_node(&tmp_environment);
+	return res;
+
+	//************
+	error_assert:
+	unlink_node(&tmp_node);
+	unlink_node(&tmp_environment);
+	unlink_node(&res);
+	return res;
+}

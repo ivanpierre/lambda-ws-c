@@ -9,7 +9,7 @@
 #ifndef EVAL_H
 #define EVAL_H
 
-bool *(*eval_ptr)(Node **var, Node *node, Node *environment);
-bool EVAL(Node **var, Node *node, Node *environment);
+Node *(*eval_ptr)(Node *node, Node *environment);
+Node *EVAL(Node *node, Node *environment);
 
 #endif

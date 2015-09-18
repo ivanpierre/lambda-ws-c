@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "nodes.h"
 #include "function.h"
 #include "free_internal.h"
@@ -60,5 +61,21 @@ Node *function_free(Node **node)
 
 	error_assert:
 	return *node;
+}
+
+/*
+ * Get varargs length
+ */
+long count_args(va_list args)
+{
+	Node *walk = va_arg(args, Node *);
+	long i = 0;
+	while(walk)
+	{
+		i++;
+		walk = va_arg(args, Node *);
+	}
+	va_end(args);
+	return i;
 }
 

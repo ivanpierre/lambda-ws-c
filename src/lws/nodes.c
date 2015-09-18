@@ -37,7 +37,7 @@ static Node *init_node(Node *node, TYPE type)
 {
 	ASSERT(node, ERR_NULL_PTR);
 	node->type        = get_type(type);
-	node->occurrences = 0; // will be incremented on link
+	node->occurrences = 0; // will be decremented on valid creation
 #ifdef DEBUG_ALLOC
 	if (!last_node)
 	{
@@ -65,7 +65,8 @@ static Node *init_node(Node *node, TYPE type)
 Node *new_node(TYPE type)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
-	Node *node = malloc(sizeof(Node) + size_type(type));
+	Node *node = NULL;
+	node = malloc(sizeof(Node) + size_type(type));
 #ifdef DEBUG_FREE
 	node->printable_version = NULL;
 #endif
@@ -88,27 +89,29 @@ void *THREAD_NODE(Node *init, ...)
 {
 	void *(*func)(Node *arg) = NULL;
 	va_list funp;
-	Node *node = NULL;
+	Node *res = NULL;
 
-	link_node(&node, init);
-	unlink_node(&init);
-	ASSERT(node, ERR_INIT);
+	ASSERT(init, ERR_INIT);
 
+	// Last previous result is init
+	link_node(&res, init);
+
+	// We will trampoline on function call values. fun(res) -> res,
+	// with unlink on previous res
 	va_start(funp, init);
 	while ((func = va_arg(funp, void *(*)(Node *arg))))
 	{
-		Node *res = (*func)(node);
-		link_node(&node, res);
-		unlink_node(&res);
-		ASSERT(node, ERR_INIT);
+		link_node(&res, (*func)(res));
+		ASSERT(res, ERR_INIT);
 	}
 
-	return node;
+	return res;
 
+	//****************
 	error_assert:
-	unlink_node(&node);
 	unlink_node(&init);
-	return node;
+	unlink_node(&res);
+	return NULL;
 }
 
 /*
@@ -116,10 +119,17 @@ void *THREAD_NODE(Node *init, ...)
 */
 bool FALSE_Q_(Node *node)
 {
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, INODES);
 	bool res =  node == NIL ||
 				node == FALSE;
 	unlink_node(&node);
 	return res;
+
+	//****************
+	error_assert:
+	unlink_node(&tmp_node);
+	return BOOL_FALSE;
 }
 
 /*
@@ -127,9 +137,16 @@ bool FALSE_Q_(Node *node)
 */
 bool TRUE_Q_(Node *node)
 {
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, INODES);
 	bool res = !FALSE_Q_(node);
 	unlink_node(&node);
 	return res;
+
+	//****************
+	error_assert:
+	unlink_node(&tmp_node);
+	return BOOL_FALSE;
 }
 
 /*
@@ -137,7 +154,16 @@ bool TRUE_Q_(Node *node)
 */
 Node *false_Q_(Node *node)
 {
-	return FALSE_Q_(node) ? TRUE : FALSE;
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, INODES);
+	Node *res = FALSE_Q_(tmp_node) ? TRUE : FALSE;
+	unlink_node(&tmp_node);
+	return res;
+
+	//****************
+	error_assert:
+	unlink_node(&tmp_node);
+	return NULL;
 }
 
 /*
@@ -145,7 +171,16 @@ Node *false_Q_(Node *node)
 */
 Node *true_Q_(Node *node)
 {
-	return TRUE_Q_(node) ? TRUE : FALSE;
+	Node *tmp_node = NULL;
+	ASSERT_NODE(node, tmp_node, INODES);
+	Node *res = TRUE_Q_(tmp_node) ? TRUE : FALSE;
+	unlink_node(&tmp_node);
+	return res;
+
+	//****************
+	error_assert:
+	unlink_node(&tmp_node);
+	return NULL;
 }
 
 /*
@@ -153,8 +188,13 @@ Node *true_Q_(Node *node)
  */
 bool node_isa_type(Node *node, TYPE isa)
 {
-	return node->type->bin_type & get_type(isa)->bin_type &&
-			node->type->bin_type <= get_type(isa)->bin_type;
+	bool res = node->type->bin_type & get_type(isa)->bin_type &&
+	           node->type->bin_type <= get_type(isa)->bin_type;
+	return res;
+
+	//****************
+	error_assert:
+	return BOOL_FALSE;
 }
 
 void *STRUCT(Node *node)

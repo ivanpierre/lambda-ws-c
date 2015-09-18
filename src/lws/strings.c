@@ -22,15 +22,21 @@
 */
 char *GET_STRING(Node *node)
 {
-	String *str = STRUCT(node);
+	Node *tmp_node = NULL;
+	String *str = NULL;
+	ASSERT_NODE(node, tmp_node, ISTRING)
+	str = STRUCT(tmp_node);
 	char *res = malloc(str->size + 1);
 	ASSERT(res, ERR_ALLOC);
 	memcpy(res, str->string, str->size);
 	res[str->size] = '\0';
+	unlink_node(&tmp_node);
 	return res;
 
 	//***************
 	error_assert:
+	unlink_node(&tmp_node);
+	free(res);
 	return NULL;
 }
 
@@ -50,7 +56,7 @@ static Node *string_base(char *value)
 /*
 	Create a linked string, allocate space for the string
 */
-Node *string_unalloc(char *value)
+Node *string_noalloc(char *value)
 {
 	ASSERT(value, ERR_NODE);
 	return string_base(value); // new_string_base did the link
@@ -78,6 +84,7 @@ Node *string(char *value)
 */
 Node *string_sprintf(char *fmt, ...)
 {
+	// TODO use STRING_SPRINTF
 	va_list args;
 	va_start(args, fmt);
 	char *formated = NULL;
@@ -85,8 +92,21 @@ Node *string_sprintf(char *fmt, ...)
 	if(!formated)
 		return string("cannot format string");
 
-	// TRACE("Formatt = %s'", fmt);
-	// TRACE("Formatted String = %s'", formated);
+	return string(formated);
+}
+
+/*
+	create a new string node appending another one
+*/
+Node *STRING_SPRINTF(char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	char *formated = NULL;
+	vasprintf(&formated, fmt, args);
+	if(!formated)
+		return string("cannot format string");
+
 	return string(formated);
 }
 

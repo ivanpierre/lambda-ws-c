@@ -1,16 +1,16 @@
 /****
-    Collection header
+	Collection header
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #ifndef COLLECTION_H
 #define COLLECTION_H
 
 /*
-    Collection : Array, List, Map and Set
+	Collection : Array, List, Map and Set
 */
 typedef struct
 {
@@ -43,9 +43,14 @@ Node *collection_clone(Node *coll);
 // accessors
 Collection *GET_COLLECTION(Node *node);
 
-Node *collection_size(Node *coll);
+Node *collection_count(Node *coll);
 Node *collection_max(Node *coll);
 Node *collection_mut_Q_(Node *coll);
+
+// Direct accessors
+long COLLECTION_COUNT(Node *coll);
+long COLLECTION_MAX(Node *coll);
+bool COLLECTION_MUT_Q_(Node *coll);
 
 // nodes accessors
 Node *collection_first(Node *coll);

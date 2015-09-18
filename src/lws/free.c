@@ -32,8 +32,7 @@ static Node *FREE(Node **node);
 */
 static bool unlinkable(Node *node)
 {
-	return !node ||
-			node->type->bin_type & get_type(IUNLINKABLE)->bin_type;
+	return !node || node->type->bin_type & get_type(IUNLINKABLE)->bin_type;
 }
 
 /*
@@ -56,9 +55,19 @@ Node *link_node(Node **var, Node *node)
 		tmpnode->occurrences++;
 
 	// Unlink underlying value
-	if (*var) unlink_node(var);
+	if (*var)
+	{
+#ifdef DEBUG_FREE
+		TRACE("unlinking previous %s", (*var)->type->str_type);
+#endif
+		unlink_node(var);
+	}
 
 	*var = tmpnode;
+
+#ifdef DEBUG_FREE
+	TRACE("linked %s", node->type->str_type);
+#endif
 	return *var;
 
 	error_assert:
@@ -72,11 +81,11 @@ Node *link_node(Node **var, Node *node)
 */
 Node *unlink_node(Node **node)
 {
+	ASSERT(node, ERR_VAR);
+	if(!*node) return NULL;
 #ifdef DEBUG_FREE
 	TRACE("unlinking %s", (*node)->type->str_type);
 #endif
-	ASSERT(node, ERR_VAR);
-	ASSERT(*node, ERR_NODE);
 	if (!unlinkable(*node))
 	{
 		if ((*node)->occurrences)
@@ -85,16 +94,11 @@ Node *unlink_node(Node **node)
 		{
 #ifdef DEBUG_FREE
 			TRACE("freeing %s", (*node)->type->str_type);
-			if((*node)->printable_version)
-			{
-				free((*node)->printable_version);
-				(*node)->printable_version = NULL;
-			}
 #endif
 #ifdef DEBUG_ALLOC
-			if((*node)->next_node == NULL && (*node)->previous_node == NULL)
+			if ((*node)->next_node == NULL && (*node)->previous_node == NULL)
 			{
-				// TODO unallocated node
+				TRACE("unlink last node");
 			}
 			if (*node == first_node && *node == last_node)
 				first_node = last_node = NULL;
@@ -156,7 +160,7 @@ Node *unlink_new(Node *node)
 static Node *free_node(Node **node)
 {
 	ASSERT(node, ERR_VAR);
-	if(!*node) return NULL;
+	if (!*node) return NULL;
 	switch ((*node)->type->int_type)
 	{
 		case INIL :
@@ -203,7 +207,7 @@ static Node *free_node(Node **node)
 
 		case IVAR :
 			// FREE(node->val.compl);
-	        break;
+			break;
 
 		case IREADER :
 			reader_free(node);
@@ -286,9 +290,8 @@ void print_node_stack()
 	int  i     = 1;
 	while (walk)
 	{
-		TRACE("%d) %s %ld %s", i++,
-		      walk->type->str_type,
-		      walk->occurrences,
+		TRACE("%d) %s %ld %s", i++, walk->type->str_type, walk->occurrences,
+		//      "");
 		      print(walk));
 		walk = walk->next_node;
 	}

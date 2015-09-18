@@ -19,7 +19,7 @@
 	Define in case of allocation debugging
 */
 #define DEBUG_ALLOC
-#define DEBUG_FREE
+// #define DEBUG_FREE
 
 /*
 	Used type definitions
@@ -34,9 +34,6 @@ typedef struct Node
 {
 	Type        *type;
 	long        occurrences;
-#ifdef DEBUG_FREE
-	char        *printable_version;
-#endif
 #ifdef DEBUG_ALLOC
 	struct Node *previous_node;
 	struct Node *next_node;
@@ -71,22 +68,22 @@ extern void print_node_list ();
 #define BOOL(val) val ? TRUE : FALSE
 
 // ***************************
-#define ACCESS_START(ctype, rtype, IType) \
+#define ACCESS_START(ctype, rtype, itype) \
 Node *tmp_node = NULL; \
 rtype res; \
  \
-ASSERT_NODE(node, tmp_node, ITYPE); \
+ASSERT_NODE(node, tmp_node, itype); \
  \
 ctype *str = STRUCT(tmp_node)
 
 // ***************************
-#define ACCESS_END(OType) \
+#define ACCESS_END(otype) \
 unlink_node(&tmp_node); \
  \
 if (!res) \
 	res = NIL; \
 if (res != NIL) \
-	ASSERT_TYPE(res, OType); \
+	ASSERT_TYPE(res, otype); \
  \
 return unlink_new(res); \
  \
@@ -95,10 +92,10 @@ unlink_node(&tmp_node); \
 return NULL
 
 // ***************************
-#define ACCESS_END_TYPED(OType) \
+#define ACCESS_END_TYPED(otype) \
 unlink_node(&tmp_node); \
  \
-ASSERT_TYPE(res, OType); \
+ASSERT_TYPE(res, otype); \
  \
 return res; \
  \
@@ -116,26 +113,26 @@ unlink_node(&tmp_node); \
 return res
 
 // ***************************
-#define ACCESS_NODE(ctype, access, IType, OType) \
-ACCESS_START(ctype, Node *, IType); \
+#define ACCESS_NODE(ctype, access, itype, otype) \
+ACCESS_START(ctype, Node *, itype); \
 link_node(&res, str->access); \
-ACCESS_END(OType)
+ACCESS_END(otype)
 
 // ***************************
-#define ACCESS_BOOL(ctype, access, IType) \
-ACCESS_START(ctype, Node *, IType); \
+#define ACCESS_BOOL(ctype, access, itype) \
+ACCESS_START(ctype, Node *, itype); \
 res = BOOL(str->access ); \
 ACCESS_END_TYPED(IBOOLEAN)
 
 // ***************************
-#define ACCESS_INTEGER(ctype, access, IType) \
-ACCESS_START(ctype, Node *, IType); \
+#define ACCESS_INTEGER(ctype, access, itype) \
+ACCESS_START(ctype, Node *, itype); \
 res = integer(str->access); \
 ACCESS_END_TYPED(IINTEGER)
 
 // ***************************
-#define ACCESS_DECIMAL(ctype, access, IType) \
-ACCESS_START(ctype, Node *, IType); \
+#define ACCESS_DECIMAL(ctype, access, itype) \
+ACCESS_START(ctype, Node *, itype); \
 res = decimal(str->access); \
 ACCESS_END_TYPED(IDECIMAL)
 
@@ -146,8 +143,8 @@ res = str->access; \
 ACCESS_END_UNTYPED()
 
 // ***************************
-#define ACCESS_STR(ctype, access, IType) \
-ACCESS_START(ctype, char *, IType); \
+#define ACCESS_STR(ctype, access, itype) \
+ACCESS_START(ctype, char *, itype); \
 res = strdup(str->access); \
 ACCESS_END_UNTYPED()
 
