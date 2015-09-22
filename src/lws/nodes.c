@@ -67,9 +67,6 @@ Node *new_node(TYPE type)
 	// TRACE("fait nouveau node %s", str_type(type));
 	Node *node = NULL;
 	node = malloc(sizeof(Node) + size_type(type));
-#ifdef DEBUG_FREE
-	node->printable_version = NULL;
-#endif
 	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
 	return node;
 

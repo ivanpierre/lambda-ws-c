@@ -53,7 +53,6 @@ Node *link_node(Node *node)
 	if (!unlinkable(node))
 		node->occurrences++;
 
-
 #ifdef DEBUG_FREE
 	TRACE("linked %s", node->type->str_type);
 #endif
@@ -70,7 +69,6 @@ Node *link_node(Node *node)
 */
 Node *unlink_node(Node *node)
 {
-	ASSERT(node, ERR_VAR);
 	if(!node) return NULL;
 #ifdef DEBUG_FREE
 	TRACE("unlinking %s", node->type->str_type);
@@ -82,7 +80,7 @@ Node *unlink_node(Node *node)
 		if (node->occurrences <= 0)
 		{
 #ifdef DEBUG_FREE
-			TRACE("freeing %s", (*node)->type->str_type);
+			TRACE("freeing %s", node->type->str_type);
 #endif
 #ifdef DEBUG_ALLOC
 			if (node->next_node == NULL && node->previous_node == NULL)
@@ -126,7 +124,6 @@ Node *unlink_node(Node *node)
 */
 Node *unlink_new(Node *node)
 {
-	ASSERT(node, ERR_NODE);
 #ifdef DEBUG_FREE
 	TRACE("unlinking new %s", node->type->str_type);
 #endif

@@ -293,12 +293,11 @@ Node *collection_nth(Node *node, Node *index)
 	}
 
 	// Manage index arg
-	Node *tmpindex = NULL;
 	ASSERT_NODE(index, IINTEGER);
-	Integer *i = STRUCT(tmpindex);
+	Integer *i = STRUCT(index);
 	ASSERT(i, ERR_ARG, "index");
 	long idx = i->integer;
-	unlink_node(tmpindex);
+	unlink_node(index);
 
 	Collection *coll = STRUCT(node);
 	if (coll->size == 0 || (idx >= coll->size && idx < 0))

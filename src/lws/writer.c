@@ -200,6 +200,7 @@ static char *string_keyval(Node *node, bool map)
 */
 static char **get_array(Node *node)
 {
+	// TRACE("getting array");
 	Collection *coll = STRUCT(node);
 	Node *curr = NULL;
 	if(coll->size <= 0)
@@ -250,6 +251,7 @@ static long list_size(long size, char *arr[])
 */
 static char *collection_get_inner_content(Node *node)
 {
+	// TRACE("Printing inner content");
 	bool       rev   = node->type->int_type == ILIST; // LIST is growing from head
 	Collection *coll = STRUCT(node);
 	long       size  = coll->size;
@@ -286,10 +288,11 @@ static char *collection_get_inner_content(Node *node)
 static char *string_collection(Node *coll)
 {
 	// get back inner content
+	// TRACE("Printing a collection");
 	char *inner_content = collection_get_inner_content(coll);
 	char *res           = NULL;
 	if (!inner_content)
-	ABORT("Error getting inner content of collection");
+	    ABORT("Error getting inner content of collection");
 
 	switch (coll->type->int_type)
 	{

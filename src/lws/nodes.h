@@ -153,10 +153,12 @@ extern void print_node_list ();
 
 // ***************************
 #define ASSIGN(to, from) \
-    if(to != from) \
+{ \
+    Node *tmp = from; \
+    if(to != tmp) \
     { \
         unlink_node(to); \
-        to = link_node(from); \
-    }
-
+        to = link_node(tmp); \
+    } \
+}
 #endif

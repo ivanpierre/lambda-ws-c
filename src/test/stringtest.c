@@ -30,13 +30,13 @@ void test_string1()
 	Node *node2 = NULL;
 	Node *node3 = NULL;
 
-	link_node(&node, string("hgfjhgfjhgfjhgfjhgfhj"));
+	ASSIGN(node, string("hgfjhgfjhgfjhgfjhgfhj"));
 	print_node_stack();
 
-	link_node(&node2, string("hgfjhgfjhgfjhgfjhgfhj"));
+	ASSIGN(node2, string("hgfjhgfjhgfjhgfjhgfhj"));
 	print_node_stack();
 
-	link_node(&node3, string("hgfjhgfjhgfjhgfjhgfhj"));
+	ASSIGN(node3, string("hgfjhgfjhgfjhgfjhgfhj"));
 	print_node_stack();
 
 	PRINTLN(node);
@@ -63,9 +63,9 @@ void test_string1()
 	PRN(node);
 	print_node_stack();
 
-	unlink_node(&node2);
-	unlink_node(&node);
-	unlink_node(&node3);
+	unlink_node(node2);
+	unlink_node(node);
+	unlink_node(node3);
 	print_node_stack();
 
 	writer_curr_close();
@@ -87,13 +87,13 @@ void test_string2()
 	Node *node2 = NULL;
 	Node *node3 = NULL;
 
-	link_node(&node, string("hgfjhgfjhgfjhgfjhgfhj"));
+	ASSIGN(node, string("hgfjhgfjhgfjhgfjhgfhj"));
 	print_node_stack();
 
-	link_node(&node2, node);
+	ASSIGN(node2, node);
 	print_node_stack();
 
-	link_node(&node3, node);
+	ASSIGN(node3, node);
 	print_node_stack();
 
 	PRINTLN(node3);
@@ -120,9 +120,9 @@ void test_string2()
 	PR(node);
 	print_node_stack();
 
-	unlink_node(&node3);
-	unlink_node(&node);
-	unlink_node(&node2);
+	unlink_node(node3);
+	unlink_node(node);
+	unlink_node(node2);
 	print_node_stack();
 
 	writer_curr_close();
@@ -144,9 +144,9 @@ void test_string3()
 	Node *node2 = NULL;
 	Node *node3 = NULL;
 
-	link_node(&node, string("hgfjhgfjhgfjhgfjhgfhj"));
-	link_node(&node2, node);
-	link_node(&node3, node2);
+	ASSIGN(node, string("hgfjhgfjhgfjhgfjhgfhj"));
+	ASSIGN(node2, node);
+	ASSIGN(node3, node2);
 
 	print_node_stack();
 
@@ -173,9 +173,9 @@ void test_string3()
 	PRINTLN(TRUE);
 	print_node_stack();
 
-	unlink_node(&node3);
-	unlink_node(&node);
-	unlink_node(&node2);
+	unlink_node(node3);
+	unlink_node(node);
+	unlink_node(node2);
 	print_node_stack();
 
 	writer_curr_close();

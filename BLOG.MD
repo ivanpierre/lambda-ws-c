@@ -1,4 +1,10 @@
 # BLOG (just what happens)
+#### 22 Sept 2015
+Re-rewriting of allocation process. All functions link arguments and unlink them at the end, except constructor
+witch unlink_new them to let them have an occurences count of 0. The goal is to discard them if they are used in
+a function when not linked elsewhere.
+Going to the process to add Hash code management for Nodes. Adding Murmur3 functions.
+Modifying function argument specification to argcount (mandatory ones) and a vararg boolean.
 #### 07 sept 2015
 Ok, big tests and rewrites on allocation problems. I'll manage the explanations on
 [GABAGE.MD](GARBAGE.MD). It begins to seem obvious, but it's not a simple problem.

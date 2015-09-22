@@ -23,7 +23,7 @@ void test_integer()
 	print_node_stack();
 	Node *node2 = NULL;
 
-	link_node(&node2, node);
+	ASSIGN(node2, node);
 	print_node_stack();
 
 	PRINT(node);
@@ -32,7 +32,7 @@ void test_integer()
 	PRINT(node2);
 	print_node_stack();
 
-	unlink_node(&node2);
+	unlink_node(node2);
 	print_node_stack();
 
 	writer_curr_close();
@@ -51,13 +51,13 @@ void test_integer2()
 	Node *node3 = NULL;
 
 	// creation integer
-	link_node(&node, integer(123l));
+	ASSIGN(node, integer(123l));
 	print_node_stack();
 
-	link_node(&node2, integer(4244));
+	ASSIGN(node2, integer(4244));
 	print_node_stack();
 
-	link_node(&node3, integer(0));
+	ASSIGN(node3, integer(0));
 	print_node_stack();
 
 	PRINT(node);
@@ -75,13 +75,13 @@ void test_integer2()
 	PRINT(node2);
 	print_node_stack();
 
-	unlink_node(&node);
+	unlink_node(node);
 	print_node_stack();
 
-	unlink_node(&node2);
+	unlink_node(node2);
 	print_node_stack();
 
-	unlink_node(&node3);
+	unlink_node(node3);
 	print_node_stack();
 
 	writer_curr_close();
@@ -99,13 +99,13 @@ void test_integer3()
 	Node *node2 = NULL;
 	Node *node3 = NULL;
 
-	link_node(&node, integer(123l));
+	ASSIGN(node, integer(123l));
 	print_node_stack();
 
-	link_node(&node2, node);
+	ASSIGN(node2, node);
 	print_node_stack();
 
-	link_node(&node3, node2);
+	ASSIGN(node3, node2);
 	print_node_stack();
 
 	PRINT(node2);
@@ -123,9 +123,9 @@ void test_integer3()
 	PRINT(node2);
 	print_node_stack();
 
-	unlink_node(&node2);
-	unlink_node(&node3);
-	unlink_node(&node);
+	unlink_node(node2);
+	unlink_node(node3);
+	unlink_node(node);
 	print_node_stack();
 
 	writer_curr_close();
@@ -144,7 +144,7 @@ void test_decimal()
 	Node *node = NULL;
 
 	// creation decimal
-	link_node(&node, decimal(123.345));
+	ASSIGN(node, decimal(123.345));
 	print_node_stack();
 
 	PRINTLN(decimal(123.345));
@@ -156,7 +156,7 @@ void test_decimal()
 	PRINTLN(node);
 	print_node_stack();
 
-	unlink_node(&node);
+	unlink_node(node);
 	print_node_stack();
 
 	writer_curr_close();
@@ -176,13 +176,13 @@ void test_decimal2()
 	Node *node2 = NULL;
 	Node *node3 = NULL;
 
-	link_node(&node, decimal(123.345));
+	ASSIGN(node, decimal(123.345));
 	print_node_stack();
 
-	link_node(&node2, decimal(111));
+	ASSIGN(node2, decimal(111));
 	print_node_stack();
 
-	link_node(&node3, decimal(0.87877878787));
+	ASSIGN(node3, decimal(0.87877878787));
 	print_node_stack();
 
 	PRINTLN(node2);
@@ -209,9 +209,9 @@ void test_decimal2()
 	PRN(node3);
 	print_node_stack();
 
-	unlink_node(&node);
-	unlink_node(&node2);
-	unlink_node(&node3);
+	unlink_node(node);
+	unlink_node(node2);
+	unlink_node(node3);
 
 	writer_curr_close();
 	print_node_stack();
@@ -231,13 +231,13 @@ void test_decimal3()
 	Node *node3 = NULL;
 
 	// creation decimal
-	link_node(&node, decimal(123.345));
+	ASSIGN(node, decimal(123.345));
 	print_node_stack();
 
-	link_node(&node2, node);
+	ASSIGN(node2, node);
 	print_node_stack();
 
-	link_node(&node3, node2);
+	ASSIGN(node3, node2);
 	print_node_stack();
 
 	PRINT(node);
@@ -264,9 +264,9 @@ void test_decimal3()
 	PRN(node2);
 	print_node_stack();
 
-	unlink_node(&node);
-	unlink_node(&node2);
-	unlink_node(&node3);
+	unlink_node(node);
+	unlink_node(node2);
+	unlink_node(node3);
 	print_node_stack();
 
 	writer_curr_close();

@@ -17,7 +17,8 @@ typedef struct
 	Node                *is_macro;
 	Node                *is_special;
 	Node                *closure; // as a previous Environment
-	Node                *args;    // seq of symbols to create local Environment
+    int                 nb_args;
+    bool                varargs;
 	// for function call manage variadic arguments
 	// and to coerce types
 	union

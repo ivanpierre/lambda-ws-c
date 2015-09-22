@@ -36,40 +36,40 @@ void test_list1()
 	Node *rmap = NULL;
 	Node *rset = NULL;
 
-	link_node(&elist, empty_list());
+	ASSIGN(elist, empty_list());
 	print_node_stack();
 
-	link_node(&earray, empty_array());
+	ASSIGN(earray, empty_array());
 	print_node_stack();
 
-	link_node(&emap, empty_map());
+	ASSIGN(emap, empty_map());
 	print_node_stack();
 
-	link_node(&eset, empty_set());
+	ASSIGN(eset, empty_set());
 	print_node_stack();
 
-	link_node(&tlist, empty_transient_list());
+	ASSIGN(tlist, empty_transient_list());
 	print_node_stack();
 
-	link_node(&tarray, empty_transient_array());
+	ASSIGN(tarray, empty_transient_array());
 	print_node_stack();
 
-	link_node(&tmap, empty_transient_map());
+	ASSIGN(tmap, empty_transient_map());
 	print_node_stack();
 
-	link_node(&tset, empty_transient_set());
+	ASSIGN(tset, empty_transient_set());
 	print_node_stack();
 
-	link_node(&rlist, list(elist, earray, eset, emap, NULL));
+	ASSIGN(rlist, list(elist, earray, eset, emap, NULL));
 	print_node_stack();
 
-	link_node(&rarray, array(elist, earray, eset, emap, NULL));
+	ASSIGN(rarray, array(elist, earray, eset, emap, NULL));
 	print_node_stack();
 
-	link_node(&rmap, map(elist, earray, eset, emap, NULL));
+	ASSIGN(rmap, map(elist, earray, eset, emap, NULL));
 	print_node_stack();
 
-	link_node(&rset, set(elist, earray, eset, emap, NULL));
+	ASSIGN(rset, set(elist, earray, eset, emap, NULL));
 	print_node_stack();
 
 	PRINTLN(elist);
@@ -153,40 +153,40 @@ void test_list1()
 	PRINTLN(collection_max(rset));
 
 	dealloc:
-	unlink_node(&elist);
+	unlink_node(elist);
 	print_node_stack();
 
-	unlink_node(&earray);
+	unlink_node(earray);
 	print_node_stack();
 
-	unlink_node(&emap);
+	unlink_node(emap);
 	print_node_stack();
 
-	unlink_node(&eset);
+	unlink_node(eset);
 	print_node_stack();
 
-	unlink_node(&tlist);
+	unlink_node(tlist);
 	print_node_stack();
 
-	unlink_node(&tarray);
+	unlink_node(tarray);
 	print_node_stack();
 
-	unlink_node(&tmap);
+	unlink_node(tmap);
 	print_node_stack();
 
-	unlink_node(&tset);
+	unlink_node(tset);
 	print_node_stack();
 
-	unlink_node(&rlist);
+	unlink_node(rlist);
 	print_node_stack();
 
-	unlink_node(&rarray);
+	unlink_node(rarray);
 	print_node_stack();
 
-	unlink_node(&rmap);
+	unlink_node(rmap);
 	print_node_stack();
 
-	unlink_node(&rset);
+	unlink_node(rset);
 	print_node_stack();
 
 	writer_curr_close();

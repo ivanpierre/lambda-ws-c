@@ -67,6 +67,10 @@ typedef struct
 	TYPE        int_type;
 	long        bin_type;
 	long        size_type;
+//	Node        *(*free)(Node *node);
+//	Node        *(*pr)(Node *node);
+//	Node        *(*print)(Node *node);
+//	Node        *(*eval)(Node *node);
 } Type;
 
 typedef struct
