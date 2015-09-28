@@ -1,4 +1,9 @@
 # BLOG (just what happens)
+
+#### 28 Sept 2016
+Problem found in the new GC version. If arguments are not linked to a new temporary variable
+error catching will badly unlinks nodes nodes. If there's an error on the first argument, the second will be
+unlinked and the count will not correctly match... shit... :(
 #### 28 Sept 2016
 A lot of reflexions and test around arising problems.
 
