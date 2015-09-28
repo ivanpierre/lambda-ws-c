@@ -22,6 +22,9 @@ and arities...
 multiarity methods. This through specific and efficient persistent maps
 -- CBDWS (Complex Base Datatypes WS) So now we can go where we have to... maps, symbols, etc...
 
+For now change and dispatch to the new directories, and begin to write the new changes ;)
+
+Lot of work...
 #### 22 Sept 2015
 Re-rewriting of allocation process. All functions link arguments and unlink them at the end, except constructor
 witch unlink_new them to let them have an occurences count of 0. The goal is to discard them if they are used in
