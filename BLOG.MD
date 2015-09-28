@@ -1,4 +1,27 @@
 # BLOG (just what happens)
+#### 28 Sept 2016
+A lot of reflexions and test around arising problems.
+
+- Hard to manage global naming and reconciling various function names in one name for various data types
+and arities...
+- Would be nice to manage it with the resulting library, but we don't have it.
+- We need polymorphism, but tools are not here.
+- But our current GC system works.
+- Treading is puting it's feets in... and that's bad (for now)
+
+##### Current search option
+
+- Hash maps with keyword style keying (set of unique string).
+- Enable to use it to define complex data structures, sort of OO, but based on interface not on inheritance.
+- How to define related data in interfaces?
+- Base node are nice for now, functions should be usable as is.
+- Think about it an onions, with simple layers to more complex one and step across ;)
+- Perhaps a library by layer, good way to test layer way.
+-- LWS as only base elements : numerics, string, but no symbols, arrays, etc
+-- PWS (polymorphic WS) to add the polymorphic way to link data and polymorphic and
+multiarity methods. This through specific and efficient persistent maps
+-- CBDWS (Complex Base Datatypes WS) So now we can go where we have to... maps, symbols, etc...
+
 #### 22 Sept 2015
 Re-rewriting of allocation process. All functions link arguments and unlink them at the end, except constructor
 witch unlink_new them to let them have an occurences count of 0. The goal is to discard them if they are used in

@@ -41,40 +41,48 @@
  * @author Kurt Alfred Kluever
  */
 
-constant unsigned int seed = 0;
-constant unsigned int C1 = 0xcc9e2d51;
-constant unsigned int C2 = 0x1b873593;
+#include <stdio.h>
+#include "murmur3.h"
 
-unsigned int rotateLeft(unsigned int x, unsigned int n) {
+const unsigned int seed = 0;
+const unsigned int C1 = 0xcc9e2d51;
+const unsigned int C2 = 0x1b873593;
+
+static unsigned int rotateLeft(unsigned int x, unsigned int n)
+{
   return (x << n) | (x >> (32 - n));
 }
 
-static unsigned int mixK1(unsigned int k1){
+static unsigned int mixK1(unsigned int k1)
+{
 	k1 *= C1;
-	k1 = Integer.rotateLeft(k1, 15);
+	k1 = rotateLeft(k1, 15);
 	k1 *= C2;
 	return k1;
 }
 
-static unsigned int mixH1(unsigned int h1, unsigned int k1){
+static unsigned int mixH1(unsigned int h1, unsigned int k1)
+{
 	h1 ^= k1;
-	h1 = Integer.rotateLeft(h1, 13);
+	h1 = rotateLeft(h1, 13);
 	h1 = h1 * 5 + 0xe6546b64;
 	return h1;
 }
 
 // Finalization mix - force all bits of a hash block to avalanche
-static unsigned int fmix(unsigned int h1, unsigned int length){
+static unsigned int fmix(unsigned int h1, unsigned int length)
+{
 	h1 ^= length;
-	h1 ^= h1 >>> 16;
+	h1 ^= h1 >> 16;
 	h1 *= 0x85ebca6b;
-	h1 ^= h1 >>> 13;
+	h1 ^= h1 >> 13;
 	h1 *= 0xc2b2ae35;
-	h1 ^= h1 >>> 16;
+	h1 ^= h1 >> 16;
 	return h1;
 }
 
-unsigned int hashInt(unsigned int input){
+unsigned int hashInt(unsigned int input)
+{
 	if(input == 0) return 0;
 	unsigned int k1 = mixK1(input);
 	unsigned int h1 = mixH1(seed, k1);
@@ -82,10 +90,11 @@ unsigned int hashInt(unsigned int input){
 	return fmix(h1, 4);
 }
 
-unsigned int hashLong(long input){
+unsigned int hashLong(long input)
+{
 	if(input == 0) return 0;
 	unsigned int low = (unsigned int) input;
-	unsigned int high = (unsigned int) (input >>> 32);
+	unsigned int high = (unsigned int) (input >> 32);
 
 	unsigned int k1 = mixK1(low);
 	unsigned int h1 = mixH1(seed, k1);
@@ -96,7 +105,8 @@ unsigned int hashLong(long input){
 	return fmix(h1, 8);
 }
 
-unsigned int hashUnencodedChars(char *input, unsigned int size){
+unsigned int hashUnencodedChars(char *input, unsigned int size)
+{
 	unsigned int h1 = seed;
 
 	// step through the CharSequence 2 chars at a time
@@ -118,14 +128,16 @@ unsigned int hashUnencodedChars(char *input, unsigned int size){
 	return fmix(h1, 2 * size);
 }
 
-unsigned int mixCollHash(unsigned int hash, unsigned int count){
+unsigned int mixCollHash(unsigned int hash, unsigned int count)
+{
 	unsigned int h1 = seed;
 	unsigned int k1 = mixK1(hash);
 	h1 = mixH1(h1, k1);
 	return fmix(h1, count);
 }
 
-unsigned int hashOrdered(Iterable xs){
+unsigned int hashOrdered(Node *xs)
+{
 	unsigned int n = 0;
 	unsigned int hash = 1;
 
@@ -138,7 +150,8 @@ unsigned int hashOrdered(Iterable xs){
 	return mixCollHash(hash, n);
 }
 
-unsigned int hashUnordered(Iterable xs){
+unsigned int hashUnordered(Node *xs)
+{
 	unsigned int hash = 0;
 	unsigned int n = 0;
 	for(Object x : xs)

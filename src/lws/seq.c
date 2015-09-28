@@ -21,6 +21,9 @@ Node *seq(long index, Node *coll)
 	Node *new_coll = NULL;
 	Seq *seq = NULL;
 
+    if(coll->type->int_type == INIL)
+        return NIL;
+
 	// loop across seq if we make a seq from a seq until we find a collection
 	while(coll->type->int_type == ISEQ)
 	{
@@ -53,7 +56,7 @@ Node *seq(long index, Node *coll)
 
 	// create seq
 	Node *node = new_node(ISEQ);
-	ASSERT(node, "Creation of new seq", str_type(ISEQ));
+	ASSERT(node, "Creation of new %s", str_type(ISEQ));
 
 	seq = STRUCT(node);
 	seq->index = index;
