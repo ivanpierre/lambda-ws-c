@@ -22,10 +22,10 @@ and arities...
 - Base node are nice for now, functions should be usable as is.
 - Think about it an onions, with simple layers to more complex one and step across ;)
 - Perhaps a library by layer, good way to test layer way.
--- LWS as only base elements : numerics, string, but no symbols, arrays, etc
--- PWS (polymorphic WS) to add the polymorphic way to link data and polymorphic and
+  - LWS as only base elements : numerics, string, but no symbols, arrays, etc
+  - PWS (polymorphic WS) to add the polymorphic way to link data and polymorphic and
 multiarity methods. This through specific and efficient persistent maps
--- CBDWS (Complex Base Datatypes WS) So now we can go where we have to... maps, symbols, etc...
+  - CBDWS (Complex Base Datatypes WS) So now we can go where we have to... maps, symbols, etc...
 
 For now change and dispatch to the new directories, and begin to write the new changes ;)
 
