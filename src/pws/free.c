@@ -154,12 +154,49 @@ static Node *free_node(Node *node)
 		case IFALSE :
 			break;
 
+		case IKEYWORD :
+		case ISYMBOL :
+			named_free(node);
+	        break;
+
 		case ISTRING :
 			string_free(node);
 	        break;
 
+		case IENV_STACK :
+			break;
+
+		case IENVIRONMENT :
+			environment_free(node);
+	        break;
+
+		case ILIST :
+		case IARRAY :
+		case IMAP :
+		case ISET :
+			collection_free(node);
+	        break;
+
+		case ISEQ :
+			seq_free(node);
+	        break;
+
+		case IKEYVAL :
+			keyval_free(node);
+	        break;
+
 		case IFUNCTION :
+		case ILAMBDA :
 			function_free(node);
+	        break;
+
+
+		case IVAR :
+			// FREE(node->val.compl);
+			break;
+
+		case IREADER :
+			reader_free(node);
 	        break;
 
 		case IWRITER :
@@ -172,6 +209,14 @@ static Node *free_node(Node *node)
 	        break;
 
 		case IFRACTION :
+		case IREF:
+		case IAGENT:
+		case IFUTURE:
+		case INODES:
+		case ICONS:
+		case ILAZY:
+		case INAMESPACE:
+		case IAPI:
 		case ITYPE:
 			break;
 		default:

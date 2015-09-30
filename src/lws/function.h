@@ -54,10 +54,8 @@ Node *function_is_special(Node *node);
 Node *function_set_special(Node *node, Node *macro); // nil, FALSE, or else
 Node *function_clojure(Node *node);
 Node *function_args(Node *node);
-Node *function_body(Node *node);
-void *function_func(Node *node);
 Node *function_closure(Node *node);
-Node *function_apply(Node *node, Node *args, Node *environment); // sequable
+Node *function_apply(Node *node, Node *args);
 long count_args(va_list args);
 
 #endif

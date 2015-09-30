@@ -8,7 +8,8 @@ You can see the github https://github.com/FunctionalRomandie/LambdaCalculusWorks
 - [Goals](GOALS.MD)
 - [Implementation](IMPLEMENTATION.MD)
 - [Garbage collection](GARBAGE.MD)
-- Code generation (TBD)
+- [Code generation](CODEGENERATION.MD)
+- [Multithreading](MULTITHREADING.MD)
 - [Project requirements](REQUIREMENTS)
 
 You can see the [blog](BLOG.MD) to see advance... ;)
