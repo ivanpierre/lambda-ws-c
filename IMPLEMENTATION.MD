@@ -2,7 +2,7 @@
 
 Here are the main parts of the implementation. A library and three interpreters for various languages.
 
-## [Library](LWS.MD)
+## [Library](LIBRARY.MD)
 
 The library manages the main AST elements, with all the basic manipulation functions.
 
@@ -20,11 +20,6 @@ AST element constructors already link the Nodes in the garbage collector. But ev
 references this one should be linked too. It can be linked to another node and in this case, stay as is. Or consumed in
 some function, in case if should be unlinked. At the end of every process there should only stay in the garbage
 collector the nodes that are bound to the namespaces. Even the working objects of the language are bound here.
-
-### Namespaces
-
-The current namespace and the namespace map are bound in the core namespace, and any namespace is always linked to
-the core namespace. so at any time, core functions and variables are accessible.
 
 ### Language management
 
@@ -62,6 +57,6 @@ make the basic element of a list with a Clojure syntax should enable to use most
 The spaghetti goto mess should be an interesting point, just to see if the REPL can be a BASIC like with line numbers.
 With a save and load function.
 
-## [Java](JAVA.MD)
+## [Tiny Java](JAVA.MD)
 
 Here it will be more complicated : class management, static typing, imperative programming, say mutable state...
