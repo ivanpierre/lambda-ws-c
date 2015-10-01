@@ -14,9 +14,6 @@
 */
 typedef struct
 {
-	Node    *is_macro;
-	Node    *is_special;
-	Node    *closure; // as a previous Environment
 	Node    *(*f0) ();
 	Node    *(*f1) (Node*);
 	Node    *(*f2) (Node*,Node*);
@@ -48,14 +45,6 @@ typedef struct
 					Node*,Node*,Node*,Node*,Node*,Node*,Node*,Node*);
 } Function;
 
-Node *function_is_macro(Node *node);
-Node *function_set_macro(Node *node, Node *macro); // nil, FALSE, or else
-Node *function_is_special(Node *node);
-Node *function_set_special(Node *node, Node *macro); // nil, FALSE, or else
-Node *function_clojure(Node *node);
-Node *function_args(Node *node);
-Node *function_closure(Node *node);
-Node *function_apply(Node *node, Node *args);
 long count_args(va_list args);
 
 #endif

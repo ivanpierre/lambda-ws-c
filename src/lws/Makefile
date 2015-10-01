@@ -13,6 +13,8 @@ CFLAGS = -fPIC -g
 LDFLAGS = -shared -W1,-soname,liblws.so.1 -o
 CC = cc
 
+all: clean liblws 
+
 liblws.so : $(objects)
 	$(CC) $(LDFLAGS) liblws.so $(objects)
 

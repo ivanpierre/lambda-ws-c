@@ -38,7 +38,7 @@ possible a new AST can be created in a way that they does not interfere with the
 - The global state variables that control its work.
 - Library errors
 
-### What's can be rewritten
+### What can be rewritten
 
 - Readers.
 - Writers, that's obvios it should comply with the language syntax.
