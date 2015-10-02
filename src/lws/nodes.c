@@ -88,25 +88,26 @@ void *THREAD_NODE(Node *init, ...)
 	va_list funp;
 	Node *res = NULL;
 
-	ASSERT(init, ERR_INIT);
+	ASSERT_NODE(init, tmp_init, INODES);
 
 	// Last previous result is init
-	ASSIGN(res, init);
+	ASSIGN(res, tmp_init);
 
 	// We will trampoline on function call values. fun(res) -> res,
 	// with unlink on previous res
-	va_start(funp, init);
+	va_start(funp, tmp_init);
 	while ((func = va_arg(funp, void *(*)(Node *arg))))
 	{
 		ASSIGN(res, (*func)(res));
 		ASSERT(res, ERR_INIT);
 	}
 
+	unlink_node(tmp_init);
 	return res;
 
 	//****************
 	error_assert:
-	unlink_node(init);
+	unlink_node(tmp_init);
 	unlink_node(res);
 	return NULL;
 }
@@ -116,15 +117,15 @@ void *THREAD_NODE(Node *init, ...)
 */
 bool FALSE_Q_(Node *node)
 {
-	ASSERT_NODE(node, INODES);
+	ASSERT_NODE(node, tmp_node, INODES);
 	bool res =  node == NIL ||
 				node == FALSE;
-	unlink_node(node);
+	unlink_node(tmp_node);
 	return res;
 
 	//****************
 	error_assert:
-	unlink_node(node);
+	unlink_node(tmp_node);
 	return BOOL_FALSE;
 }
 
@@ -133,14 +134,14 @@ bool FALSE_Q_(Node *node)
 */
 bool TRUE_Q_(Node *node)
 {
-	ASSERT_NODE(node, INODES);
+	ASSERT_NODE(node, tmp_node, INODES);
 	bool res = !FALSE_Q_(node);
-	unlink_node(node);
+	unlink_node(tmp_node);
 	return res;
 
 	//****************
 	error_assert:
-	unlink_node(node);
+	unlink_node(tmp_node);
 	return BOOL_FALSE;
 }
 
@@ -188,9 +189,4 @@ bool node_isa_type(Node *node, TYPE isa)
 	//****************
 	error_assert:
 	return BOOL_FALSE;
-}
-
-void *STRUCT(Node *node)
-{
-	return ((char *)node) + sizeof(Node);
 }

@@ -19,6 +19,10 @@
 	Define in case of allocation debugging
 */
 #define DEBUG_ALLOC
+
+/*
+	To display debugging trace of allocation and unallocation
+*/
 // #define DEBUG_FREE
 
 /*
@@ -65,7 +69,8 @@ extern bool node_isa_type   (Node *node, TYPE isa);
 extern void init_node_list  ();
 extern void print_node_list ();
 
-#define BOOL(val) val ? TRUE : FALSE
+#define BOOL(val) (val ? TRUE : FALSE)
+#define STRUCT(node) ((void *)((char *)node) + sizeof(Node)))
 
 // ***************************
 #define ACCESS_START(ctype, rtype, itype) \
