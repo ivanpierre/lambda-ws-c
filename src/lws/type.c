@@ -18,9 +18,7 @@
 	type of nodes
 */
 const long BNODES       = (1l << IINVALID) - 1;  // all nodes
-const long BNIL         = (1l << INIL);          // Constant nil value
-const long BTRUE        = (1l << ITRUE);         // Constant true value
-const long BFALSE       = (1l << IFALSE);        // Constant FALSE value
+const long BCONST       = (1l << ICONST);        // Constant nil, false, true values
 const long BINTEGER     = (1l << IINTEGER);      // Integer numeric values
 const long BFRACTION    = (1l << IFRACTION);     // Fractional numeric values
 const long BDECIMAL     = (1l << IDECIMAL);      // floating numeric values
@@ -29,9 +27,6 @@ const long BFUNCTION    = (1l << IFUNCTION);     // Function pointer
 const long BWRITER      = (1l << IWRITER);       // Writer implemented in language
 const long BTYPE        = (1l << ITYPE);         // Type of nodes
 const long BINVALID     = IINVALID;              // Self explaining... used not to go too far... :D
-
-const long BUNLINKABLE  = BNIL | BTRUE | BFALSE | BTYPE;
-const long BBOOLEAN     = BTRUE | BFALSE;
 
 /*
 	Representation of types
@@ -92,4 +87,3 @@ bool isa_type(TYPE type, TYPE isa)
 			(get_type(type)->bin_type & get_type(isa)->bin_type &&
 	       get_type(type)->bin_type <= get_type(isa)->bin_type);
 }
-

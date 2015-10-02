@@ -37,7 +37,7 @@ static Node *init_node(Node *node, TYPE type)
 {
 	ASSERT(node, ERR_NULL_PTR);
 	node->type        = get_type(type);
-	node->occurrences = 0; // will be decremented on valid creation
+	node->occurrences = 1; // will be decremented on valid creation
 #ifdef DEBUG_ALLOC
 	if (!last_node)
 	{

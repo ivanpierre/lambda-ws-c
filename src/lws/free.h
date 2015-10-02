@@ -1,5 +1,5 @@
 /****
-	Named : Symbol and keyword header
+	Free
 
 	Lambda Calculus Workshop
 	C version
@@ -16,8 +16,6 @@ extern Node *unlink_node    (Node *var);
 extern Node *unlink_new     (Node *var);
 
 extern void print_node_stack();
-
-extern Node *(*free_ptr)(Node *node);
 
 /*
 	double linked list of nodes for debug

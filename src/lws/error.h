@@ -71,15 +71,14 @@ void stack_free();
 		goto error_assert; \
 	}
 
-#define ASSERT_TYPE(node, typ) \
-	if(!((node) && node_isa_type(node, typ))) \
-		ABORT(ERR_TYPE, (node)->type->str_type, str_type(typ))
+#define ASSERT_TYPE(nod, typ) \
+	if(!((nod) && node_isa_type(nod, typ))) \
+		ABORT(ERR_TYPE, (nod)->type->str_type, str_type(typ))
 
-#define ASSERT_NODE(node, typ) \
-	{ \
-		ASSERT(node, ERR_NODE); \
-		ASSERT_TYPE(node, typ); \
-		link_node(node); \
-	}
+#define ASSERT_NODE(nod, tmpnod, typ) \
+	Node	*tmpnod = NULL; \
+	ASSERT(nod, ERR_NODE); \
+	ASSERT_TYPE(nod, typ); \
+	ASSIGN(tmpnod, link_node(nod))
 
 #endif

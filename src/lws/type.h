@@ -16,17 +16,19 @@
 typedef enum TYPE
 {
 	INODES          = 0,    // All nodes
-	INIL            ,       // Constant nil value
-	ITRUE           ,       // Constant true value
-	IFALSE          ,       // Constant FALSE value
-	IINTEGER        ,       // Integer numeric values
+	ICONST          ,       // Constant nil, true and false values
+	ICHAR           ,       // Character value
+	IBYTE           ,       // Byte numeric value
+	IHASH           ,       // Hash value
+	IINTEGER        ,       // Integer numeric value
+	ILONG           ,       // Long numeric value
 	IFRACTION       ,       // Fractional numeric values
-	IDECIMAL        ,       // floating numeric values
+	IFLOAT          ,       // Floating numeric values
+	IDOUBLE         ,       // Double numeric values
 	ISTRING         ,       // String
 	IFUNCTION       ,       // Function pointer
 	IWRITER         ,       // Writer implemented in language
 	ITYPE           ,       // types
-	IUNLINKABLE     ,
 	IBOOLEAN        ,
 	IINVALID                // Self explaining... used not to go too far... :D
 } TYPE;

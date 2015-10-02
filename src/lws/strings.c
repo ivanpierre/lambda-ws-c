@@ -143,4 +143,3 @@ char *GET_ELEM_STRING(Node *elem, Node *(*func)(Node *))
 {
 	return THREAD_NODE(elem, func, &PRINT, &GET_STRING, NULL);
 }
-

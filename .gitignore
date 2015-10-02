@@ -28,7 +28,7 @@
 *.x86_64
 *.hex
 lcw
-
+src/test/test
 
 # Debug files
 *.dSYM/
