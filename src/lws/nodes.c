@@ -30,8 +30,7 @@ Node        *FALSE    = &false_val;
 Node        *TRUE     = &true_val;
 
 /*
-    First initialisation of an allocated node, first link to the data segment
-    Return linked node or NIL
+    Init base node content allocated
 */
 static Node *init_node(Node *node, TYPE type)
 {
@@ -59,20 +58,83 @@ static Node *init_node(Node *node, TYPE type)
 }
 
 /*
-    Create a node
+    Allocate a static node
     Constructor, return linked
+	It should be unlink_new() by constructor
 */
 Node *new_node(TYPE type)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
 	Node *node = NULL;
 	node = malloc(sizeof(Node) + size_type(type));
+
+	// Init base node content
 	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
 	return node;
 
+	//**************
 	error_assert:
 	unlink_node(node);
 	return NULL;
+}
+
+/*
+    Allocate a dynamic node, i.e. a String 
+    Constructor, return linked
+	It should be unlink_new() by constructor
+*/
+Node *new_dynamic_node(TYPE type, size_t size)
+{
+	// TRACE("fait nouveau node %s", str_type(type));
+	Node *node = NULL;
+	node = malloc(sizeof(Node) + size);
+
+	// Init base node content
+	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
+	return node;
+
+	//**************
+	error_assert:
+	unlink_node(node);
+	return NULL;
+}
+
+/*
+	Push arguments
+	Will link all arguments to protect new node from unlinking
+	during the function execution
+*/
+bool push_args(int nb, ...)
+{
+	va_list args;
+	bool res = BOOL_FALSE;
+
+	va_start(args, nb);
+	for(i = 0; i < nb; i++)
+	{
+		Node *arg = va_arg(args, Node *);
+		if(arg)
+			res = BOOL_TRUE;
+		else
+			link_node(arg);
+	}
+	return res;
+}
+
+/*
+	Pop arguments
+	This will drop new unlinked nodes
+*/
+void pop_args(int nb, ...)
+{
+	va_list args;
+
+	va_start(args, nb);
+	for(i = 0; i < nb; i++)
+	{
+		Node *arg = va_arg(args, Node *);
+		unlink_node(arg);
+	}
 }
 
 /*

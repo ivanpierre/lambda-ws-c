@@ -13,7 +13,7 @@
 #include "error.h"
 
 // Stack trace
-Exception *stack = NULL;
+Error *error_stack = NULL;
 
 // Error* function
 void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
@@ -26,14 +26,14 @@ void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...)
     vasprintf(&mess, fmt, args);
 
     // Push it
-    stack_push(file,line, func, mess); // message has been allocated
+	Node err = *error(file,line, func, mess);
+	error_stack_push(err); // message has been allocated
 
     // print it
-    fprintf(stderr, "ERROR !!!! %s(%d) %s() : %s\n", file, line, func, mess);
-    fflush(stderr);
+    TRACE("ERROR !!!! %s(%d) %s() : %s\n", file, line, func, mess);
 }
 
-// Error* function
+// Trace* function
 void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...)
 {
     char *mess;
@@ -44,17 +44,16 @@ void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...)
     vasprintf(&mess, fmt, args);
 
     // print it
-    fprintf(stdout, "            %s(%d) %s() : %s\n", file, line, func, mess);
-    fflush(stdout);
+    TRACE("            %s(%d) %s() : %s\n", file, line, func, mess);
     free(mess);
 }
 
 /*
  * Push exception on the trace stack
  */
-void stack_push(const char file[], int line, const char func[], char *mess)
+void error_stack_push(char *file, int line, const char func[], char *mess)
 {
-    Exception *error = malloc(sizeof(Exception));
+    Error *error = malloc(sizeof(Exception));
     error->file = file;
     error->line = line;
     error->func = func;
@@ -66,35 +65,36 @@ void stack_push(const char file[], int line, const char func[], char *mess)
 /*
  * Print stack trace
  */
-void stack_print()
+void error_stack_print()
 {
-    Exception *walk = stack;
+    NODE *walk = error_stack;
 
-    fprintf(stderr, "Stack trace");
-    fprintf(stderr, "===========");
+    TRACE("Stack trace");
+    TRACE("===========");
 
     while(walk)
     {
-        fprintf(stderr, "%s(%d) %s() : %s\n",
-                walk->file, walk->line, walk->func, walk->mess);
-        walk = walk->previous;
+		Error *err = STRUCT(walk);
+        TRACE("%s(%d) %s() : %s\n", err->file, err->line, err->func, err->mess);
+        walk = err->previous;
     }
 
-    fprintf(stderr, "===========");
+    TRACE("===========");
 }
 
 /*
  * erase stack trace
  */
-void stack_free()
+void error_stack_free()
 {
-    Exception *walk = stack;
+    Node *walk = error_stack;
 
     while(walk)
     {
-        Exception *old = walk;
-        walk = walk->previous;
-        free(old->mess);
-        free(old);
+		Node *old = walk;
+        Error *err = STRUCT(walk);
+        walk = err->previous;
+        unlink_node(old);
     }
+	error_stack = NULL;
 }

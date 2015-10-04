@@ -1,5 +1,5 @@
 /****
-    Integer
+    Integer : manage 32 bits Integers
 
     Lambda Calculus Workshop
     C version
@@ -11,17 +11,54 @@
 
 typedef struct
 {
-	int 	integer;
-} Integer;
+	WS_INT 	integer;
+} Int;
 
-Node    *integer(int value);
-int     integer_integer(Node * node);
-Node 	*integer_to_byte(Node * node);
-Node 	*integer_to_char(Node * node);
-// Node	*integer_to_integer(Node * node);
-Node 	*integer_to_long(Node * node);
-Node 	*integer_to_float(Node * node);
-Node 	*integer_to_double(Node * node);
-Node    *integer_Q_(Node * node);
+// Boxing
+Node    *int_box				(WS_INT value);
+WS_INT  int_unbox				(Node *node);
+
+// test
+Node    *is_int					(Node *node);
+Node	*int_is_zero			(Node *node);
+Node	*int_is_neg				(Node *node);
+Node	*int_is_pos				(Node *node);
+
+// coerce
+Node 	*int_to_byte			(Node *node);
+Node 	*int_to_short			(Node *node);
+// Node	*int_to_integer			(Node *node);
+Node 	*int_to_long			(Node *node);
+Node 	*int_to_big_int			(Node *node);
+Node 	*int_to_float			(Node *node);
+Node 	*int_to_double			(Node *node);
+
+//
+Node 	*int_add				(Node *x, Node *y);
+Node 	*int_addP				(Node *x, Node *y);
+
+Node 	*int_multiply			(Node *x, Node *y);
+Node 	*int_multiplyP			(Node *x, Node *y);
+
+Node 	*int_divide				(Node *x, Node *y);
+
+Node 	*int_quotient			(Node *x, Node *y);
+
+Node 	*int_remainder			(Node *x, Node *y);
+
+Node 	*int_equiv				(Node *x, Node *y);
+
+Node 	*int_lt					(Node *x, Node *y);
+Node 	*int_lte				(Node *x, Node *y);
+Node 	*int_gte				(Node *x, Node *y);
+
+Node 	*int_negate				(Node *x);
+Node 	*int_negateP			(Node *x);
+
+Node 	*int_inc				(Node *x);
+Node 	*int_incP				(Node *x);
+
+Node 	*int_dec				(Node *x);
+Node 	*int_decP				(Node *x);
 
 #endif

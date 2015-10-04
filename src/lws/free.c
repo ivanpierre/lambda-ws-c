@@ -60,12 +60,11 @@ Node *link_node(Node *node)
 */
 Node *unlink_node(Node *node)
 {
-	if(!node) return NULL;
+	if(!node && !unlinkable(node))
+	{
 #ifdef DEBUG_FREE
 	TRACE("unlinking %s", node->type->str_type);
 #endif
-	if (!unlinkable(node))
-	{
 		if (node->occurrences)
 			node->occurrences--;
 		if (node->occurrences <= 0)

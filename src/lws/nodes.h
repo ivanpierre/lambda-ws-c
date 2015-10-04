@@ -158,12 +158,17 @@ extern void print_node_list ();
 
 // ***************************
 #define ASSIGN(to, from) \
-{ \
-    Node *tmp = from; \
-    if(to != tmp) \
-    { \
-        unlink_node(to); \
-        to = link_node(tmp); \
-    } \
-}
+	{ \
+	    Node *tmp = link_node(from); \
+	    if(to != tmp) \
+	    { \
+	        unlink_node(to); \
+	        to = tmp; \
+	    } \
+	}
+
+// ***************************
+#define LINK_ARG(to, from) \
+    Node *to = link_node(from)
+
 #endif
