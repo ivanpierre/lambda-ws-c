@@ -15,44 +15,34 @@
 */
 typedef enum TYPE
 {
-	INODES          = 0,    // All nodes
-	ICONST          ,       // Constant nil, true and false values
-	ICHAR           ,       // Character value
-	IBYTE           ,       // Byte numeric value
-	IHASH           ,       // Hash value
-	IINTEGER        ,       // Integer numeric value
-	ILONG           ,       // Long numeric value
-	IFRACTION       ,       // Fractional numeric values
-	IFLOAT          ,       // Floating numeric values
-	IDOUBLE         ,       // Double numeric values
-	ISTRING         ,       // String
-	IFUNCTION       ,       // Function pointer
-	IWRITER         ,       // Writer implemented in language
-	ITYPE           ,       // types
-	IBOOLEAN        ,
-	IINVALID                // Self explaining... used not to go too far... :D
+	NODE = 0,	// Constant nil, true and false values
+	BYTE,		// Byte numeric value
+	INT,		// Integer numeric value
+	LONG,		// Long numeric value
+	BIGINT,		// Big Integer numeric value
+	RATIO,		// Ratio numeric value
+	FLOAT,		// Floating numeric values
+	DOUBLE,		// Double numeric values
+	BIGDEC,		// Big decimal numeric values
+	CHAR,		// Character value
+	HASH,		// Hash value
+	STRING,		// String
+	FUNCTION,	// Function pointer
+	WRITER,		// Writer implemented in language
+	INVALID		// Self explaining... used not to go too far... :D
 } TYPE;
 
 typedef struct
 {
-	char        *str_type;
-	TYPE        int_type;
-	long        bin_type;
-	long        size_type;
+	const char	*str_type;
+	long		size_type;
 } Type;
-
-typedef struct
-{
-	Type        *type;
-} NodeType;
 
 extern Type type_array[];
 
 // public function for types
-extern long     bin_type        (TYPE type);
-extern char     *str_type       (TYPE type);
-extern long     size_type       (TYPE type);
-extern bool     isa_type        (TYPE type, TYPE isa);
-extern Type     *get_type       (TYPE type);
+extern char		*str_type	(TYPE type);
+extern long		size_type	(TYPE type);
+extern bool		isa_type	(TYPE type, TYPE isa);
 
 #endif

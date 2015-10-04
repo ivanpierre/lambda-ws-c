@@ -1,13 +1,13 @@
 /****
-    Integer : manage 32 bits Integers
+    Int : manage 32 bits Integers
 
     Lambda Calculus Workshop
     C version
     Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#ifndef INTEGER_H
-#define INTEGER_H
+#ifndef INT_H
+#define INT_H
 
 typedef struct
 {
@@ -29,11 +29,10 @@ Node 	*int_to_byte			(Node *node);
 Node 	*int_to_short			(Node *node);
 // Node	*int_to_integer			(Node *node);
 Node 	*int_to_long			(Node *node);
-Node 	*int_to_big_int			(Node *node);
 Node 	*int_to_float			(Node *node);
 Node 	*int_to_double			(Node *node);
 
-//
+// operators10
 Node 	*int_add				(Node *x, Node *y);
 Node 	*int_addP				(Node *x, Node *y);
 

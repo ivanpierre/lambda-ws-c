@@ -58,7 +58,13 @@ void error_stack_print	();
 void error_stack_free	();
 
 /*
-	Message trace
+	Error Message
+*/
+#define ERROR(fmt, ...) \
+	ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
+
+/*
+	Trace message
 */
 #define TRACE(fmt, ...) \
 	TRACE_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
@@ -72,6 +78,10 @@ void error_stack_free	();
 		goto catch; \
 	}
 
+#define CATCH_ERROR \
+	if(error_stack) \
+		goto catch
+
 /*
 	Link all arguments, test NULLs, and break on exceptions
 */
@@ -82,13 +92,12 @@ void error_stack_free	();
 		goto catch
 
 /*
-	Link all arguments, test NULLs, and break on exceptions
+	Unink all arguments, Push error trace if in error condition
 */
 #define POP_ARGS(nb, ...) \
 	pop_args(nb, ##__VA_ARGS__)); \
 	if(error_stack) \
-		THROW(ERR_STACK_TRACE)
-
+		ERROR(ERR_STACK_TRACE)
 
 /*
 	Throw error on condition

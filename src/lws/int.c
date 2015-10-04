@@ -18,8 +18,8 @@
 */
 Node *int(WS_INT value)
 {
-	Node *node = new_node(IINTEGER);
-	ASSERT(node, ERR_CREATE_NEW, str_type(IINTEGER));
+	Node *node = new_node(INTEGER);
+	ASSERT(node, ERR_CREATE_NEW, str_type(INTEGER));
 	Integer *integer = STRUCT(node);
 	integer->integer = value;
 	return unlink_new(node);
@@ -36,7 +36,7 @@ Node *int(WS_INT value)
 WS_INT int_unbox(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, IINTEGER);
+    ASSERT_TYPE(node, INTEGER);
 	Int *integer = STRUCT(node);
 	WS_INT res = integer->integer;
 	POP_ARGS(1, node);
@@ -54,8 +54,7 @@ WS_INT int_unbox(Node *node)
 Node *is_int(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, IINTEGER);
-	Node *res = (node && node->type->int_type == IINTEGER) ? TRUE : FALSE;
+	Node *res = (node && node->type->int_type == INTEGER) ? TRUE : FALSE;
 	POP_ARGS(1, node);
 	return res;
 
@@ -71,7 +70,7 @@ Node *is_int(Node *node)
 static Node *tst_int(Node *node, Node *(*pred)())
 {
 	PUSH_ARGS(1, node);
-	ASSERT_TYPE(node, IINTEGER);
+	ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
 	Node *res = (*pred)(val) ? TRUE : FALSE;
 	POP_ARGS(1, node);
@@ -84,9 +83,9 @@ static Node *tst_int(Node *node, Node *(*pred)())
 }
 
 //predicates
-static Node *is_zero(WS_INT val){return val == 0}
-static Node *is_neg(WS_INT val){return val < 0}
-static Node *is_pos(WS_INT val){return val > 0}
+static Node *int_is_zero(WS_INT val){return val == 0}
+static Node *int_is_neg(WS_INT val){return val < 0}
+static Node *int_is_pos(WS_INT val){return val > 0}
 
 /**
 	test = 0
@@ -119,7 +118,7 @@ Node *int_is_neg(Node *node)
 Node *int_to_byte(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, IINTEGER);
+    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
 	Node *res = byte_box(val);
 	POP_ARGS(1, node);
@@ -135,7 +134,7 @@ Node *int_to_byte(Node *node)
 Node *int_to_short(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, IINTEGER);
+    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
 	Node *res = short_box(val);
 	POP_ARGS(1, node);
@@ -153,7 +152,7 @@ Node *int_to_short(Node *node)
 Node *int_to_long(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, IINTEGER);
+    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
 	Node *res = long_box(val);
 	POP_ARGS(1, node);
@@ -171,7 +170,7 @@ Node *int_to_long(Node *node)
 Node *int_to_float(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, IINTEGER);
+    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
 	Node *res = float_box(val);
 	POP_ARGS(1, node);
@@ -187,7 +186,7 @@ Node *int_to_float(Node *node)
 Node *int_to_double	(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, IINTEGER);
+    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
 	Node *res = double_box(val);
 	POP_ARGS(1, node);

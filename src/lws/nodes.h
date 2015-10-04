@@ -36,7 +36,7 @@ struct Node; // forward
 */
 typedef struct Node
 {
-	Type        *type;
+	TYPE        type;
 	long        occurrences;
 #ifdef DEBUG_ALLOC
 	struct Node *previous_node;

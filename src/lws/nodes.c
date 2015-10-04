@@ -79,7 +79,7 @@ Node *new_node(TYPE type)
 }
 
 /*
-    Allocate a dynamic node, i.e. a String 
+    Allocate a dynamic node, i.e. a String
     Constructor, return linked
 	It should be unlink_new() by constructor
 */
