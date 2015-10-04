@@ -21,18 +21,22 @@ typedef enum TYPE
 	INT,		// Integer numeric value
 	LONG,		// Long numeric value
 	BIGINT,		// Big Integer numeric value
-	RATIO,		// Ratio numeric value
+	RATIO,		// numerator and denominator values for rationals.
 	FLOAT,		// Floating numeric values
 	DOUBLE,		// Double numeric values
 	BIGDEC,		// Big decimal numeric values
-	CHAR,		// Character value
-	HASH,		// Hash value
-	STRING,		// String
-	FUNC,		// Function pointer
-	PTR,		// Pointer
-	ARRAY,		// Array of constant size base types
+	CHAR,		// 16 bits unsigned char (UTF16)
+	HASH,		// 32 bits unsigned hashcode for nodes.
+	STRING,		// Sized constant String of bytes. Can be UTFed. `size` is a long.
+	ZSTRING,	// Constant String of bytes. It's complemented by a final \0.
+	MFUNC,		// 21 function pointers for arrity 0 to 20.
+	FUNC,		// unique function, with arrity and vararg.
+	PTR,		// Pointer on Node.
+	ARRAY,		// Sized array of constant size `Nodes`.
+	CLASS,		// Class definition
 	OBJECT,		// Objects
-	NB_TYPES
+	INTERFACE,	// Interface definition
+	NB_TYPES	// .... terminator for this library
 } TYPE;
 
 typedef struct

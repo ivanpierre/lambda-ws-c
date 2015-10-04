@@ -1,108 +1,45 @@
-# lambda-ws-c
-Lambda Calculus Workshop in C
+lambda-ws-c
+===========
 
-## Introduction
-This is result of the workshop of Functional Romandie the 16/07/2015. 
-You can see the github https://github.com/FunctionalRomandie/LambdaCalculusWorkshop.
+Project evolved a lot and goes in another direction... so documentation is to be completely rewritten...
 
-- [Goals](GOALS.MD)
-- [Implementation](IMPLEMENTATION.MD)
-- [Garbage collection](GARBAGE.MD)
-- [Code generation](CODEGENERATION.MD)
-- [Multithreading](MULTITHREADING.MD)
-- [Project requirements](REQUIREMENTS)
+Ideas
+-----
 
-You can see the [blog](BLOG.MD) to see advance... ;)
+Define all data elements of a language. They will be bricks for any AST system. The whole in C.
 
-## Behind the requirements
+Immutability is the key. But mutable object should be accessible through protected thread access. all elements from bit to complex structures will be seen as a Node. Every Node is a specific datatype with it's own management functions. All these should enable to construct any possible data structures.
 
-As this workshop is on AST (Abstract Syntax Tree) proof of concept, creating a Clojure like language with some AST
-management function is a clear non-goal... So we'll put AST as a LWS library, and languages
-on their own directories.
+Especially it should enable to create evaluatable Nodes as algorithmic units corresponding to languages specific implementations. These nodes should be readable in a syntax defined by the languages and writable as language source of machine code functions. Simple evaluation of these nodes should provide emulation of execution of the corresponding machine code generation.
 
-What is specific to languages ? The AST ? Well it can be a limitating factor, but in fact the only dependent
-part of language is: its syntax (the reader, the writer) and semantic (the core elements of the 
-language). THE AST only give access to basis computational concepts all languages would like to use.
+These nodes should be able to manage all nodes giving the ability to make a language grow by successive layers, giving to every layer the ability to construct the next one.
 
-For the AST point of view, the two following pieces of code here are quite the same :
+### Garbage collection
 
-```.bas
-    10 If a = 0 Then Print "coucou" Else Print "caca"
-```
-```.clj
-    (if (zero? a) 
-      (println "coucou")
-      (println "caca"))
-```
+Every nodes are tracked and managed so unreferenced Nodes will be discarded from memory.
 
-But that is not the case for the followings :
+### Threading
 
-```.bas
-    10 sum = 0
-    20 For i = 0 To 1000 - 1
-    30 sum = sum + i
-    40 Next i
-    50 Print sum
-```
-```.clj
-    (prinln (reduce + (range 1000)))
-```
+threads will be managed by nodes by usage of mutex (equivatent of Java synchronize).
 
-So what's the difference ? 
+### base_nodes library.
 
-In BASIC we are stateful, so we can modify the SUM variable, but we don't have function as first class
-type, we don't have lazy list data structure. But we can spaghettify the code with an implicit GOTO in 
-the form of NEXT.
+Base `Node` hold the `TYPE` enum id.
 
-So is AST different, no... just BASIC programmer has no access to certain data structure, so AST. If you want 
-to enhance BASIC you'll try to manage an access to these elements, but without changing syntax and
-main language ideas...
+Basic data elements bricks.
 
-OR you do with the language. For example, some would think to use variable indexed GOSUB. And yes you can
-do it with an old BASIC... but some would say, it's not idiomatically correct... poor guy... probably not a BASIC 
-programmer :D. But yes, it could become an awful unmanageable boilerplate.
-
-## How to figure out ?
-So to have a proof of concept, the better way is to try to implement some different paradigms with
-the same AST library. 
-
-So we'll take :
-
-- Clojure-like - functional, dynamically typed, immutable language.
-- BASIC - original non structured, spaghetti, stateful, line based language.
-- Java-like - object, structured, statically typed language.
-
-Clearly separating the stuff better the implementation problems will arise. If I have to update the library to 
-implement my language means or I don't know how to use it, or there is a paradigm that is not manageable by my AST.
-
-## So what ?
-Well, we'll see. How to separate AST specific things and language implementation details. 
-
-For example is laziness an AST thing of we can manage it with a shorter AST. Yes any Turing language can do it,
-but as a problem of efficiency where to put the balance ?
-
-Yes KEYVAL can be an array, but it would take more space. Yes and array can be a linked list enabling
-a better memory management, but you lose the indexing, map could be a list, but you lose the mapping.
-
-So it's a question of data definition efficiency and somewhat taste. :D
-
-
-## And now what ?
-For any question or issue you can write to me on twitter @ivanpierre. It's currently a WIP.
-
-But as I have to manage all the data types to begin to put just a function call with a symbol in environment, I 
-finish to have a complete functional language. Well this was the goal, as programming a functional language with a 
-functional language is ways too easy ;)
-
-Well, it will be when all the data types will be implemented.
-
-But the BIG difficulty, is managing the memory, even if we dont use a real garbage collector.
-
-And it's a side project, so I can not always give to it intended time ;)
-
-## Licence
-For now :
-
-- GNU General Public Licence - v 3.0 for the code. See http://www.gnu.org/licenses/gpl.html.
-- Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0) for documentation. http://creativecommons.org/licenses/by-sa/3.0/
-
+-	`CONST` : unique void nodes as nil, true, false. Some will be used as lock for some processes.
+-	`BYTE`, `SHORT`, `INT`, `LONG` : Integers of 8, 16, 32 and 64 bits.
+-	`RATIO` : numerator and denominator values for rationals.
+-	`BIGINT`, `BIGDEC` : unlimited size Integers and Floats.
+-	`CHAR`: 16 bits unsigned char (UTF16).
+-	`HASH` : 32 bits unsigned hashcode for nodes.
+-	`STRING` : Sized constant String of bytes. Can be UTFed. `size` is a long.
+-	`ZSTRING` : Constant String of bytes. It's complemented by a final \0.
+-	`MFUNC` : 21 function pointers for arrity 0 to 20.
+-	`FUNC` : unique function, with arrity and vararg.
+-	`PTR` : Pointer on Node.
+-	`ARRAY` : Sized array of constant size `Nodes`.
+-	`CLASS` : Class definition.
+-	`OBJECT` : Object according to a class of interface.
+-	`INTERFACE` : Interface definition.
