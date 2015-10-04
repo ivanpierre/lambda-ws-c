@@ -15,7 +15,8 @@
 */
 typedef enum TYPE
 {
-	NODE = 0,	// Constant nil, true and false values
+	NODE = 0,	// All Nodes
+	CONST,		// Constant nil, true and false values
 	BYTE,		// Byte numeric value
 	INT,		// Integer numeric value
 	LONG,		// Long numeric value
@@ -27,20 +28,24 @@ typedef enum TYPE
 	CHAR,		// Character value
 	HASH,		// Hash value
 	STRING,		// String
-	FUNCTION,	// Function pointer
-	WRITER,		// Writer implemented in language
-	INVALID		// Self explaining... used not to go too far... :D
+	FUNC,		// Function pointer
+	PTR,		// Pointer
+	ARRAY,		// Array of constant size base types
+	OBJECT,		// Objects
+	NB_TYPES
 } TYPE;
 
 typedef struct
 {
 	const char	*str_type;
+	const TYPE  int_type;
 	long		size_type;
 } Type;
 
 extern Type type_array[];
 
 // public function for types
+extern Node		*type()
 extern char		*str_type	(TYPE type);
 extern long		size_type	(TYPE type);
 extern bool		isa_type	(TYPE type, TYPE isa);

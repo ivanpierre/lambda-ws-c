@@ -17,21 +17,25 @@
 	Representation of types
 */
 Type type_array[] = {
-	{"Node",		0},
-	{"Byte",		sizeof(Byte)},
-	{"Int",			sizeof(Int)},
-	{"Long",		sizeof(Long)},
-	{"BigInt",		0,
-	{"Ratio",		0,
-	{"Float",		sizeof(Float)},
-	{"Double",		sizeof(Double)},
-	{"BigDec",		0,
-	{"Char",		sizeof(Char)},
-	{"Hash",		sizeof(Hash)},
-	{"String",		sizeof(String)},
-	{"Function",	sizeof(Function)},
-	{"Writer",		sizeof(Writer)},
-	{"Invalid",		0}
+	{"Node",		NODE,		0				NULL},
+	{"Const",		CONST,		0,				NULL},
+	{"Byte",		BYTE,		sizeof(Byte),	NULL},
+	{"Int",			INT,		sizeof(Int),	NULL},
+	{"Long",		LONG,		sizeof(Long),	NULL},
+	{"Bigint",		BIGINT,		0,				&bigint_free}
+	{"Ratio",		RATIO,		0,				&ratio_free}
+	{"Float",		FLOAT,		sizeof(Float),	NULL},
+	{"Double",		DOUBLE,		sizeof(Double),	NULL},
+	{"Bigdec",		BIGDEC,		0,				&bigdec_free}
+	{"Char",		CHAR,		sizeof(Char),	NULL},
+	{"Hash",		HASH,		sizeof(Hash),	NULL},
+	{"String",		STRING,		0,				NULL},
+	{"Function",	FUNCTION,	sizeof(Function), NULL},
+	{"Ptr",			PTR,		sizeof(void *),	NULL},
+	{"Array",		ARRAY,		0,				&array_free},
+	{"Class",		CLASS,		0,				&class_free},
+	{"Object",		OBJECT,		0,				&object_free},
+	{"Interface",	INTERFACE,	0,				&interface_free}
 };
 
 /*
