@@ -20,6 +20,7 @@
 #define ERR_CREATE_NEW  "cannot create new %s."
 #define ERR_INIT        "Error in initialization of %s."
 #define ERR_TYPE        "type error %s, expected %s."
+#define ERR_OVERFLOW	"Numeric overfow."
 #define ERR_INDEX       "Index %ld out of bound."
 #define ERR_NULL_INDEX  "Index %ld is NULL."
 #define ERR_VAR         "Null pointer on var."
@@ -46,8 +47,8 @@ extern Error *error_stack;
 /*
 	Errors and assertions
 */
-void ERROR_STAR			(const char *file, int line, const char func[], char *fmt, ...);
-void TRACE_STAR			(const char *file, int line, const char func[], char *fmt, ...);
+void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
+void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
 
 /*
  * trace management

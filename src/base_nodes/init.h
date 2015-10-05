@@ -1,9 +1,9 @@
 /****
-    Initialization header
+	Init	0
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #ifndef INIT_H

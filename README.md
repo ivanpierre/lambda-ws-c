@@ -14,17 +14,17 @@ Especially it should enable to create evaluatable Nodes as algorithmic units cor
 
 These nodes should be able to manage all nodes giving the ability to make a language grow by successive layers, giving to every layer the ability to construct the next one.
 
-### Garbage collection
-
-Every nodes are tracked and managed so unreferenced Nodes will be discarded from memory.
-
 ### Threading
 
 threads will be managed by nodes by usage of mutex (equivatent of Java synchronize).
 
 ### base_nodes library.
 
+This library will manage all the base simple Nodes.
+
 Base `Node` hold the `TYPE` enum id.
+
+Every nodes are tracked and managed so unreferenced Nodes will be discarded from memory.
 
 Basic data elements bricks.
 
@@ -34,7 +34,7 @@ Basic data elements bricks.
 -	`BIGINT`, `BIGDEC` : unlimited size Integers and Floats.
 -	`CHAR`: 16 bits unsigned char (UTF16).
 -	`HASH` : 32 bits unsigned hashcode for nodes.
--	`STRING` : Sized constant String of bytes. Can be UTFed. `size` is a long.
+-	`STRING` : Sized constant String of bytes. Can be UTFed.`size` is a long.
 -	`ZSTRING` : Constant String of bytes. It's complemented by a final \0.
 -	`MFUNC` : 21 function pointers for arrity 0 to 20.
 -	`FUNC` : unique function, with arrity and vararg.
@@ -43,3 +43,5 @@ Basic data elements bricks.
 -	`CLASS` : Class definition.
 -	`OBJECT` : Object according to a class of interface.
 -	`INTERFACE` : Interface definition.
+
+### polymorphic_nodes library

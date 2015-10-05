@@ -11,7 +11,7 @@
 
 typedef struct
 {
-	WS_INT 	integer;
+	WS_INT 	value;
 } Int;
 
 // Boxing
@@ -24,13 +24,14 @@ Node	*int_is_zero			(Node *node);
 Node	*int_is_neg				(Node *node);
 Node	*int_is_pos				(Node *node);
 
-// coerce
-Node 	*int_to_byte			(Node *node);
-Node 	*int_to_short			(Node *node);
-// Node	*int_to_integer			(Node *node);
-Node 	*int_to_long			(Node *node);
-Node 	*int_to_float			(Node *node);
-Node 	*int_to_double			(Node *node);
+// // coerce
+// Node 	*int_to_byte		(Node *node);
+// Node 	*int_to_short		(Node *node);
+// // Node	*int_to_integer		(Node *node);
+// Node 	*int_to_long		(Node *node);
+// Node 	*int_to_float		(Node *node);
+// Node 	*int_to_double		(Node *node);
+Node 	*int_to_type			(Node *node, TYPE type);
 
 // operators10
 Node 	*int_add				(Node *x, Node *y);

@@ -7,8 +7,8 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "nodes.h"
+#include "type.h"
 
 // include all number headers in order to have conversion functions
 #include "number.h"
@@ -16,12 +16,12 @@
 /*
 	Create an int
 */
-Node *int(WS_INT value)
+Node *int_box(WS_INT value)
 {
 	Node *node = new_node(INTEGER);
 	ASSERT(node, ERR_CREATE_NEW, str_type(INTEGER));
 	Integer *integer = STRUCT(node);
-	integer->integer = value;
+	integer->value = value;
 	return unlink_new(node);
 
     //*********************
@@ -38,9 +38,9 @@ WS_INT int_unbox(Node *node)
 	PUSH_ARGS(1, node);
     ASSERT_TYPE(node, INTEGER);
 	Int *integer = STRUCT(node);
-	WS_INT res = integer->integer;
+	WS_INT value = integer->value;
 	POP_ARGS(1, node);
-	return res;
+	return value;
 
     //*********************
 	catch:
@@ -54,7 +54,8 @@ WS_INT int_unbox(Node *node)
 Node *is_int(Node *node)
 {
 	PUSH_ARGS(1, node);
-	Node *res = (node && node->type->int_type == INTEGER) ? TRUE : FALSE;
+	Node *res = (node && node->type->int_type == INTEGER) ?
+					TRUE : FALSE;
 	POP_ARGS(1, node);
 	return res;
 
@@ -112,15 +113,15 @@ Node *int_is_neg(Node *node)
 }
 
 /*************************************************
-	Coerce to other numerics
-****/
-// Byte int8
-Node *int_to_byte(Node *node)
+	Coerce between numerics
+*/
+// Int -> Byte int8
+static Node *int_to_byte(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
-	Node *res = byte_box(val);
+	ASSERT(val >= WS_BYTE_MIN && val <= WS_BYTE_MAX, ERR_OVERFLOW);
+	Node *res = byte_box((WS_BYTE)val);
 	POP_ARGS(1, node);
 	return res;
 
@@ -130,13 +131,13 @@ Node *int_to_byte(Node *node)
 	return NULL;
 }
 
-// Short int16
-Node *int_to_short(Node *node)
+// Int -> Short int16
+static Node *int_to_short(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
-	Node *res = short_box(val);
+	ASSERT(val >= WS_SHORT_MIN && val <= WS_SHORT_MAX, ERR_OVERFLOW);
+	Node *res = short_box((WS_SHORT)val);
 	POP_ARGS(1, node);
 	return res;
 
@@ -146,15 +147,18 @@ Node *int_to_short(Node *node)
 	return NULL;
 }
 
-// Node	*int_to_integer			(Node *node)
+// Int -> Int int32
+static Node *int_to_int(Node *node)
+{
+	return node;
+}
 
-// Long int64
-Node *int_to_long(Node *node)
+// Int -> Long int64
+static Node *int_to_long(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
-	Node *res = long_box(val);
+	Node *res = long_box((WS_LONG)val);
 	POP_ARGS(1, node);
 	return res;
 
@@ -166,13 +170,12 @@ Node *int_to_long(Node *node)
 
 // Node *int_to_ratio(Node *node)
 
-// Float
-Node *int_to_float(Node *node)
+// Int -> Float
+static Node *int_to_float(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
-	Node *res = float_box(val);
+	Node *res = float_box((WS_FLOAT)val);
 	POP_ARGS(1, node);
 	return res;
 
@@ -182,13 +185,32 @@ Node *int_to_float(Node *node)
 	return NULL;
 }
 
-// Double
-Node *int_to_double	(Node *node)
+// Int -> Double
+static Node *int_to_double(Node *node)
 {
 	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, INTEGER);
 	WS_INT val = int_unbox(node);
-	Node *res = double_box(val);
+	Node *res = double_box((WS_DOUBLE)val);
+	POP_ARGS(1, node);
+	return res;
+
+    //*******************
+	catch:
+	POP_ARGS(1, node);
+	return NULL;
+}
+
+// Int -> type
+static Node *int_to_double(Node *node, TYPE type)
+{
+	PUSH_ARGS(1, node);
+	WS_INT val = int_unbox(node);
+	Node *res = NULL;
+	switch(type)
+	{
+		case WS_BYTE:
+	}
+	Node *res = double_box((WS_DOUBLE)val);
 	POP_ARGS(1, node);
 	return res;
 
