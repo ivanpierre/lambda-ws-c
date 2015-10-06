@@ -9,31 +9,28 @@
 #ifndef INT_H
 #define INT_H
 
+/*
+	Int structure
+*/
 typedef struct
 {
 	WS_INT 	value;
 } Int;
 
-// Boxing
+//* Boxing ****************
 Node    *int_box				(WS_INT value);
 WS_INT  int_unbox				(Node *node);
 
-// test
+//* test ***************
 Node    *is_int					(Node *node);
 Node	*int_is_zero			(Node *node);
 Node	*int_is_neg				(Node *node);
 Node	*int_is_pos				(Node *node);
 
-// // coerce
-// Node 	*int_to_byte		(Node *node);
-// Node 	*int_to_short		(Node *node);
-// // Node	*int_to_integer		(Node *node);
-// Node 	*int_to_long		(Node *node);
-// Node 	*int_to_float		(Node *node);
-// Node 	*int_to_double		(Node *node);
+// coerce
 Node 	*int_to_type			(Node *node, TYPE type);
 
-// operators10
+//* operators *************
 Node 	*int_add				(Node *x, Node *y);
 Node 	*int_addP				(Node *x, Node *y);
 
@@ -60,5 +57,26 @@ Node 	*int_incP				(Node *x);
 
 Node 	*int_dec				(Node *x);
 Node 	*int_decP				(Node *x);
+
+//* MACROS *********************
+
+//* INT_UNBOX *********************
+#define INT_UNBOX(val, node) \
+	ASSERT(node, ERR_VAR_UNBOUND); \
+	ASSERT_TYPE(node, INTEGER); \
+	WS_INT val = ((Int *)STRUCT(node))->value
+
+//* START_INT_FUN1 ******
+#define START_INT_FUN1 \
+	Node *res = NULL; \
+	PUSH_ARGS(1, x); \
+	INT_INBOX(valx, x)
+
+//* START_INT_FUN2 ******
+#define START_INT_FUN2 \
+	Node *res = NULL; \
+	PUSH_ARGS(2, x, y); \
+	INT_INBOX(valx, x); \
+	INT_INBOX(valy, y)
 
 #endif

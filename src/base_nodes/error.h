@@ -21,6 +21,7 @@
 #define ERR_INIT        "Error in initialization of %s."
 #define ERR_TYPE        "type error %s, expected %s."
 #define ERR_OVERFLOW	"Numeric overfow."
+#define ERR_CONVERSION	"Bad numeric conversion from %s to %s."
 #define ERR_INDEX       "Index %ld out of bound."
 #define ERR_NULL_INDEX  "Index %ld is NULL."
 #define ERR_VAR         "Null pointer on var."

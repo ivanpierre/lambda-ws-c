@@ -18,69 +18,50 @@
 */
 Node *int_box(WS_INT value)
 {
-	Node *node = new_node(INTEGER);
+	Node *nod§e = new_node(INTEGER);
 	ASSERT(node, ERR_CREATE_NEW, str_type(INTEGER));
 	Integer *integer = STRUCT(node);
 	integer->value = value;
 	return unlink_new(node);
 
-    //*********************
+	//*********************
 	catch:
 	unlink_node(node);
 	return NULL;
 }
 
 /*
-	Return value of int
+	get value of int
 */
-WS_INT int_unbox(Node *node)
+WS_INT *int_unbox(Node *x)
 {
-	PUSH_ARGS(1, node);
-    ASSERT_TYPE(node, INTEGER);
-	Int *integer = STRUCT(node);
-	WS_INT value = integer->value;
-	POP_ARGS(1, node);
-	return value;
+	INT_UNBOX(valx, x);
+	return valx;
 
-    //*********************
+	//*********************
 	catch:
-	POP_ARGS(1, node);
-	return 0l;
+	return 0;
 }
 
 /*
 	test if node is an int
 */
-Node *is_int(Node *node)
+Node *is_int(Node *x)
 {
-	PUSH_ARGS(1, node);
-	Node *res = (node && node->type->int_type == INTEGER) ?
-					TRUE : FALSE;
-	POP_ARGS(1, node);
-	return res;
-
-    //*******************
-	catch:
-	POP_ARGS(1, node);
-	return NULL;
+	START_INT_FUN1;
+	Node *res = (x && x->type->int_type == INTEGER) ? TRUE : FALSE;
+	END_FUN1;
 }
 
 /*
 	test int with a predicate
 */
-static Node *tst_int(Node *node, Node *(*pred)())
+static Node *tst_int(Node *x, Node *(*pred)())
 {
-	PUSH_ARGS(1, node);
-	ASSERT_TYPE(node, INTEGER);
-	WS_INT val = int_unbox(node);
-	Node *res = (*pred)(val) ? TRUE : FALSE;
-	POP_ARGS(1, node);
-	return res;
+	START_INT_FUN1;
+	Node *res = (*pred)(valx) ? TRUE : FALSE;
+	END_FUN1;
 
-    //*******************
-	catch:
-	POP_ARGS(1, node);
-	return NULL;
 }
 
 //predicates
@@ -91,131 +72,220 @@ static Node *int_is_pos(WS_INT val){return val > 0}
 /**
 	test = 0
 */
-Node *int_is_zero(Node *node)
+Node *int_is_zero(Node *x)
 {
-	return tst_int(node, &is_zero);
+	return tst_int(x, &is_zero);
 }
 
 /**
 	test > 0
 */
-Node *int_is_pos(Node *node)
+Node *int_is_pos(Node *x)
 {
-	return tst_int(node, &is_pos);
+	return tst_int(x, &is_pos);
 }
 
 /**
 	test < 0
 */
-Node *int_is_neg(Node *node)
+Node *int_is_neg(Node *x)
 {
-	return tst_int(node, &is_neg);
+	return tst_int(x, &is_neg);
 }
 
 /*************************************************
 	Coerce between numerics
 */
-// Int -> Byte int8
-static Node *int_to_byte(Node *node)
-{
-	PUSH_ARGS(1, node);
-	WS_INT val = int_unbox(node);
-	ASSERT(val >= WS_BYTE_MIN && val <= WS_BYTE_MAX, ERR_OVERFLOW);
-	Node *res = byte_box((WS_BYTE)val);
-	POP_ARGS(1, node);
-	return res;
-
-    //*******************
-	catch:
-	POP_ARGS(1, node);
-	return NULL;
-}
-
-// Int -> Short int16
-static Node *int_to_short(Node *node)
-{
-	PUSH_ARGS(1, node);
-	WS_INT val = int_unbox(node);
-	ASSERT(val >= WS_SHORT_MIN && val <= WS_SHORT_MAX, ERR_OVERFLOW);
-	Node *res = short_box((WS_SHORT)val);
-	POP_ARGS(1, node);
-	return res;
-
-    //*******************
-	catch:
-	POP_ARGS(1, node);
-	return NULL;
-}
-
 // Int -> Int int32
-static Node *int_to_int(Node *node)
+static Node *int_to_int(Node *x)
 {
-	return node;
+	return x;
 }
 
 // Int -> Long int64
-static Node *int_to_long(Node *node)
+static Node *int_to_long(Node *x)
 {
-	PUSH_ARGS(1, node);
-	WS_INT val = int_unbox(node);
-	Node *res = long_box((WS_LONG)val);
-	POP_ARGS(1, node);
-	return res;
-
-    //*******************
-	catch:
-	POP_ARGS(1, node);
-	return NULL;
+	START_INT_FUN1;
+	Node *res = long_box((WS_LONG)valx);
+	END_FUN1;
 }
 
-// Node *int_to_ratio(Node *node)
-
 // Int -> Float
-static Node *int_to_float(Node *node)
+static Node *int_to_float(Node *x)
 {
-	PUSH_ARGS(1, node);
-	WS_INT val = int_unbox(node);
-	Node *res = float_box((WS_FLOAT)val);
-	POP_ARGS(1, node);
-	return res;
-
-    //*******************
-	catch:
-	POP_ARGS(1, node);
-	return NULL;
+	START_INT_FUN1;
+	Node *res = float_box((WS_FLOAT)valx);
+	END_FUN1;
 }
 
 // Int -> Double
-static Node *int_to_double(Node *node)
+static Node *int_to_double(Node *x)
 {
-	PUSH_ARGS(1, node);
-	WS_INT val = int_unbox(node);
-	Node *res = double_box((WS_DOUBLE)val);
-	POP_ARGS(1, node);
-	return res;
-
-    //*******************
-	catch:
-	POP_ARGS(1, node);
-	return NULL;
+	START_INT_FUN1;
+	Node *res = double_box((WS_DOUBLE)valx);
+	END_FUN1;
 }
 
 // Int -> type
-static Node *int_to_double(Node *node, TYPE type)
+Node *int_to_type(Node *x, TYPE type)
 {
-	PUSH_ARGS(1, node);
-	WS_INT val = int_unbox(node);
-	Node *res = NULL;
+	START_INT_FUN1;
 	switch(type)
 	{
 		case WS_BYTE:
-	}
-	Node *res = double_box((WS_DOUBLE)val);
-	POP_ARGS(1, node);
-	return res;
+			res = int_to_byte(valx);
+			break;
 
-    //*******************
-	catch:
-	POP_ARGS(1, node);
-	return NULL;
+		case WS_SHORT:
+			res = int_to_short(valx);
+			break;
+
+		case WS_INT:
+			res = int_to_int(valx);
+			break;
+
+		case WS_LONG:
+			res = int_to_long(valx);
+			break;
+
+		case WS_FLOAT:
+			res = int_to_float(valx);
+			break;
+
+		case WS_DOUBLE:
+			res = int_to_double(valx);
+			break;
+
+		default:
+			ABORT(ERR_CONVERSION, str_type(INTEGER), str_type(type));
+			break
+	}
+	END_FUN1;
+}
+
+/********************************
+	operators
+*/
+
+Node *int_add(Node *x, Node *y);
+{
+	START_INT_FUN2;
+	res = int_box(valx + valy);
+	END_FUN2;
+}
+
+Node *int_addP(Node *x, Node *y);
+{
+	START_INT_FUN2;
+	WS_INT sum = valx + valy;
+	if((sum ^ valx) < 0 && (sum ^ valy) < 0)
+		res = long_allP(int_to_type(x, LONG), int_to_type(y, LONG));
+	else
+		res = int_box(sum);
+	END_FUN2;
+}
+
+Node *int_multiply(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_multiplyP(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_divide(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_quotient(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_remainder(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_equiv(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_lt(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_lte(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_gte(Node *x, Node *y);
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_negate(Node *x);
+{
+	START_INT_FUN1;
+
+	END_FUN1;
+}
+
+Node *int_negateP(Node *x);
+{
+	START_INT_FUN1;
+
+	END_FUN1;
+}
+
+Node *int_inc(Node *x);
+{
+	START_INT_FUN1;
+
+	END_FUN1;
+}
+
+Node *int_incP(Node *x);
+{
+	START_INT_FUN1;
+
+	END_FUN1;
+}
+
+Node *int_dec(Node *x);
+{
+	START_INT_FUN1;
+
+	END_FUN1;
+}
+
+Node *int_decP(Node *x);
+{
+	START_INT_FUN1;
+
+	END_FUN1;
 }

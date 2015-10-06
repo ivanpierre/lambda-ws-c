@@ -37,4 +37,24 @@ typedef double			WS_DOUBLE;
 #define WS_DOUBLE_MIN	DBL_MIN
 #define WS_DOUBLE_MAX	DBL_MAX
 
+//* MACROS *******
+
+//******
+#define END_FUN1 \
+	POP_ARGS(1, x); \
+	return res; \
+	\
+	catch: \
+	POP_ARGS(1, x); \
+	return NULL
+
+//*******
+#define END_FUN2 \
+	POP_ARGS(2, x, y); \
+	return res; \
+    \
+	catch: \
+	POP_ARGS(2, x, y); \
+	return NULL
+
 #endif
