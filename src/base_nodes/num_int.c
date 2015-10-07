@@ -18,7 +18,7 @@
 */
 Node *int_box(WS_INT value)
 {
-	Node *nod§e = new_node(INTEGER);
+	Node *node = new_node(INTEGER);
 	ASSERT(node, ERR_CREATE_NEW, str_type(INTEGER));
 	Integer *integer = STRUCT(node);
 	integer->value = value;
@@ -49,7 +49,7 @@ WS_INT *int_unbox(Node *x)
 Node *is_int(Node *x)
 {
 	START_INT_FUN1;
-	Node *res = (x && x->type->int_type == INTEGER) ? TRUE : FALSE;
+	Node *res = (x && x->type == INTEGER) ? TRUE : FALSE;
 	END_FUN1;
 }
 
@@ -65,16 +65,16 @@ static Node *tst_int(Node *x, Node *(*pred)())
 }
 
 //predicates
-static Node *int_is_zero(WS_INT val){return val == 0}
-static Node *int_is_neg(WS_INT val){return val < 0}
-static Node *int_is_pos(WS_INT val){return val > 0}
+static Node *int_is_zeroP(WS_INT val){return val == 0}
+static Node *int_is_negP(WS_INT val){return val < 0}
+static Node *int_is_posP(WS_INT val){return val > 0}
 
 /**
 	test = 0
 */
 Node *int_is_zero(Node *x)
 {
-	return tst_int(x, &is_zero);
+	return tst_int(x, &int_is_zeroP);
 }
 
 /**
@@ -82,7 +82,7 @@ Node *int_is_zero(Node *x)
 */
 Node *int_is_pos(Node *x)
 {
-	return tst_int(x, &is_pos);
+	return tst_int(x, &int_is_posP);
 }
 
 /**
@@ -90,7 +90,7 @@ Node *int_is_pos(Node *x)
 */
 Node *int_is_neg(Node *x)
 {
-	return tst_int(x, &is_neg);
+	return tst_int(x, &int_is_negP);
 }
 
 /*************************************************

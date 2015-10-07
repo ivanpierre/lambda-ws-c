@@ -6,9 +6,6 @@
 */
 
 #include <stdio.h>
-#include "nodes.h"
-#include "global.h"
-#include "init.h"
 
 /*
 	main entry point
@@ -23,3 +20,7 @@ int main(int argc, const char* argv[])
 	return 0;
 }
 
+void test_errno()
+{
+
+}

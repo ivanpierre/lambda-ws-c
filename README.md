@@ -28,20 +28,33 @@ Every nodes are tracked and managed so unreferenced Nodes will be discarded from
 
 Basic data elements bricks.
 
--	`CONST` : unique void nodes as nil, true, false. Some will be used as lock for some processes.
+-	`CONST` : Unique void nodes as nil, true, false. Some will be used as lock for some processes.
+-	`TYPE` : Type definition. Primitive class type.
+-	`BOOLEAN` : TRUE or FALSE values.
 -	`BYTE`, `SHORT`, `INT`, `LONG` : Integers of 8, 16, 32 and 64 bits.
--	`RATIO` : numerator and denominator values for rationals.
--	`BIGINT`, `BIGDEC` : unlimited size Integers and Floats.
--	`CHAR`: 16 bits unsigned char (UTF16).
--	`HASH` : 32 bits unsigned hashcode for nodes.
+-	`UBYTE`, `USHORT`, `UINT`, `ULONG` : Unsigned Integers of 8, 16, 32 and 64 bits.
+-	`RATIO` : Numerator and denominator values for ratios.
+-	`BIGINT`, `UBIGINT` and `BIGDEC` : unlimited size Integers and Floats.
+-	`CHAR`: 16 bits signed char (UTF16). Implemented as SHORT.
+-	`UCHAR`: 16 bits unsigned char (UTF16). Implemented as USHORT.
 -	`STRING` : Sized constant String of bytes. Can be UTFed.`size` is a long.
--	`ZSTRING` : Constant String of bytes. It's complemented by a final \0.
--	`MFUNC` : 21 function pointers for arrity 0 to 20.
--	`FUNC` : unique function, with arrity and vararg.
--	`PTR` : Pointer on Node.
--	`ARRAY` : Sized array of constant size `Nodes`.
--	`CLASS` : Class definition.
+-	`ZSTRING` : Constant String of bytes. It's terminated by a final \0.
+-	`MFUNC` : Multiple arrity functions.
+-	`FUNC` : Single function, with arrity and vararg.
+-	`PTR` : Pointer on a Node.
+-	`SARRAY` : Sized array of constant size `Nodes`.
+-	`SLIST` : Sized list of constant size `Nodes`.
+-	`BITARRAY` : Array of bits (implemented as UBIGINT)
+-	`ARRAY` : Immutable hashed array
+-	`ORDEREDARRAY` : Immutable ordered hashed array
+-	`LIST` : Immutable hashed list
+-	`KEYVAL` : Associative value as a key and a value.
+-	`MAP` : Immutable hashed map
+-	`ARRAYMAP` : Immutable hashed array map
+-	`ORDEREDMAP` : Immutable ordered hashed array map
+-	`SET` : Immutable hashed set
+-	`CLASS` : Class definition. Derived class type.
 -	`OBJECT` : Object according to a class of interface.
--	`INTERFACE` : Interface definition.
+-	`INTERFACE` : Interface definition. Polymorphic class type.
 
 ### polymorphic_nodes library
