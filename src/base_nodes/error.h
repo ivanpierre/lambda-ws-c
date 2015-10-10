@@ -54,7 +54,8 @@ void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
 /*
  * trace management
  */
-void error				(char *file, int line, const char func[], char *mess);
+void error_box				(char *file, int line, const char func[],
+							 char *mess);
 void error_stack_push	(Node *node);
 void error_stack_print	();
 void error_stack_free	();

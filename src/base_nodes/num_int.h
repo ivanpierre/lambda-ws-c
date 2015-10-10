@@ -28,7 +28,7 @@ Node	*int_is_neg				(Node *node);
 Node	*int_is_pos				(Node *node);
 
 // coerce
-Node 	*int_to_type			(Node *node, TYPE type);
+Node 	*int_coerce				(Node *node, TYPE type);
 
 //* operators *************
 Node 	*int_add				(Node *x, Node *y);
@@ -70,13 +70,13 @@ Node 	*int_decP				(Node *x);
 #define START_INT_FUN1 \
 	Node *res = NULL; \
 	PUSH_ARGS(1, x); \
-	INT_INBOX(valx, x)
+	INT_UNBOX(valx, x)
 
 //* START_INT_FUN2 ******
 #define START_INT_FUN2 \
 	Node *res = NULL; \
 	PUSH_ARGS(2, x, y); \
-	INT_INBOX(valx, x); \
-	INT_INBOX(valy, y)
+	INT_UNBOX(valx, x); \
+	INT_UNBOX(valy, y)
 
 #endif

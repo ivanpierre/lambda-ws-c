@@ -37,10 +37,108 @@ typedef double			WS_DOUBLE;
 #define WS_DOUBLE_MIN	DBL_MIN
 #define WS_DOUBLE_MAX	DBL_MAX
 
+// Function pointer id for function with 1 argument
+enum
+{
+	NUM_IS_ZERO,
+	NUM_IS_NEG,
+	NUM_IS_POS,
+	NUM_NEGATE,
+	NUM_NEGATEP,
+	NUM_INC,
+	NUM_INCP,
+	NUM_DEC,
+	NUM_DECP
+} FUNC1;
+
+// Function pointer id for function with 2 argument
+enum
+{
+	NUM_ADD,
+	NUM_ADDP,
+	NUM_MULTIPLY,
+	NUM_MULTIPLYP,
+	NUM_DIVIDE,
+	NUM_QUOTIENT,
+	NUM_REMAIDER,
+	NUM_EQIV,
+	NUM_LT,
+	NUM_LTE,
+	NUM_GTE,
+
+} FUNC2;
+
+
+//* test ***************
+Node    *is_num					(Node *node);
+Node	*num_is_zero			(Node *node);
+Node	*num_is_neg				(Node *node);
+Node	*num_is_pos				(Node *node);
+
+// coerce
+Node 	*num_coerce				(Node *node, TYPE type);
+
+//* operators *************
+Node 	*num_add				(Node *x, Node *y);
+Node 	*num_addP				(Node *x, Node *y);
+
+Node 	*num_multiply			(Node *x, Node *y);
+Node 	*num_multiplyP			(Node *x, Node *y);
+
+Node 	*num_divide				(Node *x, Node *y);
+
+Node 	*num_quotient			(Node *x, Node *y);
+
+Node 	*num_remainder			(Node *x, Node *y);
+
+Node 	*num_equiv				(Node *x, Node *y);
+
+Node 	*num_lt					(Node *x, Node *y);
+Node 	*num_lte				(Node *x, Node *y);
+Node 	*num_gte				(Node *x, Node *y);
+
+Node 	*num_negate				(Node *x);
+Node 	*num_negateP			(Node *x);
+
+Node 	*num_inc				(Node *x);
+Node 	*num_incP				(Node *x);
+
+Node 	*num_dec				(Node *x);
+Node 	*num_decP				(Node *x);
+
+//* bit functions **********
+Node	*num_not				(Node *x);
+Node	*num_and				(Node *x, Node *y);
+Node	*num_or					(Node *x, Node *y);
+Node	*num_xor				(Node *x, Node *y);
+Node	*num_and_not			(Node *x, Node *y);
+
+Node	*num_clear_bit			(Node *x, Node *y);
+Node	*num_set_bit			(Node *x, Node *y);
+Node	*num_flip_bit			(Node *x, Node *y);
+Node	*num_test_bit			(Node *x, Node *y);
+
+Node	*num_shift_left			(Node *x, Node *y);
+Node	*num_shift_leftP		(Node *x, Node *y);
+Node	*num_shift_right		(Node *x, Node *y);
+Node	*num_rot_left			(Node *x, Node *y);
+Node	*num_rot_right			(Node *x, Node *y);
+
+
 //* MACROS *******
+//* START_FUN1 ******
+#define START_FUN1 \
+	Node *res = NULL; \
+	PUSH_ARGS(1, x)
+
+//* START_INT_FUN2 ******
+#define START_FUN2 \
+	Node *res = NULL; \
+	PUSH_ARGS(2, x, y);
 
 //******
 #define END_FUN1 \
+	CATCH_ERROR; \
 	POP_ARGS(1, x); \
 	return res; \
 	\
@@ -50,6 +148,7 @@ typedef double			WS_DOUBLE;
 
 //*******
 #define END_FUN2 \
+	CATCH_ERROR; \
 	POP_ARGS(2, x, y); \
 	return res; \
     \

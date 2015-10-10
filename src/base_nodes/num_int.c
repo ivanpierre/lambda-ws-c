@@ -56,7 +56,7 @@ Node *is_int(Node *x)
 /*
 	test int with a predicate
 */
-static Node *tst_int(Node *x, Node *(*pred)())
+static Node *tst_int(Node *x, Node *(*pred)(WS_INT))
 {
 	START_INT_FUN1;
 	Node *res = (*pred)(valx) ? TRUE : FALSE;
@@ -96,6 +96,24 @@ Node *int_is_neg(Node *x)
 /*************************************************
 	Coerce between numerics
 */
+// Int -> Byte int8
+static Node *int_to_byte(Node *x)
+{
+	START_INT_FUN1;
+	ASSERT(valx >= WS_BYTE_MIN && valx <= WS_BYTE_MAX, ERR_OVERFLOW);
+	Node *res = byte_box((WS_SHORT)valx);
+	END_FUN1;
+}
+
+// Int -> Short int16
+static Node *int_to_short(Node *x)
+{
+	START_INT_FUN1;
+	ASSERT(valx >= WS_SHORT_MIN && valx <= WS_SHORT_MAX, ERR_OVERFLOW);
+	Node *res = short_box((WS_SHORT)valx);
+	END_FUN1;
+}
+
 // Int -> Int int32
 static Node *int_to_int(Node *x)
 {
@@ -167,14 +185,14 @@ Node *int_to_type(Node *x, TYPE type)
 	operators
 */
 
-Node *int_add(Node *x, Node *y);
+Node *int_add(Node *x, Node *y)
 {
 	START_INT_FUN2;
 	res = int_box(valx + valy);
 	END_FUN2;
 }
 
-Node *int_addP(Node *x, Node *y);
+Node *int_addP(Node *x, Node *y)
 {
 	START_INT_FUN2;
 	WS_INT sum = valx + valy;
@@ -185,107 +203,206 @@ Node *int_addP(Node *x, Node *y);
 	END_FUN2;
 }
 
-Node *int_multiply(Node *x, Node *y);
+Node *int_multiply(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_multiplyP(Node *x, Node *y);
+Node *int_multiplyP(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_divide(Node *x, Node *y);
+Node *int_divide(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_quotient(Node *x, Node *y);
+Node *int_quotient(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_remainder(Node *x, Node *y);
+Node *int_remainder(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_equiv(Node *x, Node *y);
+Node *int_equiv(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_lt(Node *x, Node *y);
+Node *int_lt(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_lte(Node *x, Node *y);
+Node *int_lte(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_gte(Node *x, Node *y);
+Node *int_gte(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_negate(Node *x);
+Node *int_negate(Node *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_negateP(Node *x);
+Node *int_negateP(Node *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_inc(Node *x);
+Node *int_inc(Node *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_incP(Node *x);
+Node *int_incP(Node *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_dec(Node *x);
+Node *int_dec(Node *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_decP(Node *x);
+Node *int_decP(Node *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
+}
+
+//* bit functions **********
+Node *num_not				(Node *x)
+{
+	START_INT_FUN1;
+
+	END_FUN1;
+}
+
+Node *num_and				(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_or					(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_xor				(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_and_not			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_clear_bit			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_set_bit			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_flip_bit			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_test_bit			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_shift_left			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_shift_leftP			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_shift_right		(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_rot_left			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *num_rot_right			(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
 }
