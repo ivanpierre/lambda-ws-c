@@ -1,6 +1,10 @@
 BLOG (just what happens)
 ========================
 
+#### 14 Oct 2015
+
+Still on the boat even if lot of work outside...
+
 #### 03 Oct 2015
 
 As modification arise and change of structure become obvious the whole doc should be rewritten... For now it's only interesting as historical sources.
