@@ -41,9 +41,19 @@ typedef enum TYPE
 
 typedef struct
 {
-	const char	*str_type;
-	const TYPE  int_type;
-	long		size_type;
+	char		*func_name;
+	WS_INT		nb_args;
+	void		*func;
+} FuncDef;
+
+typedef struct
+{
+	char		*str_type;
+	TYPE  		int_type;
+	WS_LONG		size_type;
+	NODE		*name_index; // map name id - function index
+	WS_INT		nb_func;
+	FuncDef		*func[];
 } Type;
 
 extern Type type_array[];

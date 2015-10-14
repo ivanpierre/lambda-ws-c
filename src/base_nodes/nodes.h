@@ -73,10 +73,10 @@ extern void print_node_list ();
 #define STRUCT(node) ((void *)((char *)node) + sizeof(Node)))
 
 // ***************************
-#define ACCESS_START(ctype, rtype, itype) \
-    rtype res; \
-    ASSERT_NODE(node, itype); \
-    ctype *str = STRUCT(node)
+#define ACCESS_START(struct_type, return_type, input_type) \
+    return_type res; \
+    ASSERT_NODE(node, input_type); \
+    struct_type *str = STRUCT(node)
 
 // ***************************
 #define ACCESS_END(otype) \
@@ -130,19 +130,43 @@ extern void print_node_list ();
 #define ACCESS_BOOL(ctype, access, itype) \
     ACCESS_START(ctype, Node *, itype); \
     res = BOOL(str->access ); \
-    ACCESS_END_TYPED(IBOOLEAN)
+    ACCESS_END_TYPED(BOOLEAN)
+
+// ***************************
+#define ACCESS_BYTE(ctype, access, itype) \
+    ACCESS_START(ctype, Node *, itype); \
+    res = byte(str->access); \
+    ACCESS_END_TYPED(INTEGER)
+
+// ***************************
+#define ACCESS_SHORT(ctype, access, itype) \
+    ACCESS_START(ctype, Node *, itype); \
+    res = short(str->access); \
+    ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_INTEGER(ctype, access, itype) \
     ACCESS_START(ctype, Node *, itype); \
     res = integer(str->access); \
-    ACCESS_END_TYPED(IINTEGER)
+    ACCESS_END_TYPED(INTEGER)
 
 // ***************************
-#define ACCESS_DECIMAL(ctype, access, itype) \
+#define ACCESS_INTEGER(ctype, access, itype) \
     ACCESS_START(ctype, Node *, itype); \
-    res = decimal(str->access); \
-    ACCESS_END_TYPED(IDECIMAL)
+    res = double(str->access); \
+    ACCESS_END_TYPED(INTEGER)
+
+// ***************************
+#define ACCESS_FLOAT(ctype, access, itype) \
+    ACCESS_START(ctype, Node *, itype); \
+    res = float(str->access); \
+    ACCESS_END_TYPED(DECIMAL)
+
+// ***************************
+#define ACCESS_DOUBLE(ctype, access, itype) \
+    ACCESS_START(ctype, Node *, itype); \
+    res = double(str->access); \
+    ACCESS_END_TYPED(DECIMAL)
 
 // ***************************
 #define ACCESS_PTR(ctype, access, itype) \

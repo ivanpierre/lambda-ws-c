@@ -37,23 +37,13 @@ typedef double			WS_DOUBLE;
 #define WS_DOUBLE_MIN	DBL_MIN
 #define WS_DOUBLE_MAX	DBL_MAX
 
-// Function pointer id for function with 1 argument
+// index of function
 enum
 {
 	NUM_IS_ZERO,
 	NUM_IS_NEG,
 	NUM_IS_POS,
-	NUM_NEGATE,
-	NUM_NEGATEP,
-	NUM_INC,
-	NUM_INCP,
-	NUM_DEC,
-	NUM_DECP
-} FUNC1;
-
-// Function pointer id for function with 2 argument
-enum
-{
+	NUM_COERCE,
 	NUM_ADD,
 	NUM_ADDP,
 	NUM_MULTIPLY,
@@ -61,13 +51,29 @@ enum
 	NUM_DIVIDE,
 	NUM_QUOTIENT,
 	NUM_REMAIDER,
-	NUM_EQIV,
+	NUM_EQUIV,
+	NUM_EQUAL,
 	NUM_LT,
 	NUM_LTE,
 	NUM_GTE,
-
-} FUNC2;
-
+	NUM_NEGATE,
+	NUM_NEGATEP,
+	NUM_INC,
+	NUM_INCP,
+	NUM_DEC,
+	NUM_DECP,
+	NUM_NOT
+	NUM_AND,
+	NUM_OR,
+	NUM_XOR,
+	NUM_AND_NOT,
+	NUM_CLEAR_BIT,
+	NUM_SET_BIT,
+	NUM_FLIP_BIT,
+	NUM_TEST_BIT,
+	NUM_HASH_CODE,
+	NUM_HASHEQ
+};
 
 //* test ***************
 Node    *is_num					(Node *node);
@@ -96,6 +102,7 @@ Node 	*num_equiv				(Node *x, Node *y);
 Node 	*num_lt					(Node *x, Node *y);
 Node 	*num_lte				(Node *x, Node *y);
 Node 	*num_gte				(Node *x, Node *y);
+Node 	*num_compare			(Node *x, Node *y);
 
 Node 	*num_negate				(Node *x);
 Node 	*num_negateP			(Node *x);
@@ -124,6 +131,9 @@ Node	*num_shift_right		(Node *x, Node *y);
 Node	*num_rot_left			(Node *x, Node *y);
 Node	*num_rot_right			(Node *x, Node *y);
 
+//* hash ***********************
+int 	num_hash_code			(Node *x);
+int 	num_hasheq				(Node *x);
 
 //* MACROS *******
 //* START_FUN1 ******

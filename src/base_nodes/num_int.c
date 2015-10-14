@@ -128,6 +128,20 @@ static Node *int_to_long(Node *x)
 	END_FUN1;
 }
 
+// Int -> bigdec
+static Node *int_to_bigdec(Node *x)
+{
+	START_INT_FUN1;
+	Node *res = bigdec_box((WSLONG)valx);
+	END_FUN1;
+}
+
+// Int -> Ratio
+static Node *int_to_ratio(Node *x)
+{
+	return x;
+}
+
 // Int -> Float
 static Node *int_to_float(Node *x)
 {
@@ -144,10 +158,18 @@ static Node *int_to_double(Node *x)
 	END_FUN1;
 }
 
+// Int -> bigdeb
+static Node *int_to_bigdeb(Node *x)
+{
+	START_INT_FUN1;
+	Node *res = bigdec_box((WS_DOUBLE)valx);
+	END_FUN1;
+}
+
 // Int -> type
 Node *int_to_type(Node *x, TYPE type)
 {
-	START_INT_FUN1;
+	Node *res = NULL;
 	switch(type)
 	{
 		case WS_BYTE:
@@ -166,6 +188,14 @@ Node *int_to_type(Node *x, TYPE type)
 			res = int_to_long(valx);
 			break;
 
+		case WS_BIGINT:
+			res = int_to_bigint(valx);
+			break;
+
+		case WS_RATIO
+			res = int_to_ratio(valx);
+			break;
+
 		case WS_FLOAT:
 			res = int_to_float(valx);
 			break;
@@ -174,11 +204,20 @@ Node *int_to_type(Node *x, TYPE type)
 			res = int_to_double(valx);
 			break;
 
+		case WS_BIGDEC:
+			res = int_to_bigdec(valx);
+			break;
+
 		default:
 			ABORT(ERR_CONVERSION, str_type(INTEGER), str_type(type));
 			break
 	}
-	END_FUN1;
+
+catch:
+	return res;
+
+catch:
+	return NULL;
 }
 
 /********************************
@@ -245,6 +284,13 @@ Node *int_equiv(Node *x, Node *y)
 	END_FUN2;
 }
 
+Node *int_equal(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
 Node *int_lt(Node *x, Node *y)
 {
 	START_INT_FUN2;
@@ -260,6 +306,13 @@ Node *int_lte(Node *x, Node *y)
 }
 
 Node *int_gte(Node *x, Node *y)
+{
+	START_INT_FUN2;
+
+	END_FUN2;
+}
+
+Node *int_compare(Node *x, Node *y);
 {
 	START_INT_FUN2;
 
@@ -309,100 +362,106 @@ Node *int_decP(Node *x)
 }
 
 //* bit functions **********
-Node *num_not				(Node *x)
+Node *int_not				(Node *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *num_and				(Node *x, Node *y)
+Node *int_and				(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_or					(Node *x, Node *y)
+Node *int_or					(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_xor				(Node *x, Node *y)
+Node *int_xor				(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_and_not			(Node *x, Node *y)
+Node *int_and_not			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_clear_bit			(Node *x, Node *y)
+Node *int_clear_bit			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_set_bit			(Node *x, Node *y)
+Node *int_set_bit			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_flip_bit			(Node *x, Node *y)
+Node *int_flip_bit			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_test_bit			(Node *x, Node *y)
+Node *int_test_bit			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_shift_left			(Node *x, Node *y)
+Node *int_shift_left			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_shift_leftP			(Node *x, Node *y)
+Node *int_shift_leftP			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_shift_right		(Node *x, Node *y)
+Node *int_shift_right		(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_rot_left			(Node *x, Node *y)
+Node *int_rot_left			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *num_rot_right			(Node *x, Node *y)
+Node *int_rot_right			(Node *x, Node *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
+}
+
+int int_hash_code(Node *x){
+}
+
+int int_hasheq(Node *x){
 }
