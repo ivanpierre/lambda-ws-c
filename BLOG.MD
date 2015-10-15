@@ -1,6 +1,16 @@
 BLOG (just what happens)
 ========================
 
+#### 15 Oct 2015
+
+Type vision is bashed... alas a first pass through an object interface to construct the base seems unavoidable.
+
+Big question... is it an awfull OOP bias and an laziness outrage, or is it a necessary layer.
+
+I know, it's not necessary to make a lisp, but when you want to keep interoperability possible...
+
+Still wondering....
+
 #### 14 Oct 2015
 
 Still on the boat even if lot of work outside...
