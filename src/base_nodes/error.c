@@ -71,8 +71,7 @@ void error_stack_push(Node *node)
 {
     Error *error = STRUCT(node);
     error->previous = error_stack;
-	error_stack = NULL;
-    ASSIGN(error_stack, node);
+    LINK_ARG(error_stack, node);
 }
 
 /*

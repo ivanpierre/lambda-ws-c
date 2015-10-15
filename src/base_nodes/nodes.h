@@ -49,8 +49,8 @@ struct Node; // forward
 */
 typedef struct Node
 {
-	TYPES        type;
-	WS_LONG     occurrences;
+	Nodes		*type; // type or class
+	WS_LONG		occurrences;
 #ifdef DEBUG_ALLOC
 	struct Node *previous_node;
 	struct Node *next_node;
@@ -67,73 +67,73 @@ extern Node *NIL;
 extern Node *TRUE;
 extern Node *FALSE;
 
-extern Node *new_node       (TYPES type);
-extern Node *false_Q_       (Node *node);
-extern Node *true_Q_        (Node *node);
+extern Node *new_node		(TYPES type);
+extern Node *false_Q_		(Node *node);
+extern Node *true_Q_		(Node *node);
 
 // Non-standard functions
-extern void *NODE_STRUCT    (Node *node, TYPES type);
-extern bool FALSE_Q_        (Node *node);
-extern bool TRUE_Q_         (Node *node);
-extern void *THREAD_NODE    (Node *init, ...);
-extern bool node_isa_type   (Node *node, TYPES isa);
+extern void *NODE_STRUCT	(Node *node, TYPES type);
+extern bool FALSE_Q_		(Node *node);
+extern bool TRUE_Q_			(Node *node);
+extern void *THREAD_NODE	(Node *init, ...);
+extern bool node_isa_type	(Node *node, TYPES isa);
 
 // DEBUG_ALLOC functions
-extern void init_node_list  ();
-extern void print_node_list ();
+extern void init_node_list	();
+extern void print_node_list	();
 
 #define BOOL(val) (val ? TRUE : FALSE)
 #define STRUCT(node) (void *)((char *)node + sizeof(Node))
 
 // ***************************
 #define ACCESS_START(struct_type, return_type, input_type) \
-    return_type res; \
-    ASSERT_NODE(node, input_type); \
-    struct_type *str = STRUCT(node)
+	return_type res; \
+	ASSERT_NODE(node, input_type); \
+	struct_type *str = STRUCT(node)
 
 // ***************************
 #define ACCESS_END(otype) \
-    unlink_node(node); \
+	unlink_node(node); \
  \
-    if (!res) \
-	    res = NIL; \
-    if (res != NIL) \
-	    ASSERT_TYPE(res, otype); \
-    return unlink_new(res); \
+	if (!res) \
+		res = NIL; \
+	if (res != NIL) \
+		ASSERT_TYPE(res, otype); \
+	return unlink_new(res); \
  \
-    catch: \
-    unlink_node(node); \
-    return NULL
+	catch: \
+	unlink_node(node); \
+	return NULL
 
 // ***************************
 #define ACCESS_END_TYPED(otype) \
-    unlink_node(node); \
-    ASSERT_TYPE(res, otype); \
-    return res; \
+	unlink_node(node); \
+	ASSERT_TYPE(res, otype); \
+	return res; \
  \
-    catch: \
-    unlink_node(node); \
-    return NULL
+	catch: \
+	unlink_node(node); \
+	return NULL
 
 // ***************************
 #define ACCESS_END_UNTYPED() \
-    unlink_node(node); \
-    return res; \
+	unlink_node(node); \
+	return res; \
  \
-    catch: \
-    unlink_node(node); \
-    return res
+	catch: \
+	unlink_node(node); \
+	return res
 
 // ***************************
 #define ACCESS_NODE(ctype, access, itype, otype) \
-    ACCESS_START(ctype, Node *, itype); \
-    res = link_node(str->access); \
-    ACCESS_END(otype)
+	ACCESS_START(ctype, Node *, itype); \
+	res = link_node(str->access); \
+	ACCESS_END(otype)
 
 // ***************************
 #define ACCESS_VALUE(ctype, access, itype, def) \
-    itype res = def; \
-    link_node(node); \
+	itype res = def; \
+	link_node(node); \
 	ctype *coll = STRUCT(node); \
 	res = coll->access; \
 	unlink_node(node); \
@@ -141,71 +141,71 @@ extern void print_node_list ();
 
 // ***************************
 #define ACCESS_BOOL(ctype, access, itype) \
-    ACCESS_START(ctype, Node *, itype); \
-    res = BOOL(str->access ); \
-    ACCESS_END_TYPED(BOOLEAN)
+	ACCESS_START(ctype, Node *, itype); \
+	res = BOOL(str->access ); \
+	ACCESS_END_TYPED(BOOLEAN)
 
 // ***************************
 #define ACCESS_BYTE(ctype, access, itype) \
-    ACCESS_START(ctype, Node *, itype); \
-    res = byte(str->access); \
-    ACCESS_END_TYPED(INTEGER)
+	ACCESS_START(ctype, Node *, itype); \
+	res = byte(str->access); \
+	ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_SHORT(ctype, access, itype) \
-    ACCESS_START(ctype, Node *, itype); \
-    res = short(str->access); \
-    ACCESS_END_TYPED(INTEGER)
+	ACCESS_START(ctype, Node *, itype); \
+	res = short(str->access); \
+	ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_INTEGER(ctype, access, itype) \
-    ACCESS_START(ctype, Node *, itype); \
-    res = integer(str->access); \
-    ACCESS_END_TYPED(INTEGER)
+	ACCESS_START(ctype, Node *, itype); \
+	res = integer(str->access); \
+	ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_LONG(ctype, access, itype) \
-    ACCESS_START(ctype, Node *, itype); \
-    res = long(str->access); \
-    ACCESS_END_TYPED(INTEGER)
+	ACCESS_START(ctype, Node *, itype); \
+	res = long(str->access); \
+	ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_FLOAT(ctype, access, itype) \
-    ACCESS_START(ctype, Node *, itype); \
-    res = float(str->access); \
-    ACCESS_END_TYPED(DECIMAL)
+	ACCESS_START(ctype, Node *, itype); \
+	res = float(str->access); \
+	ACCESS_END_TYPED(DECIMAL)
 
 // ***************************
 #define ACCESS_DOUBLE(ctype, access, itype) \
-    ACCESS_START(ctype, Node *, itype); \
-    res = double(str->access); \
-    ACCESS_END_TYPED(DECIMAL)
+	ACCESS_START(ctype, Node *, itype); \
+	res = double(str->access); \
+	ACCESS_END_TYPED(DECIMAL)
 
 // ***************************
 #define ACCESS_PTR(ctype, access, itype) \
-    ACCESS_START(ctype, void *, itype); \
-    res = str->access; \
-    ACCESS_END_UNTYPED()
+	ACCESS_START(ctype, void *, itype); \
+	res = str->access; \
+	ACCESS_END_UNTYPED()
 
 // ***************************
 #define ACCESS_STR(ctype, access, itype) \
-    ACCESS_START(ctype, char *, itype); \
-    res = strdup(str->access); \
-    ACCESS_END_UNTYPED()
+	ACCESS_START(ctype, char *, itype); \
+	res = strdup(str->access); \
+	ACCESS_END_UNTYPED()
 
 // ***************************
 #define ASSIGN(to, from) \
 	{ \
-	    Node *tmp = link_node(from); \
-	    if(to != tmp) \
-	    { \
-	        unlink_node(to); \
-	        to = tmp; \
-	    } \
+		Node *tmp = link_node(from); \
+		if(to != tmp) \
+		{ \
+			unlink_node(to); \
+			to = tmp; \
+		} \
 	}
 
 // ***************************
 #define LINK_ARG(to, from) \
-    Node *to = link_node(from)
+	Node *to = link_node(from)
 
 #endif

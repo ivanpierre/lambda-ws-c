@@ -1,9 +1,9 @@
 /****
-    Nodes
+	Nodes
 
-    Lambda Calculus Workshop
-    C version
-    Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
 #include <stdio.h>
@@ -18,24 +18,24 @@
 #ifdef DEBUG_ALLOC
 	#define NEW_CONST {CONST, 0l, NULL, NULL}
 #else
-    #define NEW_CONST {CONST, 0l}
+	#define NEW_CONST {CONST, 0l}
 #endif
 
 // global values
 static Node nil_val   = NEW_CONST;
 static Node true_val  = NEW_CONST;
 static Node false_val = NEW_CONST;
-Node        *NIL      = &nil_val;
-Node        *FALSE    = &false_val;
-Node        *TRUE     = &true_val;
+Node		*NIL	  = &nil_val;
+Node		*FALSE	= &false_val;
+Node		*TRUE	 = &true_val;
 
 /*
-    Init base node content allocated
+	Init base node content allocated
 */
-static Node *init_node(Node *node, TYPE type)
+static Node *init_node(Node *node, Node *type)
 {
 	ASSERT(node, ERR_NULL_PTR);
-	node->type        = type;
+	node->type = type;
 	node->occurrences = 1; // will be decremented on valid creation
 #ifdef DEBUG_ALLOC
 	if (!last_node)
@@ -45,8 +45,8 @@ static Node *init_node(Node *node, TYPE type)
 	}
 	else
 	{
-		node->previous_node  = NULL;
-		node->next_node      = first_node;
+		node->previous_node = NULL;
+		node->next_node = first_node;
 		first_node->previous_node = node;
 		first_node = node;
 	}
@@ -59,11 +59,11 @@ static Node *init_node(Node *node, TYPE type)
 }
 
 /*
-    Allocate a static node
-    Constructor, return linked
+	Allocate a static node
+	Constructor, return linked
 	It should be unlink_new() by constructor
 */
-Node *new_node(TYPES type)
+Node *new_node(Node *type)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
 	Node *node = NULL;
@@ -80,8 +80,8 @@ Node *new_node(TYPES type)
 }
 
 /*
-    Allocate a dynamic node, i.e. a String
-    Constructor, return linked
+	Allocate a dynamic node, i.e. a String
+	Constructor, return linked
 	It should be unlink_new() by constructor
 */
 Node *new_dynamic_node(TYPES type, size_t size)
@@ -139,11 +139,11 @@ void pop_args(int nb, ...)
 }
 
 /*
-     Compose functions on an initial value
-     All initial and intermediate values should be allocated linked Nodes*.
-     At every state, the previous state is unlinked.
-     Last value can be anything and should be considered as allocated
-     Function list should finish with a NULL, else.... :D
+	 Compose functions on an initial value
+	 All initial and intermediate values should be allocated linked Nodes*.
+	 At every state, the previous state is unlinked.
+	 Last value can be anything and should be considered as allocated
+	 Function list should finish with a NULL, else.... :D
 */
 void *THREAD_NODE(Node *init, ...)
 {
@@ -151,8 +151,6 @@ void *THREAD_NODE(Node *init, ...)
 	void *(*func)(Node *arg) = NULL;
 	va_list funp;
 	Node *res = NULL;
-
-	link_node(init);
 
 	// Last previous result is init
 	ASSIGN(res, init);
@@ -176,80 +174,74 @@ void *THREAD_NODE(Node *init, ...)
 }
 
 /*
-    Test falsey
+	Test falsey
 */
 bool FALSE_Q_(Node *node)
 {
-	ASSERT_NODE(node, tmp_node, NODES);
+	PUSH_ARGS(1, node);
+	ASSERT(node, ERR_ARG);
+
 	bool res =  node == NIL ||
 				node == FALSE;
-	unlink_node(tmp_node);
+
+	POP_ARGS(1, node);
 	return res;
 
 	//****************
 	catch:
-	unlink_node(tmp_node);
+	POP_ARGS(1, node);
 	return BOOL_FALSE;
 }
 
 /*
-    Test truthey
+	Test truthey
 */
 bool TRUE_Q_(Node *node)
 {
-	ASSERT_NODE(node, tmp_node, NODES);
-	bool res = !FALSE_Q_(node);
-	unlink_node(tmp_node);
+	PUSH_ARGS(1, node);
+	ASSERT(node, ERR_ARG);
+
+	bool res =  FALSE_Q(node);
+
+	POP_ARGS(1, node);
 	return res;
 
 	//****************
 	catch:
-	unlink_node(tmp_node);
+	POP_ARGS(1, node);
 	return BOOL_FALSE;
 }
 
 /*
-    Test falsey
+	Test falsey
 */
 Node *false_Q_(Node *node)
 {
-	ASSERT_NODE(node, INODES);
-	Node *res = FALSE_Q_(node) ? TRUE : FALSE;
-	unlink_node(node);
-	return res;
-
-	//****************
-	catch:
-	unlink_node(node);
-	return NULL;
+	return FALSE_Q_(node) ? TRUE : FALSE;
 }
 
 /*
-    Test truthey
+	Test truthey
 */
 Node *true_Q_(Node *node)
 {
-	ASSERT_NODE(node, INODES);
-	Node *res = TRUE_Q_(node) ? TRUE : FALSE;
-	unlink_node(node);
-	return res;
-
-	//****************
-	catch:
-	unlink_node(node);
-	return NULL;
+	return TRUE_Q_(node) ? TRUE : FALSE;
 }
 
 /*
  * Get type Node isa
+ * TODO implement through interface
  */
-bool node_isa_type(Node *node, TYPE isa)
+bool node_isa_type(Node *node, Node *isa)
 {
+	PUSH_ARGS(1, node);
 	bool res = node->type->bin_type & get_type(isa)->bin_type &&
-	           node->type->bin_type <= get_type(isa)->bin_type;
+			   node->type->bin_type <= get_type(isa)->bin_type;
+	POP_ARGS(1, node);
 	return res;
 
 	//****************
 	catch:
+	POP_ARGS(1, node);
 	return BOOL_FALSE;
 }

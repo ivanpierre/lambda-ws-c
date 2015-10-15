@@ -16,7 +16,6 @@ typedef struct
 {
 	WS_BYTE start_arrity;
 	WS_BYTE end_arrity;
-	void 	*func[];
 } Func;
 
 long count_args(va_list args);

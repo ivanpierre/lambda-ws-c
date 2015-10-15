@@ -17,26 +17,39 @@
 	Representation of types
 */
 Type type_array[] = {
-	{"Node",		NODE,		0				NULL},
-	{"Const",		CONST,		0,				NULL},
-	{"Error",		ERROR,		sizeof(Error),	NULL},
-	{"Byte",		BYTE,		sizeof(Byte),	NULL},
-	{"Int",			INT,		sizeof(Int),	NULL},
-	{"Long",		LONG,		sizeof(Long),	NULL},
-	{"Bigint",		BIGINT,		0,				&bigint_free}
-	{"Ratio",		RATIO,		0,				&ratio_free}
-	{"Float",		FLOAT,		sizeof(Float),	NULL},
-	{"Double",		DOUBLE,		sizeof(Double),	NULL},
-	{"Bigdec",		BIGDEC,		0,				&bigdec_free}
-	{"Char",		CHAR,		sizeof(Char),	NULL},
-	{"String",		STRING,		0,				NULL},
-	{"ZString",		ZSTRING,	0,				NULL},
-	{"Func",		FUNC,		0, 				NULL},
-	{"Ptr",			PTR,		sizeof(void *),	NULL},
-	{"Array",		ARRAY,		0,				&array_free},
-	{"Type",		TYPE,		0,				&type_free},
-	{"Record",		OBJECT,		0,				&object_free},
-	{"Interface",	INTERFACE,	0,				&interface_free}
+	{"Const",		CONST,		0				},
+	{"Byte",		BYTE,		sizeof(Byte)	},
+	{"Short",		SHORT,		sizeof(Short)	},
+	{"Int",			INT,		sizeof(Int)		},
+	{"Long",		LONG,		sizeof(Long)	},
+	{"Float",		FLOAT,		sizeof(Float)	},
+	{"Double",		DOUBLE,		sizeof(Double)	},
+	{"Char",		CHAR,		sizeof(Char)	},
+	{"String",		STRING,		0,				},
+	{"ZString",		ZSTRING,	0,				},
+	{"Ptr",			PTR,		sizeof(void *)	},
+	{"Array",		ARRAY,		0,				}
+};
+
+/*
+	Representation of classes
+*/
+Class class_array[] = {
+	{"Error",		ERROR		},
+	{"Bigint",		BIGINT		},
+	{"Ratio",		RATIO		},
+	{"Bigdec",		BIGDEC		},
+	{"Func",		FUNC		},
+	{"Type",		TYPE		},
+	{"Object",		OBJECT		},
+	{"Interface",	INTERFACE	}
+};
+
+/*
+	Representation of interfaces
+*/
+Class interface_array[] = {
+	{"Node",		NODE}
 };
 
 /*

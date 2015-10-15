@@ -31,31 +31,53 @@ typedef enum TYPE
 	ZSTRING,	// Constant String of bytes. It's complemented by a final \0.
 	FUNC,		// unique function, with arrity and vararg.
 	PTR,		// Pointer on something.
-	ARRAY,		// Sized array of constant size `Nodes`.
+	ARRAY,		// Sized array of same Types internals.
 	TYPE,		// Type definition
-	RECORD,		// Objects
+	CLASS,		// Class definition
+	OBJECT,		// Mapped array of nodes defined by CLASS
 	INTERFACE,	// Interface definition
 	NB_TYPES	// .... terminator for this library
 } TYPES;
+
+
 
 typedef struct
 {
 	char		*func_name;
 	WS_INT		nb_args;
 	void		*func;
-} FuncDef;
+} Method;
+
+typedef struct
+{
+	char		*member_name;
+	Node		*type;
+} Member;
 
 typedef struct
 {
 	char		*str_type;
 	TYPES  		int_type;
 	WS_LONG		size_type;
-	struct Node	*name_index; // map name id - function index
+	struct Node	*interfaces; // Array of interfaces and classes
+	struct Node	*name_index; // Map name id - function index
 	WS_INT		nb_func;
 	FuncDef		*func[];
 } Type;
 
-extern Type type_array[];
+typedef struct
+{
+	char		*str_type;
+	TYPES  		int_type;
+	WS_LONG		size_type;
+	struct Node	*interfaces; // Array of interfaces and classes
+	struct Node	*name_index; // Map name id - function index
+	WS_INT		nb_func;
+	FuncDef		*func[];
+	MemberDef	*member[];
+} Class;
+
+extern Type *type_array;
 
 // public function for types
 extern char		*str_type		(TYPES type);
