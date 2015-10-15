@@ -44,16 +44,19 @@
 #include <stdio.h>
 #include "murmur3.h"
 
-const unsigned int seed = 0;
-const unsigned int C1 = 0xcc9e2d51;
-const unsigned int C2 = 0x1b873593;
+const WS_INT seed = 0;
+const WS_INT C1 = 0xcc9e2d51;
+const WS_INT C2 = 0x1b873593;
+const WS_INT C3 = 0xe6546b64;
+const WS_INT C4 = 0x85ebca6b;
+const WS_INT C5 = 0xc2b2ae35;
 
-static unsigned int rotateLeft(unsigned int x, unsigned int n)
+static WS_INT rotateLeft(WS_INT x, WS_INT n)
 {
-  return (x << n) | (x >> (32 - n));
+  return (x << n) | (x >> (sizeof(WS_INT) - n));
 }
 
-static unsigned int mixK1(unsigned int k1)
+static WS_INT mixK1(WS_INT k1)
 {
 	k1 *= C1;
 	k1 = rotateLeft(k1, 15);
@@ -61,43 +64,43 @@ static unsigned int mixK1(unsigned int k1)
 	return k1;
 }
 
-static unsigned int mixH1(unsigned int h1, unsigned int k1)
+static WS_INT mixH1(WS_INT h1, WS_INT k1)
 {
 	h1 ^= k1;
 	h1 = rotateLeft(h1, 13);
-	h1 = h1 * 5 + 0xe6546b64;
+	h1 = h1 * 5 + C3;
 	return h1;
 }
 
 // Finalization mix - force all bits of a hash block to avalanche
-static unsigned int fmix(unsigned int h1, unsigned int length)
+static WS_INT fmix(WS_INT h1, WS_INT length)
 {
 	h1 ^= length;
-	h1 ^= h1 >> 16;
-	h1 *= 0x85ebca6b;
+	h1 ^= h1 >> sizeof(WS_SHORT);
+	h1 *= C4;
 	h1 ^= h1 >> 13;
-	h1 *= 0xc2b2ae35;
-	h1 ^= h1 >> 16;
+	h1 *= C5;
+	h1 ^= h1 >> sizeof(WS_SHORT);
 	return h1;
 }
 
-unsigned int hashInt(unsigned int input)
+WS_INT hashInt(WS_INT input)
 {
 	if(input == 0) return 0;
-	unsigned int k1 = mixK1(input);
-	unsigned int h1 = mixH1(seed, k1);
+	WS_INT k1 = mixK1(input);
+	WS_INT h1 = mixH1(seed, k1);
 
 	return fmix(h1, 4);
 }
 
-unsigned int hashLong(long input)
+WS_INT hashLong(WS_LONG input)
 {
 	if(input == 0) return 0;
-	unsigned int low = (unsigned int) input;
-	unsigned int high = (unsigned int) (input >> 32);
+	WS_INT low = (WS_INT) input;
+	WS_INT high = (WS_INT) (input >> sizeof(WS_INT));
 
-	unsigned int k1 = mixK1(low);
-	unsigned int h1 = mixH1(seed, k1);
+	WS_INT k1 = mixK1(low);
+	WS_INT h1 = mixH1(seed, k1);
 
 	k1 = mixK1(high);
 	h1 = mixH1(h1, k1);
@@ -105,22 +108,22 @@ unsigned int hashLong(long input)
 	return fmix(h1, 8);
 }
 
-unsigned int hashUnencodedChars(char *input, unsigned int size)
+WS_INT hashUnencodedChars(char *input, WS_INT size)
 {
-	unsigned int h1 = seed;
+	WS_INT h1 = seed;
 
 	// step through the CharSequence 2 chars at a time
 	for(long i = 1; i < size; i += 2)
 		{
-		unsigned int k1 = input[i - 1] | (input[i] << 16);
+		WS_INT k1 = input[i - 1] | (input[i] << sizeof(WS_SHORT));
 		k1 = mixK1(k1);
 		h1 = mixH1(h1, k1);
 		}
 
 	// deal with any remaining characters
-	if(size & 1) == 1)
+	if((size & 1) == 1)
 		{
-		unsigned int k1 = input[size - 1];
+		WS_INT k1 = input[size - 1];
 		k1 = mixK1(k1);
 		h1 ^= k1;
 		}
@@ -128,18 +131,19 @@ unsigned int hashUnencodedChars(char *input, unsigned int size)
 	return fmix(h1, 2 * size);
 }
 
-unsigned int mixCollHash(unsigned int hash, unsigned int count)
+WS_INT mixCollHash(WS_INT hash, WS_INT count)
 {
-	unsigned int h1 = seed;
-	unsigned int k1 = mixK1(hash);
+	WS_INT h1 = seed;
+	WS_INT k1 = mixK1(hash);
 	h1 = mixH1(h1, k1);
 	return fmix(h1, count);
 }
 
-unsigned int hashOrdered(Node *xs)
+/* TODO implement when we have iterators
+WS_INT hashOrdered(Node *xs)
 {
-	unsigned int n = 0;
-	unsigned int hash = 1;
+	WS_INT n = 0;
+	WS_INT hash = 1;
 
 	for(Object x : xs)
 		{
@@ -150,10 +154,10 @@ unsigned int hashOrdered(Node *xs)
 	return mixCollHash(hash, n);
 }
 
-unsigned int hashUnordered(Node *xs)
+WS_INT hashUnordered(Node *xs)
 {
-	unsigned int hash = 0;
-	unsigned int n = 0;
+	WS_INT hash = 0;
+	WS_INT n = 0;
 	for(Object x : xs)
 		{
 		hash += Util.hasheq(x);
@@ -162,4 +166,4 @@ unsigned int hashUnordered(Node *xs)
 
 	return mixCollHash(hash, n);
 }
-
+*/

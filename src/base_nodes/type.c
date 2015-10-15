@@ -19,6 +19,7 @@
 Type type_array[] = {
 	{"Node",		NODE,		0				NULL},
 	{"Const",		CONST,		0,				NULL},
+	{"Error",		ERROR,		sizeof(Error),	NULL},
 	{"Byte",		BYTE,		sizeof(Byte),	NULL},
 	{"Int",			INT,		sizeof(Int),	NULL},
 	{"Long",		LONG,		sizeof(Long),	NULL},
@@ -28,7 +29,6 @@ Type type_array[] = {
 	{"Double",		DOUBLE,		sizeof(Double),	NULL},
 	{"Bigdec",		BIGDEC,		0,				&bigdec_free}
 	{"Char",		CHAR,		sizeof(Char),	NULL},
-	{"Hash",		HASH,		sizeof(Hash),	NULL},
 	{"String",		STRING,		0,				NULL},
 	{"Function",	FUNCTION,	sizeof(Function), NULL},
 	{"Ptr",			PTR,		sizeof(void *),	NULL},

@@ -9,7 +9,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#include "type.h"
+#include "nodes.h"
 
 /* standard error texts */
 #define ERR_NULL_PTR    "Null pointer assignement."
@@ -32,52 +32,52 @@
 #define ERR_STACK_TRACE "Stack error trace."
 
 /*
- * Manage the stack
+ * Define Error
  */
-typedef struct Error
+typedef struct
 {
-	struct Error 	*previous;
+	struct Node		*previous;
 	char 			*file;
 	int 			line;
 	char 			*func;
 	char 			*mess;
 } Error;
 
-extern Error *error_stack;
+// Stack trace in case of error
+extern struct Node *error_stack;
 
 /*
 	Errors and assertions
 */
-void ERROR_STAR(const char *file, int line, const char func[], char *fmt, ...);
-void TRACE_STAR(const char *file, int line, const char func[], char *fmt, ...);
+extern void ERROR_STAR(char *file, int line, char *func, char *fmt, ...);
+extern void TRACE_STAR(char *file, int line, char *func, char *fmt, ...);
 
 /*
  * trace management
  */
-void error_box				(char *file, int line, const char func[],
-							 char *mess);
-void error_stack_push	(Node *node);
-void error_stack_print	();
-void error_stack_free	();
+struct Node *error_box			(char *file, int line, char *func, char *mess);
+void 		error_stack_push	(struct Node *node);
+void 		error_stack_print	();
+void 		error_stack_free	();
 
 /*
 	Error Message
 */
 #define ERROR(fmt, ...) \
-	ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
+	ERROR_STAR(__FILE__, __LINE__, (char *)__func__, fmt, ##__VA_ARGS__)
 
 /*
 	Trace message
 */
 #define TRACE(fmt, ...) \
-	TRACE_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
+	TRACE_STAR(__FILE__, __LINE__, (char *)__func__, fmt, ##__VA_ARGS__)
 
 /*
 	Throw error
 */
 #define THROW(fmt, ...) \
 	{ \
-		ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+		ERROR_STAR(__FILE__, __LINE__, (char *)__func__, fmt, ##__VA_ARGS__); \
 		goto catch; \
 	}
 
@@ -92,13 +92,13 @@ void error_stack_free	();
 	if(push_args(nb, ##__VA_ARGS__)) \
 		THROW(ERR_VAR) \
 	if(error_stack) \
-		goto catch
+		ERROR(ERR_STACK_TRACE)
 
 /*
 	Unink all arguments, Push error trace if in error condition
 */
 #define POP_ARGS(nb, ...) \
-	pop_args(nb, ##__VA_ARGS__)); \
+	pop_args(nb, ##__VA_ARGS__); \
 	if(error_stack) \
 		ERROR(ERR_STACK_TRACE)
 
@@ -108,7 +108,7 @@ void error_stack_free	();
 #define ASSERT(cond, fmt, ...) \
 	if(!(cond)) \
 	{ \
-		ERROR_STAR(__FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__); \
+		ERROR_STAR(__FILE__, __LINE__, (char *)__func__, fmt, ##__VA_ARGS__); \
 		goto catch; \
 	}
 

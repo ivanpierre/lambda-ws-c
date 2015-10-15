@@ -16,9 +16,9 @@
 #include "writer.h"
 
 #ifdef DEBUG_ALLOC
-	#define NEW_CONST {NULL, 0l, NULL, NULL}
+	#define NEW_CONST {CONST, 0l, NULL, NULL}
 #else
-    #define NEW_CONST {NULL, 0l}
+    #define NEW_CONST {CONST, 0l}
 #endif
 
 // global values
@@ -35,7 +35,7 @@ Node        *TRUE     = &true_val;
 static Node *init_node(Node *node, TYPE type)
 {
 	ASSERT(node, ERR_NULL_PTR);
-	node->type        = get_type(type);
+	node->type        = type;
 	node->occurrences = 1; // will be decremented on valid creation
 #ifdef DEBUG_ALLOC
 	if (!last_node)
@@ -53,7 +53,8 @@ static Node *init_node(Node *node, TYPE type)
 #endif
 	return node;
 
-	error_assert:
+	//*************
+	catch:
 	return NULL;
 }
 
@@ -73,7 +74,7 @@ Node *new_node(TYPE type)
 	return node;
 
 	//**************
-	error_assert:
+	catch:
 	unlink_node(node);
 	return NULL;
 }
@@ -94,7 +95,7 @@ Node *new_dynamic_node(TYPE type, size_t size)
 	return node;
 
 	//**************
-	error_assert:
+	catch:
 	unlink_node(node);
 	return NULL;
 }
@@ -110,10 +111,10 @@ bool push_args(int nb, ...)
 	bool res = BOOL_FALSE;
 
 	va_start(args, nb);
-	for(i = 0; i < nb; i++)
+	for(int i = 0; i < nb; i++)
 	{
 		Node *arg = va_arg(args, Node *);
-		if(arg)
+		if(!arg)
 			res = BOOL_TRUE;
 		else
 			link_node(arg);
@@ -130,7 +131,7 @@ void pop_args(int nb, ...)
 	va_list args;
 
 	va_start(args, nb);
-	for(i = 0; i < nb; i++)
+	for(int i = 0; i < nb; i++)
 	{
 		Node *arg = va_arg(args, Node *);
 		unlink_node(arg);
@@ -146,31 +147,31 @@ void pop_args(int nb, ...)
 */
 void *THREAD_NODE(Node *init, ...)
 {
+	PUSH_ARGS(1, init);
 	void *(*func)(Node *arg) = NULL;
 	va_list funp;
 	Node *res = NULL;
 
-	ASSERT_NODE(init, tmp_init, INODES);
+	link_node(init);
 
 	// Last previous result is init
-	ASSIGN(res, tmp_init);
+	ASSIGN(res, init);
 
 	// We will trampoline on function call values. fun(res) -> res,
 	// with unlink on previous res
-	va_start(funp, tmp_init);
+	va_start(funp, init);
 	while ((func = va_arg(funp, void *(*)(Node *arg))))
 	{
 		ASSIGN(res, (*func)(res));
 		ASSERT(res, ERR_INIT);
 	}
 
-	unlink_node(tmp_init);
+	POP_ARGS(1, init);
 	return res;
 
 	//****************
-	error_assert:
-	unlink_node(tmp_init);
-	unlink_node(res);
+	catch:
+	POP_ARGS(2, init, res);
 	return NULL;
 }
 
@@ -186,7 +187,7 @@ bool FALSE_Q_(Node *node)
 	return res;
 
 	//****************
-	error_assert:
+	catch:
 	unlink_node(tmp_node);
 	return BOOL_FALSE;
 }
@@ -202,7 +203,7 @@ bool TRUE_Q_(Node *node)
 	return res;
 
 	//****************
-	error_assert:
+	catch:
 	unlink_node(tmp_node);
 	return BOOL_FALSE;
 }
@@ -218,7 +219,7 @@ Node *false_Q_(Node *node)
 	return res;
 
 	//****************
-	error_assert:
+	catch:
 	unlink_node(node);
 	return NULL;
 }
@@ -234,7 +235,7 @@ Node *true_Q_(Node *node)
 	return res;
 
 	//****************
-	error_assert:
+	catch:
 	unlink_node(node);
 	return NULL;
 }
@@ -249,6 +250,6 @@ bool node_isa_type(Node *node, TYPE isa)
 	return res;
 
 	//****************
-	error_assert:
+	catch:
 	return BOOL_FALSE;
 }

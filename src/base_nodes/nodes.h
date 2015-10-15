@@ -9,6 +9,24 @@
 #ifndef NODES_H
 #define NODES_H
 
+#include <stdint.h>
+
+/*
+	Used type definitions
+*/
+// Integers
+typedef int8_t			WS_BYTE;
+typedef int16_t			WS_SHORT;
+typedef int32_t			WS_INT;
+typedef int64_t			WS_LONG;
+typedef int8_t			bool;
+
+// Decimal
+typedef float			WS_FLOAT;
+typedef double			WS_DOUBLE;
+
+struct Node; // forward
+
 #include "type.h"
 #include "error.h"
 
@@ -25,11 +43,6 @@
 */
 // #define DEBUG_FREE
 
-/*
-	Used type definitions
-*/
-#define bool            int
-struct Node; // forward
 
 /*
 	Struct of a base node
@@ -37,7 +50,7 @@ struct Node; // forward
 typedef struct Node
 {
 	TYPE        type;
-	long        occurrences;
+	WS_LONG     occurrences;
 #ifdef DEBUG_ALLOC
 	struct Node *previous_node;
 	struct Node *next_node;
@@ -70,7 +83,7 @@ extern void init_node_list  ();
 extern void print_node_list ();
 
 #define BOOL(val) (val ? TRUE : FALSE)
-#define STRUCT(node) ((void *)((char *)node) + sizeof(Node)))
+#define STRUCT(node) (void *)((char *)node + sizeof(Node))
 
 // ***************************
 #define ACCESS_START(struct_type, return_type, input_type) \
@@ -88,7 +101,7 @@ extern void print_node_list ();
 	    ASSERT_TYPE(res, otype); \
     return unlink_new(res); \
  \
-    error_assert: \
+    catch: \
     unlink_node(node); \
     return NULL
 
@@ -98,7 +111,7 @@ extern void print_node_list ();
     ASSERT_TYPE(res, otype); \
     return res; \
  \
-    error_assert: \
+    catch: \
     unlink_node(node); \
     return NULL
 
@@ -107,7 +120,7 @@ extern void print_node_list ();
     unlink_node(node); \
     return res; \
  \
-    error_assert: \
+    catch: \
     unlink_node(node); \
     return res
 
@@ -151,9 +164,9 @@ extern void print_node_list ();
     ACCESS_END_TYPED(INTEGER)
 
 // ***************************
-#define ACCESS_INTEGER(ctype, access, itype) \
+#define ACCESS_LONG(ctype, access, itype) \
     ACCESS_START(ctype, Node *, itype); \
-    res = double(str->access); \
+    res = long(str->access); \
     ACCESS_END_TYPED(INTEGER)
 
 // ***************************

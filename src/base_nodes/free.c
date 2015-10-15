@@ -26,7 +26,7 @@ Node *last_node  = NULL;
 */
 static bool unlinkable(Node *node)
 {
-	return !node || node->type->int_type == ICONST;
+	return !node || node->type == CONST;
 }
 
 /*
@@ -49,7 +49,7 @@ Node *link_node(Node *node)
 	return node;
 
 	//**************
-	error_assert:
+	catch:
 	return NULL;
 }
 
@@ -98,14 +98,19 @@ Node *unlink_node(Node *node)
 				node->previous_node->next_node = node->next_node;
 			}
 #endif
-			FREE(node);
+			// unalloc node
+			void (*free_node)(Node *node) = func_free_type(node->type);
+			if(free_node)
+				(*free_node)(node);
+			else
+				free(node);
 			node = NULL;
 		}
 	}
 	return node;
 
 	//***************
-	error_assert:
+	catch:
 	return NULL;
 }
 
@@ -126,7 +131,7 @@ Node *unlink_new(Node *node)
 	return node;
 
 	//**************
-	error_assert:
+	catch:
 	return NULL;
 }
 
@@ -161,7 +166,8 @@ void print_node_stack()
 	int i = 1;
 	while (walk)
 	{
-		TRACE("%d) %s %ld %s", i++, walk->type->str_type, walk->occurrences, print(walk));
+		TRACE("%d) %s %ld %s", i++, str_type(walk->type),
+								walk->occurrences, print(walk));
 		walk = walk->next_node;
 	}
 #endif
