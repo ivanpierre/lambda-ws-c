@@ -36,7 +36,7 @@ typedef enum TYPE
 	RECORD,		// Objects
 	INTERFACE,	// Interface definition
 	NB_TYPES	// .... terminator for this library
-} TYPE;
+} TYPES;
 
 typedef struct
 {
@@ -48,7 +48,7 @@ typedef struct
 typedef struct
 {
 	char		*str_type;
-	TYPE  		int_type;
+	TYPES  		int_type;
 	WS_LONG		size_type;
 	struct Node	*name_index; // map name id - function index
 	WS_INT		nb_func;
@@ -58,9 +58,9 @@ typedef struct
 extern Type type_array[];
 
 // public function for types
-extern char		*str_type		(TYPE type);
-extern WS_LONG	size_type		(TYPE type);
-extern void 	*func_free_type	(TYPE type);
-extern bool		isa_type		(TYPE type, TYPE isa);
+extern char		*str_type		(TYPES type);
+extern WS_LONG	size_type		(TYPES type);
+extern void 	*func_free_type	(TYPES type);
+extern bool		isa_type		(TYPES type, TYPES isa);
 
 #endif

@@ -42,7 +42,7 @@ Type type_array[] = {
 /*
  * get type from an TYPE
  */
-static Type *get_type(TYPE type)
+static Type *get_type(TYPES type)
 {
 	return &(type_array[type]);
 }
@@ -50,7 +50,7 @@ static Type *get_type(TYPE type)
 /*
    get type name
 */
-char *str_type(TYPE type)
+char *str_type(TYPES type)
 {
 	return get_type(type)->str_type;
 }
@@ -58,7 +58,7 @@ char *str_type(TYPE type)
 /*
    get type size
 */
-long size_type(TYPE type)
+long size_type(TYPES type)
 {
 	return get_type(type)->size_type;
 }
@@ -66,7 +66,7 @@ long size_type(TYPE type)
 /*
  * Get type isa
  */
-bool isa_type(TYPE type, TYPE isa)
+bool isa_type(TYPES type, TYPES isa)
 {
 	return  isa == NODE || // NODE accept anything, even a non node pointer
 			(get_type(type)->bin_type & get_type(isa)->bin_type &&

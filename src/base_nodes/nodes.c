@@ -63,7 +63,7 @@ static Node *init_node(Node *node, TYPE type)
     Constructor, return linked
 	It should be unlink_new() by constructor
 */
-Node *new_node(TYPE type)
+Node *new_node(TYPES type)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
 	Node *node = NULL;
@@ -84,7 +84,7 @@ Node *new_node(TYPE type)
     Constructor, return linked
 	It should be unlink_new() by constructor
 */
-Node *new_dynamic_node(TYPE type, size_t size)
+Node *new_dynamic_node(TYPES type, size_t size)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
 	Node *node = NULL;
@@ -180,7 +180,7 @@ void *THREAD_NODE(Node *init, ...)
 */
 bool FALSE_Q_(Node *node)
 {
-	ASSERT_NODE(node, tmp_node, INODES);
+	ASSERT_NODE(node, tmp_node, NODES);
 	bool res =  node == NIL ||
 				node == FALSE;
 	unlink_node(tmp_node);
@@ -197,7 +197,7 @@ bool FALSE_Q_(Node *node)
 */
 bool TRUE_Q_(Node *node)
 {
-	ASSERT_NODE(node, tmp_node, INODES);
+	ASSERT_NODE(node, tmp_node, NODES);
 	bool res = !FALSE_Q_(node);
 	unlink_node(tmp_node);
 	return res;

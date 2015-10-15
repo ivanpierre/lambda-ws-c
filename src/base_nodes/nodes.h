@@ -49,7 +49,7 @@ struct Node; // forward
 */
 typedef struct Node
 {
-	TYPE        type;
+	TYPES        type;
 	WS_LONG     occurrences;
 #ifdef DEBUG_ALLOC
 	struct Node *previous_node;
@@ -67,16 +67,16 @@ extern Node *NIL;
 extern Node *TRUE;
 extern Node *FALSE;
 
-extern Node *new_node       (TYPE type);
+extern Node *new_node       (TYPES type);
 extern Node *false_Q_       (Node *node);
 extern Node *true_Q_        (Node *node);
 
 // Non-standard functions
-extern void *NODE_STRUCT    (Node *node, TYPE type);
+extern void *NODE_STRUCT    (Node *node, TYPES type);
 extern bool FALSE_Q_        (Node *node);
 extern bool TRUE_Q_         (Node *node);
 extern void *THREAD_NODE    (Node *init, ...);
-extern bool node_isa_type   (Node *node, TYPE isa);
+extern bool node_isa_type   (Node *node, TYPES isa);
 
 // DEBUG_ALLOC functions
 extern void init_node_list  ();

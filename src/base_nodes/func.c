@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "nodes.h"
-#include "function.h"
+#include "func.h"
 
 /*
  * Get varargs length
