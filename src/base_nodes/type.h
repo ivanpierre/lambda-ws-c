@@ -29,12 +29,11 @@ typedef enum TYPE
 	STRING,		// Sized constant String of bytes. Can be UTF.
 				// `size` is a long.
 	ZSTRING,	// Constant String of bytes. It's complemented by a final \0.
-	MFUNC,		// 21 function pointers for arrity 0 to 20.
 	FUNC,		// unique function, with arrity and vararg.
 	PTR,		// Pointer on something.
 	ARRAY,		// Sized array of constant size `Nodes`.
-	CLASS,		// Class definition
-	OBJECT,		// Objects
+	TYPE,		// Type definition
+	RECORD,		// Objects
 	INTERFACE,	// Interface definition
 	NB_TYPES	// .... terminator for this library
 } TYPE;

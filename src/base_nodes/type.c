@@ -10,7 +10,7 @@
 #include "nodes.h"
 #include "number.h"
 #include "strings.h"
-#include "function.h"
+#include "func.h"
 #include "writer.h"
 
 /*
@@ -30,11 +30,12 @@ Type type_array[] = {
 	{"Bigdec",		BIGDEC,		0,				&bigdec_free}
 	{"Char",		CHAR,		sizeof(Char),	NULL},
 	{"String",		STRING,		0,				NULL},
-	{"Function",	FUNCTION,	sizeof(Function), NULL},
+	{"ZString",		ZSTRING,	0,				NULL},
+	{"Func",		FUNC,		0, 				NULL},
 	{"Ptr",			PTR,		sizeof(void *),	NULL},
 	{"Array",		ARRAY,		0,				&array_free},
-	{"Class",		CLASS,		0,				&class_free},
-	{"Object",		OBJECT,		0,				&object_free},
+	{"Type",		TYPE,		0,				&type_free},
+	{"Record",		OBJECT,		0,				&object_free},
 	{"Interface",	INTERFACE,	0,				&interface_free}
 };
 
