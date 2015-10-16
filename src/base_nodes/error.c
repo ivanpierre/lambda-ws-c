@@ -1,5 +1,5 @@
 /****
-    Nodes
+    Error
 
     Lambda Calculus Workshop
     C version
