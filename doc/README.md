@@ -1,0 +1,50 @@
+Documentation
+=============
+
+-	Introduction
+	-	[Prolegomenes](prolegomenes.md)
+	-	[An intermediate OOP ?](oop.md)
+-	Elements
+	-	Nodes
+		-	[Nodes structure](nodestructure.md)
+		-	[Garbage collection](gc.md)
+		-	[Error and exceptions](gc.md)
+	-	Protocols
+		-	[Objects](objects.md)
+	-	Base types
+		-	Fixed size
+			-	[Integers](integers.md)
+			-	[Floats](floats.md)
+			-	[Char](char.md)
+			-	[Pointers](pointers.md)
+			-	[Streams](streams.md)
+		-	Varible size
+			-	[Typed arrays](typedarrays.md)
+			-	[Strings](strings.md)
+	-	Complex structures
+		-	Nodes definition
+			-	[Protocols](protocols.md)
+			-	[Functions](functions.md)
+			-	[Records](protocols.md)
+			-	[Name spaces](namespaces.md)
+			-	[Vars](vars.md)
+			-	[Keywords](keywords.md)
+			-	Interoperability definitions
+				-	[Structures](structures.md)
+				-	[Native functions](natives.md)
+		-	Complex bases
+			-	[Ratio](ratio.md)
+			-	[Big values](bigvalues.md)
+			-	[Errors](errors.md)
+		-	Data structures
+			-	[INodes](inodes.md)
+			-	[Arrays](arrays.md)
+			-	[Lists](lists.md)
+			-	[Maps](maps.md)
+			-	[Sets](sets.md)
+			-	[Sequences](sequences.md)
+			-	[Iterators](iterators.md)
+	-	Compilation
+		-	[Code generation](codegeneration.md)
+		-	[Code compilation](codecompilation.md)
+		-	[Interoperability](interoperability.md)
