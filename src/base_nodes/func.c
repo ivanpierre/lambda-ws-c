@@ -27,3 +27,19 @@ long count_args(va_list args)
 	va_end(args);
 	return i;
 }
+
+/**
+	define function interface
+*/
+MethodDesc	functionInit[]
+{
+	METHOD_DESC_END
+};
+
+/*
+	Class initialisation
+*/
+bool Function()
+{
+	
+}

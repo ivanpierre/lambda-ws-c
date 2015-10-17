@@ -6,55 +6,28 @@ Project evolved a lot and goes in another direction... so documentation is to be
 Ideas
 -----
 
-Define all data elements of a language. They will be bricks for any AST system. The whole in C.
+Define data elements of a language as an AST system. The whole in C.
 
-Immutability is the key. But mutable object should be accessible through protected thread access. all elements from bit to complex structures will be seen as a Node. Every Node is a specific datatype with it's own management functions. All these should enable to construct any possible data structures.
+Somewhere it's like quantum against relativist physics.
 
-Especially it should enable to create evaluatable Nodes as algorithmic units corresponding to languages specific implementations. These nodes should be readable in a syntax defined by the languages and writable as language source of machine code functions. Simple evaluation of these nodes should provide emulation of execution of the corresponding machine code generation.
+Simple elements are complex to use but you can manage them with a simple, short code treatments. They are bricks of this AST system. But the goal is to manage complex compound made of these bricks, worse, you will use the brick behavior to create their behavior. Where is the border between simple and compound objects. When does, the language emerges out of elements that should be able to create any languages.
 
-These nodes should be able to manage all nodes giving the ability to make a language grow by successive layers, giving to every layer the ability to construct the next one.
+Perhaps is it an utopy. Perhaps languages are not made of simple bricks, general enough to generate all generalizations. Perhaps, the middle cement that glue all these bricks are between bricks and structures emerging from them.
 
-### Threading
+Desires, knowledge, experience and experiments make from this mold an interesting journey. Retain one's tendency to go in known paths, do not be afraid to test and make errors, in order to discover some others, this is not always an easy way.
 
-threads will be managed by nodes by usage of mutex (equivatent of Java synchronize).
+Why C ?
+-------
 
-### base_nodes library.
+Well, because evolving from quite the beginning, long years ago, from the BASIC of my youth, quickly passing to assembler, FORTRAN, FORTH, Pascal, Algol... I quickly search around some other paradigms APL, LISP, PROLOG. But because of the lack of experience, I didn't really got the differences, didn't found the particular idiomatic ways they express themselves.
 
-This library will manage all the base simple Nodes.
+As my first professional language, I worked in C. I liked to call it a "structured assembler". I'm not proud to say it was the hard way. It was just the only way there was... K&R, some books found here and there, technical books to figure out how to manage UNIX, DOS... manuals from database vendors to manage their software in C, in a less or more tricky fashion... No internet, no mail... I still ask myself how we achieved to write 200 or 500 thousand of lines of code this way. And more wondering how all this stuff could work :D
 
-Base `Node` hold the `TYPE` enum id.
+Well, long years ago. In the mean time, enthousiasm and discoveries, disapointments and depression were the peebles on witch every programmers put it's feets to traverse the river of our programming difficulties. Looking behind to discover how much was made, how easier the new tools made the work for us.
 
-Every nodes are tracked and managed so unreferenced Nodes will be discarded from memory.
+OOP a solution ?
+----------------
 
-Basic data elements bricks.
+As structured programmingwas seen as a real (and obvious afterward) enhancement in our code, the goto were blamed for their awful spagghetti code habit generation. Even FORTRAN take the structural habit. Functional way to see the code seemed natural. But it was not clear what exactly a funtion was. Procedures were still a function that return nothing and function a procedure that returns something. Bad habits were taken, as accepting to use goto to go outside of a structured code when there was errors,witch was later taken as an "exception". Yes, the worm was in the fruit, but we weren't exctly knowing what the fruit was... neither what the worm was...
 
--	`CONST` : Unique void nodes as nil, true, false. Some will be used as lock for some processes.
--	`TYPE` : Type definition. Primitive class type.
--	`BOOLEAN` : TRUE or FALSE values.
--	`BYTE`, `SHORT`, `INT`, `LONG` : Integers of 8, 16, 32 and 64 bits.
--	`UBYTE`, `USHORT`, `UINT`, `ULONG` : Unsigned Integers of 8, 16, 32 and 64 bits.
--	`RATIO` : Numerator and denominator values for ratios.
--	`BIGINT`, `UBIGINT` and `BIGDEC` : unlimited size Integers and Floats.
--	`CHAR`: 16 bits signed char (UTF16). Implemented as SHORT.
--	`UCHAR`: 16 bits unsigned char (UTF16). Implemented as USHORT.
--	`STRING` : Sized constant String of bytes. Can be UTFed.`size` is a long.
--	`ZSTRING` : Constant String of bytes. It's terminated by a final \0.
--	`MFUNC` : Multiple arrity functions.
--	`FUNC` : Single function, with arrity and vararg.
--	`PTR` : Pointer on a Node.
--	`SARRAY` : Sized array of constant size `Nodes`.
--	`SLIST` : Sized list of constant size `Nodes`.
--	`BITARRAY` : Array of bits (implemented as UBIGINT)
--	`ARRAY` : Immutable hashed array
--	`ORDEREDARRAY` : Immutable ordered hashed array
--	`LIST` : Immutable hashed list
--	`KEYVAL` : Associative value as a key and a value.
--	`MAP` : Immutable hashed map
--	`ARRAYMAP` : Immutable hashed array map
--	`ORDEREDMAP` : Immutable ordered hashed array map
--	`SET` : Immutable hashed set
--	`CLASS` : Class definition. Derived class type.
--	`OBJECT` : Object according to a class of interface.
--	`INTERFACE` : Interface definition. Polymorphic class type.
-
-### polymorphic_nodes library
+TO be continued...

@@ -12,8 +12,8 @@
 #include <string.h>
 #include "nodes.h"
 
-// Stack trace
-Node *error_stack = NULL;
+// Stack trace (this is a closure)
+static Node *error_stack = NULL;
 
 // Error* function
 void ERROR_STAR(char *file, int line, char *func, char *fmt, ...)

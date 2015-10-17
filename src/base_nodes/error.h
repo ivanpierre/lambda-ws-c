@@ -43,9 +43,6 @@ typedef struct
 	char 			*mess;
 } Error;
 
-// Stack trace in case of error
-extern struct Node *error_stack;
-
 /*
 	Errors and assertions
 */
