@@ -12,6 +12,7 @@ Documentation
 	-	Protocols
 		-	[Objects](objects.md)
 	-	Base types
+	-	Base nodes
 		-	Fixed size
 			-	[Integers](integers.md)
 			-	[Floats](floats.md)
@@ -25,13 +26,12 @@ Documentation
 		-	Nodes definition
 			-	[Protocols](protocols.md)
 			-	[Functions](functions.md)
-			-	[Records](protocols.md)
+			-	[Structures](structure.ms)
+			-	[Members](members.md)
 			-	[Name spaces](namespaces.md)
 			-	[Vars](vars.md)
 			-	[Keywords](keywords.md)
-			-	Interoperability definitions
-				-	[Structures](structures.md)
-				-	[Native functions](natives.md)
+			-	[Native functions](natives.md)
 		-	Complex bases
 			-	[Ratio](ratio.md)
 			-	[Big values](bigvalues.md)
@@ -42,6 +42,7 @@ Documentation
 			-	[Lists](lists.md)
 			-	[Maps](maps.md)
 			-	[Sets](sets.md)
+			-	[Records](records.md)
 			-	[Sequences](sequences.md)
 			-	[Iterators](iterators.md)
 	-	Compilation

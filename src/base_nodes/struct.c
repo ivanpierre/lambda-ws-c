@@ -1,7 +1,10 @@
+
+
+
 /*
-	Representation of classes
+	Representation of structures
 */
-Class class_array[] = {
+Struct struct_array[] = {
 	{"Const",		0},
 	{"Byte",		sizeof(Byte)},
 	{"Short",		sizeof(Short)},
@@ -13,6 +16,8 @@ Class class_array[] = {
 	{"String",		{Long, ZString}{Array, List}},
 	{"ZString",		{Ptr}},
 	{"Ptr",			sizeof(void *)},
+	{"CharPtr",		sizeof(char *)},
+	{"NodePtr",		sizeof(Node *)},
 	{"Array",		{Class, Long, Ptr}}
 	{"List",		{Array}}
 	{"Error",		{...}},
@@ -20,7 +25,7 @@ Class class_array[] = {
 	{"Ratio",		{Integer, Integer}},
 	{"Bigdec",		{...}},
 	{"Func",		{...}}, // Function or method ?!? TODO to be seen
-	{"Interface"	{...}},
-	{"Class"		{Interface}{...}},
+	{"Protocol"		{...}},
+	{"Struct"		{Interface}{...}},
 	{"Object",		{Class, ...}}
 };

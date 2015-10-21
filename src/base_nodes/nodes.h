@@ -19,7 +19,7 @@ typedef int8_t			WS_BYTE;
 typedef int16_t			WS_SHORT;
 typedef int32_t			WS_INT;
 typedef int64_t			WS_LONG;
-typedef int8_t			bool;
+typedef int8_t			WS_BOOL;
 
 // Decimal
 typedef float			WS_FLOAT;
