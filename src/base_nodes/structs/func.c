@@ -41,5 +41,5 @@ MethodDesc	functionInit[]
 */
 bool Function()
 {
-	
+
 }

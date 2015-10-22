@@ -15,8 +15,8 @@
 typedef struct
 {
 	Node		*name				// ZSTRING Name of function
- 	Node		*start_arrity;		// BYTE nb of args of first function
-	Node		*end_arrity;		// BYTE nb of args of last function
+ 	WS_BYTE		start_arrity;		// BYTE nb of args of first function
+	WS_BYTE		end_arrity;			// BYTE nb of args of last function
 	Node		*methods;			// TYPED_ARRAY of PTR on functions
 									// NIL for non existant intermediate
 									// functions
