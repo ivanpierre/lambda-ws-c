@@ -12,15 +12,15 @@
 #include "interface.h"
 
 #define STRUCT_CLASS \
-struct Object *super
+STRUCT_INTERFACE; \
+struct Class *super
 
 typedef struct
 {
-	STRUCT_INTERFACE;
 	STRUCT_CLASS;
 } Class;
 
-extern Object *class(char *name, char *super, 
+extern Object *class(char *name, char *super,
 						char *interfaces[], MethodDesc *methods[]);
 
 #endif

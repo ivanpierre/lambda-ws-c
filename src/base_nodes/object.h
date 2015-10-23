@@ -43,18 +43,24 @@ struct Object; // forward
 */
 // #define DEBUG_FREE
 
+#ifdef DEBUG_ALLOC
+#define STRUCT_OBJECT \
+	Nodes		*type; \
+	WS_LONG		occurrences; \
+	struct Object *previous_node; \
+	struct Object *next_node
+#else
+#define STRUCT_OBJECT \
+	Nodes		*type; \
+	WS_LONG		occurrences
+#endif
 
 /*
 	Struct of a base node
 */
 typedef struct Object
 {
-	Nodes		*type; // type or class
-	WS_LONG		occurrences;
-#ifdef DEBUG_ALLOC
-	struct Object *previous_node;
-	struct Object *next_node;
-#endif
+	STRUCT_OBJECT;
 } Object;
 
 #include "free.h"
