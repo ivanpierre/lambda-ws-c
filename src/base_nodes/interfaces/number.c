@@ -7,7 +7,7 @@
 */
 
 #include <stdio.h>
-#include "nodes.h"
+#include "object.h"
 #include "number.h"
 
 static  FuncDef	num_func_def[] =
@@ -48,7 +48,7 @@ static  FuncDef	num_func_def[] =
 
 //* helper functions *****
 // Table of all numeric funtion with 1 argument
-static Node *(**num_funct1[])(Node *arg1) =
+static Object *(**num_funct1[])(Object *arg1) =
 			{
 				&byte_funct1;
 				&num_funct1;
@@ -61,7 +61,7 @@ static Node *(**num_funct1[])(Node *arg1) =
 			};
 
 // Table of all numeric funtion pointer with 2 argument
-static Node *(**num_funct2[])(Node *arg1, Node *arg2)[];
+static Object *(**num_funct2[])(Object *arg1, Object *arg2)[];
 			{
 				&byte_funct2;
 				&num_funct2;
@@ -76,7 +76,7 @@ static Node *(**num_funct2[])(Node *arg1, Node *arg2)[];
 /**
 	Heloper functions
 */
-static int max_type(Node *arg1, Node *arg2)
+static int max_type(Object *arg1, Object *arg2)
 {
 	TYPE type1 = arg1.type;
 	TYPE type2 = arg2.type;
@@ -86,21 +86,21 @@ static int max_type(Node *arg1, Node *arg2)
 		return type2 - BYTE;
 }
 
-static Node *num_operator1(Node *x, int function)
+static Object *num_operator1(Object *x, int function)
 {
 	START_FUN1;
 	res = (*num_func1[function][x.type - BYTE])(x);
 	END_FUN1;
 }
 
-static Node *num_operator2(Node *x, Node *y, int function)
+static Object *num_operator2(Object *x, Object *y, int function)
 {
 	START_FUN2;
 	res = (*num_func1[function][x.type - BYTE])(x, y);
 	END_FUN2;
 }
 
-static Node *num_operator2_coerce(Node *x, Node *y, int function)
+static Object *num_operator2_coerce(Object *x, Object *y, int function)
 {
 	START_FUN2;
 	int type = max_type(x, y);
@@ -109,7 +109,7 @@ static Node *num_operator2_coerce(Node *x, Node *y, int function)
 }
 
 // Number -> type
-Node *num_to_type(Node *x, TYPE type)
+Object *num_to_type(Object *x, TYPE type)
 {
 	TYPE type_obj = x->type;
 	switch(type_obj)
@@ -160,206 +160,206 @@ catch:
 }
 
 //* test ***************
-Node *is_num (Node *x)
+Object *is_num (Object *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *num_is_zero(Node *x);
+Object *num_is_zero(Object *x);
 {
 	return num_operator1(x, NUM_IS_ZERO);
 }
 
-Node *num_is_neg(Node *x);
+Object *num_is_neg(Object *x);
 {
 	return num_operator1(x, NUM_IS_NEG);
 }
 
-Node *num_is_pos(Node *x);
+Object *num_is_pos(Object *x);
 {
 	return num_operator1(x, NUM_IS_POS);
 }
 
 // coerce
-Node *num_coerce(Node *x, Node *type);
+Object *num_coerce(Object *x, Object *type);
 {
 
 	return num_operator2(x, type, NUM_COERCE);
 }
 
 //* operators *************
-Node *num_add(Node *x, Node *y);
+Object *num_add(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_ADD);
 }
 
-Node *num_addP(Node *x, Node *y);
+Object *num_addP(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_ADDP);
 }
 
-Node *num_multiply(Node *x, Node *y);
+Object *num_multiply(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_MULTIPLY);
 }
 
-Node *num_multiplyP(Node *x, Node *y);
+Object *num_multiplyP(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_MULTIPLYP);
 }
 
-Node *num_divide(Node *x, Node *y);
+Object *num_divide(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_DIVIDE);
 }
 
-Node *num_quotient(Node *x, Node *y);
+Object *num_quotient(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_QUOTIENT);
 }
 
-Node *num_remainder(Node *x, Node *y);
+Object *num_remainder(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_REMAINDER);
 }
 
-Node *num_equiv(Node *x, Node *y);
+Object *num_equiv(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_EQUIV);
 }
 
-Node *num_equal(Node *x, Node *y);
+Object *num_equal(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_EQUAL);
 }
 
-Node *num_lt(Node *x, Node *y);
+Object *num_lt(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_LT);
 }
 
-Node *num_lte(Node *x, Node *y);
+Object *num_lte(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_LTE);
 }
 
-Node *num_gte(Node *x, Node *y);
+Object *num_gte(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_GTE);
 }
 
-Node *num_compare(Node *x, Node *y);
+Object *num_compare(Object *x, Object *y);
 {
 	return num_operator2_coerce(x, y, NUM_COMPARE);
 }
 
-Node *num_negate(Node *x);
+Object *num_negate(Object *x);
 {
 	return num_operator1(x, NUM_NEGATE);
 }
 
-Node *num_negateP(Node *x);
+Object *num_negateP(Object *x);
 {
 	return num_operator1(x, NUM_NEGATEP);
 }
 
-Node *num_inc(Node *x);
+Object *num_inc(Object *x);
 {
 	return num_operator1(x, NUM_INC);
 }
 
-Node *num_incP(Node *x);
+Object *num_incP(Object *x);
 {
 	return num_operator1(x, NUM_INCP);
 }
 
-Node *num_dec(Node *x);
+Object *num_dec(Object *x);
 {
 	return num_operator1(x,NUM_DEC);
 }
 
-Node *num_decP(Node *x);
+Object *num_decP(Object *x);
 {
 	return num_operator1(x, NUM_DECP);
 }
 
 //* bit functions **********
-Node *num_not(Node *x)
+Object *num_not(Object *x)
 {
 	return num_operator1(x, NUM_NOT);
 }
 
-Node *num_and(Node *x, Node *y)
+Object *num_and(Object *x, Object *y)
 {
 	return num_operator2_coerce(x, y, NUM_AND);
 }
 
-Node *num_or(Node *x, Node *y)
+Object *num_or(Object *x, Object *y)
 {
 	return num_operator2_coerce(x, y, NUM_OR);
 }
 
-Node *num_xor(Node *x, Node *y)
+Object *num_xor(Object *x, Object *y)
 {
 	return num_operator2_coerce(x, y, NUM_XOR);
 }
 
-Node *num_and_not(Node *x, Node *y)
+Object *num_and_not(Object *x, Object *y)
 {
 	return num_operator2_coerce(x, y, NUM_AND_NOT);
 }
 
-Node *num_clear_bit(Node *x, Node *pos)
+Object *num_clear_bit(Object *x, Object *pos)
 {
 	return num_operator2(x, pos, NUM_CLEAR_BIT);
 }
 
-Node *num_set_bit(Node *x, Node *pos)
+Object *num_set_bit(Object *x, Object *pos)
 {
 	return num_operator2(x, pos, NUM_SET_BIT);
 }
 
-Node *num_flip_bit(Node *x, Node *pos)
+Object *num_flip_bit(Object *x, Object *pos)
 {
 	return num_operator2(x, pos, NUM_FLIP_BIT);
 }
 
-Node *num_test_bit(Node *x, Node *pos)
+Object *num_test_bit(Object *x, Object *pos)
 {
 	return num_operator2(x, pos, NUM_TEST_BIT);
 }
 
-Node *num_shift_left(Node *x, Node *shift)
+Object *num_shift_left(Object *x, Object *shift)
 {
 	return num_operator2(x, shift, NUM_SHIFT_LEFT);
 }
 
-Node *num_shift_leftP(Node *x, Node *shift)
+Object *num_shift_leftP(Object *x, Object *shift)
 {
 	return num_operator2(x, shift, NUM_SHIFT_LEFTP);
 }
 
-Node *num_shift_right		(Node *x, Node *shift)
+Object *num_shift_right		(Object *x, Object *shift)
 {
 	return num_operator2(x, shift, NUM_SHIFT_RIGHT);
 }
 
-Node *num_rot_left			(Node *x, Node *shift)
+Object *num_rot_left			(Object *x, Object *shift)
 {
 	return num_operator2(x, shift, NUM_ROT_LEFT);
 }
 
-Node *num_rot_right			(Node *x, Node *shift)
+Object *num_rot_right			(Object *x, Object *shift)
 {
 	return num_operator2(x, shift, NUM_ROT_RIGHT);
 }
 
-int num_hash_code(Node *x){
+int num_hash_code(Object *x){
 	return num_operator(x, NUM_HASHCODE);
 }
 
-int num_hasheq(Node *x){
+int num_hasheq(Object *x){
 	return num_operator(x, NUM_HASHED);
 }

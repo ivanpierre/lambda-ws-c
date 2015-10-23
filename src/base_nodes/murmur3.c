@@ -140,7 +140,7 @@ WS_INT mixCollHash(WS_INT hash, WS_INT count)
 }
 
 /* TODO implement when we have iterators
-WS_INT hashOrdered(Node *xs)
+WS_INT hashOrdered(Object *xs)
 {
 	WS_INT n = 0;
 	WS_INT hash = 1;
@@ -154,7 +154,7 @@ WS_INT hashOrdered(Node *xs)
 	return mixCollHash(hash, n);
 }
 
-WS_INT hashUnordered(Node *xs)
+WS_INT hashUnordered(Object *xs)
 {
 	WS_INT hash = 0;
 	WS_INT n = 0;

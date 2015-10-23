@@ -14,13 +14,13 @@
 */
 typedef struct
 {
-	Node		*name				// ZSTRING Name of function
+	Object		*name				// ZSTRING Name of function
  	WS_BYTE		start_arrity;		// BYTE nb of args of first function
 	WS_BYTE		end_arrity;			// BYTE nb of args of last function
-	Node		*methods;			// TYPED_ARRAY of PTR on functions
+	Object		*methods;			// TYPED_ARRAY of PTR on functions
 									// NIL for non existant intermediate
 									// functions
-	Node		*varargs;			// BOOLEAN define last function as varargs
+	Object		*varargs;			// BOOLEAN define last function as varargs
 } Function;
 
 /**
@@ -43,7 +43,7 @@ typedef struct
 bool Function();
 
 /*
-	count nb of Node arguments in va_list until NULL
+	count nb of Object arguments in va_list until NULL
 */
 WS_BYTE count_args(va_list args);
 

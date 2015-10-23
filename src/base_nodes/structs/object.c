@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include "nodes.h"
+#include "object.h"
 #include "strings.h"
 #include "free.h"
 #include "writer.h"
@@ -22,17 +22,17 @@
 #endif
 
 // global values
-static Node nil_val   = NEW_CONST;
-static Node true_val  = NEW_CONST;
-static Node false_val = NEW_CONST;
-Node		*NIL	  = &nil_val;
-Node		*FALSE	= &false_val;
-Node		*TRUE	 = &true_val;
+static Object nil_val   = NEW_CONST;
+static Object true_val  = NEW_CONST;
+static Object false_val = NEW_CONST;
+Object		*NIL	  = &nil_val;
+Object		*FALSE	= &false_val;
+Object		*TRUE	 = &true_val;
 
 /*
 	Init base node content allocated
 */
-static Node *init_node(Node *node, Node *type)
+static Object *init_node(Object *node, Object *type)
 {
 	ASSERT(node, ERR_NULL_PTR);
 	node->type = type;
@@ -63,11 +63,11 @@ static Node *init_node(Node *node, Node *type)
 	Constructor, return linked
 	It should be unlink_new() by constructor
 */
-Node *new_node(Node *type)
+Object *new_node(Object *type)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
-	Node *node = NULL;
-	node = malloc(sizeof(Node) + size_type(type));
+	Object *node = NULL;
+	node = malloc(sizeof(Object) + size_type(type));
 
 	// Init base node content
 	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
@@ -84,11 +84,11 @@ Node *new_node(Node *type)
 	Constructor, return linked
 	It should be unlink_new() by constructor
 */
-Node *new_dynamic_node(TYPES type, size_t size)
+Object *new_dynamic_node(TYPES type, size_t size)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
-	Node *node = NULL;
-	node = malloc(sizeof(Node) + size);
+	Object *node = NULL;
+	node = malloc(sizeof(Object) + size);
 
 	// Init base node content
 	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
@@ -113,7 +113,7 @@ bool push_args(int nb, ...)
 	va_start(args, nb);
 	for(int i = 0; i < nb; i++)
 	{
-		Node *arg = va_arg(args, Node *);
+		Object *arg = va_arg(args, Object *);
 		if(!arg)
 			res = BOOL_TRUE;
 		else
@@ -133,7 +133,7 @@ void pop_args(int nb, ...)
 	va_start(args, nb);
 	for(int i = 0; i < nb; i++)
 	{
-		Node *arg = va_arg(args, Node *);
+		Object *arg = va_arg(args, Object *);
 		unlink_node(arg);
 	}
 }
@@ -145,12 +145,12 @@ void pop_args(int nb, ...)
 	 Last value can be anything and should be considered as allocated
 	 Function list should finish with a NULL, else.... :D
 */
-void *THREAD_NODE(Node *init, ...)
+void *THREAD_NODE(Object *init, ...)
 {
 	PUSH_ARGS(1, init);
-	void *(*func)(Node *arg) = NULL;
+	void *(*func)(Object *arg) = NULL;
 	va_list funp;
-	Node *res = NULL;
+	Object *res = NULL;
 
 	// Last previous result is init
 	ASSIGN(res, init);
@@ -158,7 +158,7 @@ void *THREAD_NODE(Node *init, ...)
 	// We will trampoline on function call values. fun(res) -> res,
 	// with unlink on previous res
 	va_start(funp, init);
-	while ((func = va_arg(funp, void *(*)(Node *arg))))
+	while ((func = va_arg(funp, void *(*)(Object *arg))))
 	{
 		ASSIGN(res, (*func)(res));
 		ASSERT(res, ERR_INIT);
@@ -176,7 +176,7 @@ void *THREAD_NODE(Node *init, ...)
 /*
 	Test falsey
 */
-bool FALSE_Q_(Node *node)
+bool FALSE_Q_(Object *node)
 {
 	PUSH_ARGS(1, node);
 	ASSERT(node, ERR_ARG);
@@ -196,7 +196,7 @@ bool FALSE_Q_(Node *node)
 /*
 	Test truthey
 */
-bool TRUE_Q_(Node *node)
+bool TRUE_Q_(Object *node)
 {
 	PUSH_ARGS(1, node);
 	ASSERT(node, ERR_ARG);
@@ -215,7 +215,7 @@ bool TRUE_Q_(Node *node)
 /*
 	Test falsey
 */
-Node *false_Q_(Node *node)
+Object *false_Q_(Object *node)
 {
 	return FALSE_Q_(node) ? TRUE : FALSE;
 }
@@ -223,16 +223,16 @@ Node *false_Q_(Node *node)
 /*
 	Test truthey
 */
-Node *true_Q_(Node *node)
+Object *true_Q_(Object *node)
 {
 	return TRUE_Q_(node) ? TRUE : FALSE;
 }
 
 /*
- * Get type Node isa
+ * Get type Object isa
  * TODO implement through interface
  */
-bool node_isa_type(Node *node, Node *isa)
+bool node_isa_type(Object *node, Object *isa)
 {
 	PUSH_ARGS(1, node);
 	bool res = node->type->bin_type & get_type(isa)->bin_type &&

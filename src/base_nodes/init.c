@@ -8,8 +8,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "nodes.h"
-#include "type.h"
+#include "object.h"
+#include "interfaces.h"
+#include "classes.h"
 
 /*
 	Initialize all the stuff

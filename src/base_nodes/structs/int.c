@@ -7,7 +7,7 @@
 */
 
 #include <stdio.h>
-#include "nodes.h"
+#include "object.h"
 #include "type.h"
 
 // include all number headers in order to have conversion functions
@@ -16,9 +16,9 @@
 /*
 	Create an int
 */
-Node *int_box(WS_INT value)
+Object *int_box(WS_INT value)
 {
-	Node *node = new_node(INTEGER);
+	Object *node = new_node(INTEGER);
 	ASSERT(node, ERR_CREATE_NEW, str_type(INTEGER));
 	Integer *integer = STRUCT(node);
 	integer->value = value;
@@ -33,7 +33,7 @@ Node *int_box(WS_INT value)
 /*
 	get value of int
 */
-WS_INT *int_unbox(Node *x)
+WS_INT *int_unbox(Object *x)
 {
 	INT_UNBOX(valx, x);
 	return valx;
@@ -46,33 +46,33 @@ WS_INT *int_unbox(Node *x)
 /*
 	test if node is an int
 */
-Node *is_int(Node *x)
+Object *is_int(Object *x)
 {
 	START_INT_FUN1;
-	Node *res = (x && x->type == INTEGER) ? TRUE : FALSE;
+	Object *res = (x && x->type == INTEGER) ? TRUE : FALSE;
 	END_FUN1;
 }
 
 /*
 	test int with a predicate
 */
-static Node *tst_int(Node *x, Node *(*pred)(WS_INT))
+static Object *tst_int(Object *x, Object *(*pred)(WS_INT))
 {
 	START_INT_FUN1;
-	Node *res = (*pred)(valx) ? TRUE : FALSE;
+	Object *res = (*pred)(valx) ? TRUE : FALSE;
 	END_FUN1;
 
 }
 
 //predicates
-static Node *int_is_zeroP(WS_INT val){return val == 0}
-static Node *int_is_negP(WS_INT val){return val < 0}
-static Node *int_is_posP(WS_INT val){return val > 0}
+static Object *int_is_zeroP(WS_INT val){return val == 0}
+static Object *int_is_negP(WS_INT val){return val < 0}
+static Object *int_is_posP(WS_INT val){return val > 0}
 
 /**
 	test = 0
 */
-Node *int_is_zero(Node *x)
+Object *int_is_zero(Object *x)
 {
 	return tst_int(x, &int_is_zeroP);
 }
@@ -80,7 +80,7 @@ Node *int_is_zero(Node *x)
 /**
 	test > 0
 */
-Node *int_is_pos(Node *x)
+Object *int_is_pos(Object *x)
 {
 	return tst_int(x, &int_is_posP);
 }
@@ -88,7 +88,7 @@ Node *int_is_pos(Node *x)
 /**
 	test < 0
 */
-Node *int_is_neg(Node *x)
+Object *int_is_neg(Object *x)
 {
 	return tst_int(x, &int_is_negP);
 }
@@ -97,79 +97,79 @@ Node *int_is_neg(Node *x)
 	Coerce between numerics
 */
 // Int -> Byte int8
-static Node *int_to_byte(Node *x)
+static Object *int_to_byte(Object *x)
 {
 	START_INT_FUN1;
 	ASSERT(valx >= WS_BYTE_MIN && valx <= WS_BYTE_MAX, ERR_OVERFLOW);
-	Node *res = byte_box((WS_SHORT)valx);
+	Object *res = byte_box((WS_SHORT)valx);
 	END_FUN1;
 }
 
 // Int -> Short int16
-static Node *int_to_short(Node *x)
+static Object *int_to_short(Object *x)
 {
 	START_INT_FUN1;
 	ASSERT(valx >= WS_SHORT_MIN && valx <= WS_SHORT_MAX, ERR_OVERFLOW);
-	Node *res = short_box((WS_SHORT)valx);
+	Object *res = short_box((WS_SHORT)valx);
 	END_FUN1;
 }
 
 // Int -> Int int32
-static Node *int_to_int(Node *x)
+static Object *int_to_int(Object *x)
 {
 	return x;
 }
 
 // Int -> Long int64
-static Node *int_to_long(Node *x)
+static Object *int_to_long(Object *x)
 {
 	START_INT_FUN1;
-	Node *res = long_box((WS_LONG)valx);
+	Object *res = long_box((WS_LONG)valx);
 	END_FUN1;
 }
 
 // Int -> bigdec
-static Node *int_to_bigdec(Node *x)
+static Object *int_to_bigdec(Object *x)
 {
 	START_INT_FUN1;
-	Node *res = bigdec_box((WSLONG)valx);
+	Object *res = bigdec_box((WSLONG)valx);
 	END_FUN1;
 }
 
 // Int -> Ratio
-static Node *int_to_ratio(Node *x)
+static Object *int_to_ratio(Object *x)
 {
 	return x;
 }
 
 // Int -> Float
-static Node *int_to_float(Node *x)
+static Object *int_to_float(Object *x)
 {
 	START_INT_FUN1;
-	Node *res = float_box((WS_FLOAT)valx);
+	Object *res = float_box((WS_FLOAT)valx);
 	END_FUN1;
 }
 
 // Int -> Double
-static Node *int_to_double(Node *x)
+static Object *int_to_double(Object *x)
 {
 	START_INT_FUN1;
-	Node *res = double_box((WS_DOUBLE)valx);
+	Object *res = double_box((WS_DOUBLE)valx);
 	END_FUN1;
 }
 
 // Int -> bigdeb
-static Node *int_to_bigdeb(Node *x)
+static Object *int_to_bigdeb(Object *x)
 {
 	START_INT_FUN1;
-	Node *res = bigdec_box((WS_DOUBLE)valx);
+	Object *res = bigdec_box((WS_DOUBLE)valx);
 	END_FUN1;
 }
 
 // Int -> type
-Node *int_to_type(Node *x, TYPE type)
+Object *int_to_type(Object *x, TYPE type)
 {
-	Node *res = NULL;
+	Object *res = NULL;
 	switch(type)
 	{
 		case WS_BYTE:
@@ -224,14 +224,14 @@ catch:
 	operators
 */
 
-Node *int_add(Node *x, Node *y)
+Object *int_add(Object *x, Object *y)
 {
 	START_INT_FUN2;
 	res = int_box(valx + valy);
 	END_FUN2;
 }
 
-Node *int_addP(Node *x, Node *y)
+Object *int_addP(Object *x, Object *y)
 {
 	START_INT_FUN2;
 	WS_INT sum = valx + valy;
@@ -242,119 +242,119 @@ Node *int_addP(Node *x, Node *y)
 	END_FUN2;
 }
 
-Node *int_multiply(Node *x, Node *y)
+Object *int_multiply(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_multiplyP(Node *x, Node *y)
+Object *int_multiplyP(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_divide(Node *x, Node *y)
+Object *int_divide(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_quotient(Node *x, Node *y)
+Object *int_quotient(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_remainder(Node *x, Node *y)
+Object *int_remainder(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_equiv(Node *x, Node *y)
+Object *int_equiv(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_equal(Node *x, Node *y)
+Object *int_equal(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_lt(Node *x, Node *y)
+Object *int_lt(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_lte(Node *x, Node *y)
+Object *int_lte(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_gte(Node *x, Node *y)
+Object *int_gte(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_compare(Node *x, Node *y);
+Object *int_compare(Object *x, Object *y);
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_negate(Node *x)
+Object *int_negate(Object *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_negateP(Node *x)
+Object *int_negateP(Object *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_inc(Node *x)
+Object *int_inc(Object *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_incP(Node *x)
+Object *int_incP(Object *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_dec(Node *x)
+Object *int_dec(Object *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_decP(Node *x)
+Object *int_decP(Object *x)
 {
 	START_INT_FUN1;
 
@@ -362,106 +362,106 @@ Node *int_decP(Node *x)
 }
 
 //* bit functions **********
-Node *int_not				(Node *x)
+Object *int_not				(Object *x)
 {
 	START_INT_FUN1;
 
 	END_FUN1;
 }
 
-Node *int_and				(Node *x, Node *y)
+Object *int_and				(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_or					(Node *x, Node *y)
+Object *int_or					(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_xor				(Node *x, Node *y)
+Object *int_xor				(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_and_not			(Node *x, Node *y)
+Object *int_and_not			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_clear_bit			(Node *x, Node *y)
+Object *int_clear_bit			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_set_bit			(Node *x, Node *y)
+Object *int_set_bit			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_flip_bit			(Node *x, Node *y)
+Object *int_flip_bit			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_test_bit			(Node *x, Node *y)
+Object *int_test_bit			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_shift_left			(Node *x, Node *y)
+Object *int_shift_left			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_shift_leftP			(Node *x, Node *y)
+Object *int_shift_leftP			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_shift_right		(Node *x, Node *y)
+Object *int_shift_right		(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_rot_left			(Node *x, Node *y)
+Object *int_rot_left			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-Node *int_rot_right			(Node *x, Node *y)
+Object *int_rot_right			(Object *x, Object *y)
 {
 	START_INT_FUN2;
 
 	END_FUN2;
 }
 
-int int_hash_code(Node *x){
+int int_hash_code(Object *x){
 }
 
-int int_hasheq(Node *x){
+int int_hasheq(Object *x){
 }

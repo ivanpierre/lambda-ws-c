@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "nodes.h"
+#include "object.h"
 #include "strings.h"
 #include "function.h"
 #include "writer.h"
@@ -17,14 +17,14 @@
 #include "free.h"
 #include "free_internal.h"
 
-Node *curr = NULL;
+Object *curr = NULL;
 
 /*
 	Constructor
 */
-Node *writer(FILE *file)
+Object *writer(FILE *file)
 {
-	Node *node = new_node(IWRITER);
+	Object *node = new_node(IWRITER);
 	ASSERT(node, ERR_CREATE_NEW, str_type(IWRITER));
 	Writer *wr = STRUCT(node);
 	wr->file = file;
@@ -39,7 +39,7 @@ Node *writer(FILE *file)
 /*
 	Constructor avec fichier
 */
-Node *writer_open_file(Node *name)
+Object *writer_open_file(Object *name)
 {
 	ASSERT_NODE(name, ISTRING);
 	char *filename = GET_STRING(name);
@@ -59,7 +59,7 @@ Node *writer_open_file(Node *name)
 /*
 	Constructor stdout
 */
-Node *writer_stdout()
+Object *writer_stdout()
 {
 	FILE *handle = stdout;
 	ASSERT(handle, "cannot open stdout");
@@ -73,7 +73,7 @@ Node *writer_stdout()
 /*
 	Constructor stderr
 */
-Node *writer_stderr()
+Object *writer_stderr()
 {
 	FILE *handle = stderr;
 	ASSERT(handle, "cannot open stderr");
@@ -87,7 +87,7 @@ Node *writer_stderr()
 /*
 	Return file handle of the writer
 */
-void *WRITER_FILE(Node *node)
+void *WRITER_FILE(Object *node)
 {
 	ASSERT_TYPE(node, IWRITER);
 	Writer *wr = STRUCT(node);
@@ -102,7 +102,7 @@ void *WRITER_FILE(Node *node)
 /*
 	Change current output
 */
-Node *writer_curr(Node *node)
+Object *writer_curr(Object *node)
 {
 	ASSIGN(curr, node);
 	return curr;
@@ -111,7 +111,7 @@ Node *writer_curr(Node *node)
 /*
 	Change current output
 */
-Node *writer_curr_close()
+Object *writer_curr_close()
 {
 	unlink_node(curr);
 	return NIL;
@@ -149,7 +149,7 @@ static void writer_flush()
 /*
 	Free writer and close file
 */
-Node *writer_free(Node *node)
+Object *writer_free(Object *node)
 {
 	Writer *wr = STRUCT(node);
 	FILE *file = wr->file;
@@ -165,7 +165,7 @@ Node *writer_free(Node *node)
 	String representation of reader
 	returns linked allocated String
 */
-static char *string_writer(Node *node)
+static char *string_writer(Object *node)
 {
 	char *res = NULL;
 	asprintf(&res, "<%s FILE*=?>", str_type(IWRITER));
@@ -177,7 +177,7 @@ static char *string_writer(Node *node)
 	String representation for functions
 	returns linked allocated String
 */
-static char *string_function(Node *node)
+static char *string_function(Object *node)
 {
 	// TODO suppress GET_ELEM_STRING
 	char *res     = NULL;
@@ -207,7 +207,7 @@ static char *string_function(Node *node)
 /*
 	print integer
 */
-static char *string_integer(Node *node)
+static char *string_integer(Object *node)
 {
 	char *formated = NULL;
 
@@ -220,7 +220,7 @@ static char *string_integer(Node *node)
 /*
 	print decimal
 */
-static char *string_decimal(Node *node)
+static char *string_decimal(Object *node)
 {
 	char *formated = NULL;
 
@@ -233,7 +233,7 @@ static char *string_decimal(Node *node)
 /*
 	Return allocated string node of string formatted according to type
 */
-static char *string_formated(Node *node)
+static char *string_formated(Object *node)
 {
 	String *str      = STRUCT(node);
 	char   *formated = NULL;
@@ -244,7 +244,7 @@ static char *string_formated(Node *node)
 /*
 	return string version of nodes according to type
 */
-char *print_node(Node *node, bool readable)
+char *print_node(Object *node, bool readable)
 {
 	char *res = NULL;
 	// TRACE("pruint_node(%s)", node->type->str_type);
@@ -304,12 +304,12 @@ char *print_node(Node *node, bool readable)
 /*
 	def pointer for print
 */
-char *(*print_ptr)(Node *node, bool readable) = &print_node;
+char *(*print_ptr)(Object *node, bool readable) = &print_node;
 
 /*
 	PRINT node using pointer readable
 */
-char *print(Node *node)
+char *print(Object *node)
 {
 	return (*print_ptr)(node, BOOL_FALSE);
 }
@@ -317,7 +317,7 @@ char *print(Node *node)
 /*
 	PR node using pointer, non readable
 */
-char *pr(Node *node)
+char *pr(Object *node)
 {
 	return (*print_ptr)(node, BOOL_TRUE);
 }
@@ -325,7 +325,7 @@ char *pr(Node *node)
 /*
 	PRINT node using pointer readable
 */
-Node *PRINT(Node *node)
+Object *PRINT(Object *node)
 {
 	ASSERT_NODE(node, INODES);
 
@@ -348,7 +348,7 @@ Node *PRINT(Node *node)
 /*
 	PR node using pointer, non readable
 */
-Node *PR(Node *node)
+Object *PR(Object *node)
 {
 	ASSERT_NODE(node, INODES);
 
@@ -372,7 +372,7 @@ Node *PR(Node *node)
 /*
 	PRINT node using pointer readable
 */
-Node *PRINTLN(Node *node)
+Object *PRINTLN(Object *node)
 {
 	ASSERT_NODE(node, INODES);
 
@@ -398,7 +398,7 @@ Node *PRINTLN(Node *node)
 /*
 	PR node using pointer, non readable
 */
-Node *PRN(Node *node)
+Object *PRN(Object *node)
 {
 	ASSERT_NODE(node, INODES);
 

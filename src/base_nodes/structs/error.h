@@ -9,7 +9,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#include "nodes.h"
+#include "object.h"
 
 /* standard error texts */
 #define ERR_NULL_PTR    "Null pointer assignement."
@@ -36,7 +36,7 @@
  */
 typedef struct
 {
-	struct Node		*previous;
+	struct Object		*previous;
 	char 			*file;
 	int 			line;
 	char 			*func;
@@ -52,8 +52,8 @@ extern void TRACE_STAR(char *file, int line, char *func, char *fmt, ...);
 /*
  * trace management
  */
-struct Node *error_box			(char *file, int line, char *func, char *mess);
-void 		error_stack_push	(struct Node *node);
+struct Object *error_box			(char *file, int line, char *func, char *mess);
+void 		error_stack_push	(struct Object *node);
 void 		error_stack_print	();
 void 		error_stack_free	();
 

@@ -10,9 +10,9 @@
 #define FREE_H
 
 // public function for nodes
-extern Node *link_node      (Node *);
-extern Node *unlink_node    (Node *var);
-extern Node *unlink_new     (Node *var);
+extern Object *link_node      (Object *);
+extern Object *unlink_node    (Object *var);
+extern Object *unlink_new     (Object *var);
 
 extern void print_node_stack();
 extern void init_node_list();
@@ -21,8 +21,8 @@ extern void init_node_list();
 	double linked list of nodes for debug
 */
 #ifdef DEBUG_ALLOC
-	extern Node *first_node;
-	extern Node *last_node;
+	extern Object *first_node;
+	extern Object *last_node;
 #endif
 
 #endif

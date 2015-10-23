@@ -18,68 +18,68 @@ typedef struct
 } Int;
 
 //* Boxing ****************
-Node    *int_box				(WS_INT value);
-WS_INT  int_unbox				(Node *node);
+Object    *int_box				(WS_INT value);
+WS_INT  int_unbox				(Object *node);
 
 //* test ***************
-Node    *is_int					(Node *node);
-Node	*int_is_zero			(Node *node);
-Node	*int_is_neg				(Node *node);
-Node	*int_is_pos				(Node *node);
+Object    *is_int					(Object *node);
+Object	*int_is_zero			(Object *node);
+Object	*int_is_neg				(Object *node);
+Object	*int_is_pos				(Object *node);
 
 // coerce
-Node 	*int_coerce				(Node *node, TYPE type);
+Object 	*int_coerce				(Object *node, TYPE type);
 
 //* operators *************
-Node 	*int_add				(Node *x, Node *y);
-Node 	*int_addP				(Node *x, Node *y);
+Object 	*int_add				(Object *x, Object *y);
+Object 	*int_addP				(Object *x, Object *y);
 
-Node 	*int_multiply			(Node *x, Node *y);
-Node 	*int_multiplyP			(Node *x, Node *y);
+Object 	*int_multiply			(Object *x, Object *y);
+Object 	*int_multiplyP			(Object *x, Object *y);
 
-Node 	*int_divide				(Node *x, Node *y);
+Object 	*int_divide				(Object *x, Object *y);
 
-Node 	*int_quotient			(Node *x, Node *y);
+Object 	*int_quotient			(Object *x, Object *y);
 
-Node 	*int_remainder			(Node *x, Node *y);
+Object 	*int_remainder			(Object *x, Object *y);
 
-Node 	*int_equiv				(Node *x, Node *y);
+Object 	*int_equiv				(Object *x, Object *y);
 
-Node 	*int_lt					(Node *x, Node *y);
-Node 	*int_lte				(Node *x, Node *y);
-Node 	*int_gte				(Node *x, Node *y);
-Node 	*int_compare			(Node *x, Node *y);
+Object 	*int_lt					(Object *x, Object *y);
+Object 	*int_lte				(Object *x, Object *y);
+Object 	*int_gte				(Object *x, Object *y);
+Object 	*int_compare			(Object *x, Object *y);
 
-Node 	*int_negate				(Node *x);
-Node 	*int_negateP			(Node *x);
+Object 	*int_negate				(Object *x);
+Object 	*int_negateP			(Object *x);
 
-Node 	*int_inc				(Node *x);
-Node 	*int_incP				(Node *x);
+Object 	*int_inc				(Object *x);
+Object 	*int_incP				(Object *x);
 
-Node 	*int_dec				(Node *x);
-Node 	*int_decP				(Node *x);
+Object 	*int_dec				(Object *x);
+Object 	*int_decP				(Object *x);
 
 //* bit functions **********
-Node	*int_not				(Node *x);
-Node	*int_and				(Node *x, Node *y);
-Node	*int_or					(Node *x, Node *y);
-Node	*int_xor				(Node *x, Node *y);
-Node	*int_and_not			(Node *x, Node *y);
+Object	*int_not				(Object *x);
+Object	*int_and				(Object *x, Object *y);
+Object	*int_or					(Object *x, Object *y);
+Object	*int_xor				(Object *x, Object *y);
+Object	*int_and_not			(Object *x, Object *y);
 
-Node	*int_clear_bit			(Node *x, Node *y);
-Node	*int_set_bit			(Node *x, Node *y);
-Node	*int_flip_bit			(Node *x, Node *y);
-Node	*int_test_bit			(Node *x, Node *y);
+Object	*int_clear_bit			(Object *x, Object *y);
+Object	*int_set_bit			(Object *x, Object *y);
+Object	*int_flip_bit			(Object *x, Object *y);
+Object	*int_test_bit			(Object *x, Object *y);
 
-Node	*int_shift_left			(Node *x, Node *y);
-Node	*int_shift_leftP		(Node *x, Node *y);
-Node	*int_shift_right		(Node *x, Node *y);
-Node	*int_rot_left			(Node *x, Node *y);
-Node	*int_rot_right			(Node *x, Node *y);
+Object	*int_shift_left			(Object *x, Object *y);
+Object	*int_shift_leftP		(Object *x, Object *y);
+Object	*int_shift_right		(Object *x, Object *y);
+Object	*int_rot_left			(Object *x, Object *y);
+Object	*int_rot_right			(Object *x, Object *y);
 
 //* hash ***********************
-int 	int_hash_code			(Node *x);
-int 	int_hasheq				(Node *x);
+int 	int_hash_code			(Object *x);
+int 	int_hasheq				(Object *x);
 
 //* MACROS *********************
 
@@ -91,13 +91,13 @@ int 	int_hasheq				(Node *x);
 
 //* START_INT_FUN1 ******
 #define START_INT_FUN1 \
-	Node *res = NULL; \
+	Object *res = NULL; \
 	PUSH_ARGS(1, x); \
 	INT_UNBOX(valx, x)
 
 //* START_INT_FUN2 ******
 #define START_INT_FUN2 \
-	Node *res = NULL; \
+	Object *res = NULL; \
 	PUSH_ARGS(2, x, y); \
 	INT_UNBOX(valx, x); \
 	INT_UNBOX(valy, y)

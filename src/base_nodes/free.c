@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "nodes.h"
+#include "object.h"
 #include "free.h"
 #include "writer.h"
 
@@ -17,14 +17,14 @@
     double linked list of nodes
 */
 #ifdef DEBUG_ALLOC
-Node *first_node = NULL;
-Node *last_node  = NULL;
+Object *first_node = NULL;
+Object *last_node  = NULL;
 #endif
 
 /*
     test if linking is applicable
 */
-static bool unlinkable(Node *node)
+static bool unlinkable(Object *node)
 {
 	return !node || node->type == CONST;
 }
@@ -34,7 +34,7 @@ static bool unlinkable(Node *node)
     Return Linked node
     Constant elements are not lonked
 */
-Node *link_node(Node *node)
+Object *link_node(Object *node)
 {
 #ifdef DEBUG_FREE
 	TRACE("linking %s", node->type->str_type);
@@ -58,7 +58,7 @@ Node *link_node(Node *node)
     Return NULL on freeing else return node.
     Constant nodes are not unlinked
 */
-Node *unlink_node(Node *node)
+Object *unlink_node(Object *node)
 {
 	if(!node && !unlinkable(node))
 	{
@@ -99,7 +99,7 @@ Node *unlink_node(Node *node)
 			}
 #endif
 			// unalloc node
-			void (*free_node)(Node *node) = func_free_type(node->type);
+			void (*free_node)(Object *node) = func_free_type(node->type);
 			if(free_node)
 				(*free_node)(node);
 			else
@@ -118,7 +118,7 @@ Node *unlink_node(Node *node)
     Unlink new node
     Verify we are linked only once and put occurrence to 0
 */
-Node *unlink_new(Node *node)
+Object *unlink_new(Object *node)
 {
 #ifdef DEBUG_FREE
 	TRACE("unlinking new %s", node->type->str_type);
@@ -143,7 +143,7 @@ void init_node_list()
 #ifdef DEBUG_ALLOC
 	while (first_node)
 	{
-		Node *node = first_node;
+		Object *node = first_node;
 		first_node = node->next_node;
 
 		// force free
@@ -162,7 +162,7 @@ void print_node_stack()
 	TRACE("Stack trace");
 	TRACE("-----------");
 #ifdef DEBUG_ALLOC
-	Node *walk = first_node;
+	Object *walk = first_node;
 	int i = 1;
 	while (walk)
 	{

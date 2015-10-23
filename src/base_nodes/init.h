@@ -1,5 +1,5 @@
 /****
-	Init	0
+	Init
 
 	Lambda Calculus Workshop
 	C version
@@ -9,6 +9,8 @@
 #ifndef INIT_H
 #define INIT_H
 
-void init();
+extern WS_BOOL init();
+
+extern Object *CL_CLASS = NULL;
 
 #endif

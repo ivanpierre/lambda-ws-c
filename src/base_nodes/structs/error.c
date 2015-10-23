@@ -10,10 +10,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include "nodes.h"
+#include "object.h"
 
 // Stack trace (this is a closure)
-static Node *error_stack = NULL;
+static Object *error_stack = NULL;
 
 // Error* function
 void ERROR_STAR(char *file, int line, char *func, char *fmt, ...)
@@ -47,9 +47,9 @@ void TRACE_STAR(char *file, int line, char *func, char *fmt, ...)
     free(mess);
 }
 
-Node *error_box(char *file, int line, char *func, char *mess)
+Object *error_box(char *file, int line, char *func, char *mess)
 {
-	Node *node = new_node(ERROR);
+	Object *node = new_node(ERROR);
 	ASSERT(node, ERR_CREATE_NEW, str_type(ERROR));
 	Error *error = STRUCT(node);
 	error->file = file;
@@ -67,7 +67,7 @@ Node *error_box(char *file, int line, char *func, char *mess)
 /*
  * Push exception on the trace stack
  */
-void error_stack_push(Node *node)
+void error_stack_push(Object *node)
 {
     Error *error = STRUCT(node);
     error->previous = error_stack;
@@ -79,7 +79,7 @@ void error_stack_push(Node *node)
  */
 void error_stack_print()
 {
-    Node *walk = error_stack;
+    Object *walk = error_stack;
 
     TRACE("Stack trace");
     TRACE("===========");
@@ -99,11 +99,11 @@ void error_stack_print()
  */
 void error_stack_free()
 {
-    Node *walk = error_stack;
+    Object *walk = error_stack;
 
     while(walk)
     {
-		Node *old = walk;
+		Object *old = walk;
         Error *err = STRUCT(walk);
         walk = err->previous;
 		free(err->mess);

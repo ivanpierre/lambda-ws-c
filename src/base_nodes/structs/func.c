@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "nodes.h"
+#include "object.h"
 #include "func.h"
 
 /*
@@ -17,12 +17,12 @@
  */
 long count_args(va_list args)
 {
-	Node *walk = va_arg(args, Node *);
+	Object *walk = va_arg(args, Object *);
 	long i = 0;
 	while(walk)
 	{
 		i++;
-		walk = va_arg(args, Node *);
+		walk = va_arg(args, Object *);
 	}
 	va_end(args);
 	return i;

@@ -9,22 +9,27 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-// Strings
-Node *string         (char *value);
-Node *string_sprintf (char *fmt, ...);
-Node *string_Q_      (Node *node);
-
 typedef struct
 {
-	long size;
-	char *string;
+	WS_LONG		length;
+	WS_INT 		hash;
+	char 		*string;
 } String;
 
+// Strings
+Object *string         	(char *value);
+Object *string_sprintf 	(char *fmt, ...);
+Object *string_Q_      	(Object *node);
+Object *string_hash_code	(Object *node);
+Object *string_length  	(Object *node);
+
 /*
-	Access string from Node
+	Access string from Object
 */
-char *GET_STRING        (Node *node);
-char *GET_ELEM_STRING   (Node *elem, Node *(*func)(Node *node));
-Node *STRING_Q_         (Node *node);
+char 	*GET_STRING			(Object *node);
+char 	*GET_ELEM_STRING	(Object *elem, Object *(*func)(Object *node));
+WS_BOOL	STRING_Q_			(Object *node);
+WS_INT	STRING_HASH_CODE	(Object *node);
+WS_LONG	STRING_LENGTH		(Object *node);
 
 #endif

@@ -70,74 +70,74 @@ enum
 };
 
 //* test ***************
-Node    *is_num					(Node *node);
-Node	*num_is_zero			(Node *node);
-Node	*num_is_neg				(Node *node);
-Node	*num_is_pos				(Node *node);
+Object    *is_num					(Object *node);
+Object	*num_is_zero			(Object *node);
+Object	*num_is_neg				(Object *node);
+Object	*num_is_pos				(Object *node);
 
 // coerce
-Node 	*num_coerce				(Node *node, TYPE type);
+Object 	*num_coerce				(Object *node, TYPE type);
 
 //* operators *************
-Node 	*num_add				(Node *x, Node *y);
-Node 	*num_addP				(Node *x, Node *y);
+Object 	*num_add				(Object *x, Object *y);
+Object 	*num_addP				(Object *x, Object *y);
 
-Node 	*num_multiply			(Node *x, Node *y);
-Node 	*num_multiplyP			(Node *x, Node *y);
+Object 	*num_multiply			(Object *x, Object *y);
+Object 	*num_multiplyP			(Object *x, Object *y);
 
-Node 	*num_divide				(Node *x, Node *y);
+Object 	*num_divide				(Object *x, Object *y);
 
-Node 	*num_quotient			(Node *x, Node *y);
+Object 	*num_quotient			(Object *x, Object *y);
 
-Node 	*num_remainder			(Node *x, Node *y);
+Object 	*num_remainder			(Object *x, Object *y);
 
-Node 	*num_equiv				(Node *x, Node *y);
+Object 	*num_equiv				(Object *x, Object *y);
 
-Node 	*num_lt					(Node *x, Node *y);
-Node 	*num_lte				(Node *x, Node *y);
-Node 	*num_gte				(Node *x, Node *y);
-Node 	*num_compare			(Node *x, Node *y);
+Object 	*num_lt					(Object *x, Object *y);
+Object 	*num_lte				(Object *x, Object *y);
+Object 	*num_gte				(Object *x, Object *y);
+Object 	*num_compare			(Object *x, Object *y);
 
-Node 	*num_negate				(Node *x);
-Node 	*num_negateP			(Node *x);
+Object 	*num_negate				(Object *x);
+Object 	*num_negateP			(Object *x);
 
-Node 	*num_inc				(Node *x);
-Node 	*num_incP				(Node *x);
+Object 	*num_inc				(Object *x);
+Object 	*num_incP				(Object *x);
 
-Node 	*num_dec				(Node *x);
-Node 	*num_decP				(Node *x);
+Object 	*num_dec				(Object *x);
+Object 	*num_decP				(Object *x);
 
 //* bit functions **********
-Node	*num_not				(Node *x);
-Node	*num_and				(Node *x, Node *y);
-Node	*num_or					(Node *x, Node *y);
-Node	*num_xor				(Node *x, Node *y);
-Node	*num_and_not			(Node *x, Node *y);
+Object	*num_not				(Object *x);
+Object	*num_and				(Object *x, Object *y);
+Object	*num_or					(Object *x, Object *y);
+Object	*num_xor				(Object *x, Object *y);
+Object	*num_and_not			(Object *x, Object *y);
 
-Node	*num_clear_bit			(Node *x, Node *y);
-Node	*num_set_bit			(Node *x, Node *y);
-Node	*num_flip_bit			(Node *x, Node *y);
-Node	*num_test_bit			(Node *x, Node *y);
+Object	*num_clear_bit			(Object *x, Object *y);
+Object	*num_set_bit			(Object *x, Object *y);
+Object	*num_flip_bit			(Object *x, Object *y);
+Object	*num_test_bit			(Object *x, Object *y);
 
-Node	*num_shift_left			(Node *x, Node *y);
-Node	*num_shift_leftP		(Node *x, Node *y);
-Node	*num_shift_right		(Node *x, Node *y);
-Node	*num_rot_left			(Node *x, Node *y);
-Node	*num_rot_right			(Node *x, Node *y);
+Object	*num_shift_left			(Object *x, Object *y);
+Object	*num_shift_leftP		(Object *x, Object *y);
+Object	*num_shift_right		(Object *x, Object *y);
+Object	*num_rot_left			(Object *x, Object *y);
+Object	*num_rot_right			(Object *x, Object *y);
 
 //* hash ***********************
-int 	num_hash_code			(Node *x);
-int 	num_hasheq				(Node *x);
+int 	num_hash_code			(Object *x);
+int 	num_hasheq				(Object *x);
 
 //* MACROS *******
 //* START_FUN1 ******
 #define START_FUN1 \
-	Node *res = NULL; \
+	Object *res = NULL; \
 	PUSH_ARGS(1, x)
 
 //* START_INT_FUN2 ******
 #define START_FUN2 \
-	Node *res = NULL; \
+	Object *res = NULL; \
 	PUSH_ARGS(2, x, y);
 
 //******

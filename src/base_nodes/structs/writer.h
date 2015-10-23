@@ -17,39 +17,39 @@ typedef struct
     FILE            *file;
 } Writer;
 
-extern char *(*print_ptr)(Node *node, bool readable);
+extern char *(*print_ptr)(Object *node, bool readable);
 
 // to current printer
-Node *PRINT(Node *node);
-Node *PR(Node *node);
-Node *PRINTLN(Node *node);
-Node *PRN(Node *node);
+Object *PRINT(Object *node);
+Object *PR(Object *node);
+Object *PRINTLN(Object *node);
+Object *PRN(Object *node);
 
 // to string printers
-char *print(Node *node);
-char *pr(Node *node);
+char *print(Object *node);
+char *pr(Object *node);
 
 // to node printers
-Node *node_print(Node *node);
-Node *node_pr(Node *node);
+Object *node_print(Object *node);
+Object *node_pr(Object *node);
 
 // constructors
-Node *writer(FILE *file);
-Node *writer_open_file(Node *name);
-Node *writer_stdout();
-Node *writer_stderr();
+Object *writer(FILE *file);
+Object *writer_open_file(Object *name);
+Object *writer_stdout();
+Object *writer_stderr();
 
 // Set and close currect output
 // TODO in appropriate variable
-Node *writer_curr(Node *writer);
-Node *writer_curr_close();
+Object *writer_curr(Object *writer);
+Object *writer_curr_close();
 
 // Get unnoded data
-void *WRITER_FILE(Node *filename);
+void *WRITER_FILE(Object *filename);
 
 // Clobal currect writer for now
 // TODO manage some other way threoug a language variable...
-extern Node *curr;
+extern Object *curr;
 
 #endif
 

@@ -25,7 +25,7 @@ typedef int8_t			WS_BOOL;
 typedef float			WS_FLOAT;
 typedef double			WS_DOUBLE;
 
-struct Node; // forward
+struct Object; // forward
 
 #include "type.h"
 #include "error.h"
@@ -47,43 +47,43 @@ struct Node; // forward
 /*
 	Struct of a base node
 */
-typedef struct Node
+typedef struct Object
 {
 	Nodes		*type; // type or class
 	WS_LONG		occurrences;
 #ifdef DEBUG_ALLOC
-	struct Node *previous_node;
-	struct Node *next_node;
+	struct Object *previous_node;
+	struct Object *next_node;
 #endif
-} Node;
+} Object;
 
 #include "free.h"
 
-// Get Node internal struct
-void *STRUCT(Node *node);
+// Get Object internal struct
+void *STRUCT(Object *node);
 
 // global values
-extern Node *NIL;
-extern Node *TRUE;
-extern Node *FALSE;
+extern Object *NIL;
+extern Object *TRUE;
+extern Object *FALSE;
 
-extern Node *new_node		(TYPES type);
-extern Node *false_Q_		(Node *node);
-extern Node *true_Q_		(Node *node);
+extern Object *new_node		(TYPES type);
+extern Object *false_Q_		(Object *node);
+extern Object *true_Q_		(Object *node);
 
 // Non-standard functions
-extern void *NODE_STRUCT	(Node *node, TYPES type);
-extern bool FALSE_Q_		(Node *node);
-extern bool TRUE_Q_			(Node *node);
-extern void *THREAD_NODE	(Node *init, ...);
-extern bool node_isa_type	(Node *node, TYPES isa);
+extern void *NODE_STRUCT	(Object *node, TYPES type);
+extern bool FALSE_Q_		(Object *node);
+extern bool TRUE_Q_			(Object *node);
+extern void *THREAD_NODE	(Object *init, ...);
+extern bool node_isa_type	(Object *node, TYPES isa);
 
 // DEBUG_ALLOC functions
 extern void init_node_list	();
 extern void print_node_list	();
 
 #define BOOL(val) (val ? TRUE : FALSE)
-#define STRUCT(node) (void *)((char *)node + sizeof(Node))
+#define STRUCT(node) (void *)((char *)node + sizeof(Object))
 
 // ***************************
 #define ACCESS_START(struct_type, return_type, input_type) \
@@ -126,7 +126,7 @@ extern void print_node_list	();
 
 // ***************************
 #define ACCESS_NODE(ctype, access, itype, otype) \
-	ACCESS_START(ctype, Node *, itype); \
+	ACCESS_START(ctype, Object *, itype); \
 	res = link_node(str->access); \
 	ACCESS_END(otype)
 
@@ -141,43 +141,43 @@ extern void print_node_list	();
 
 // ***************************
 #define ACCESS_BOOL(ctype, access, itype) \
-	ACCESS_START(ctype, Node *, itype); \
+	ACCESS_START(ctype, Object *, itype); \
 	res = BOOL(str->access ); \
 	ACCESS_END_TYPED(BOOLEAN)
 
 // ***************************
 #define ACCESS_BYTE(ctype, access, itype) \
-	ACCESS_START(ctype, Node *, itype); \
+	ACCESS_START(ctype, Object *, itype); \
 	res = byte(str->access); \
 	ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_SHORT(ctype, access, itype) \
-	ACCESS_START(ctype, Node *, itype); \
+	ACCESS_START(ctype, Object *, itype); \
 	res = short(str->access); \
 	ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_INTEGER(ctype, access, itype) \
-	ACCESS_START(ctype, Node *, itype); \
+	ACCESS_START(ctype, Object *, itype); \
 	res = integer(str->access); \
 	ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_LONG(ctype, access, itype) \
-	ACCESS_START(ctype, Node *, itype); \
+	ACCESS_START(ctype, Object *, itype); \
 	res = long(str->access); \
 	ACCESS_END_TYPED(INTEGER)
 
 // ***************************
 #define ACCESS_FLOAT(ctype, access, itype) \
-	ACCESS_START(ctype, Node *, itype); \
+	ACCESS_START(ctype, Object *, itype); \
 	res = float(str->access); \
 	ACCESS_END_TYPED(DECIMAL)
 
 // ***************************
 #define ACCESS_DOUBLE(ctype, access, itype) \
-	ACCESS_START(ctype, Node *, itype); \
+	ACCESS_START(ctype, Object *, itype); \
 	res = double(str->access); \
 	ACCESS_END_TYPED(DECIMAL)
 
@@ -196,7 +196,7 @@ extern void print_node_list	();
 // ***************************
 #define ASSIGN(to, from) \
 	{ \
-		Node *tmp = link_node(from); \
+		Object *tmp = link_node(from); \
 		if(to != tmp) \
 		{ \
 			unlink_node(to); \
@@ -206,6 +206,8 @@ extern void print_node_list	();
 
 // ***************************
 #define LINK_ARG(to, from) \
-	Node *to = link_node(from)
+	Object *to = link_node(from)
 
 #endif
+
+#include "class.h"
