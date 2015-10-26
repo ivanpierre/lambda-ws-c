@@ -10,73 +10,52 @@
 #include "object.h"
 #include "number.h"
 
+Interface *INTERFACE_NUMBER = NULL;
+Class *CLASS_BYTE = NULL;
+Class *CLASS_SHORT = NULL;
+Class *CLASS_INT = NULL;
+Class *CLASS_LONG = NULL;
+Class *CLASS_BIGINT = NULL;
+Class *CLASS_RATIO = NULL;
+Class *CLASS_FLOAT = NULL;
+Class *CLASS_DOUBLE = NULL;
+Class *CLASS_BIGDEC = NULL;
+
+/*
+	Static functions
+*/
 static  FuncDef	num_func_def[] =
-			{
-				{"isZero",		1, &num_is_zero},
-				("isNeg",		1, &num_is_neg),
-				{"isPos",		1, &num_is_pos},
-				{"coerce",		2, &num_coerce},
-				{"add",			2, &num_add},
-				{"add'",		2, &num_addP},
-				{"multiply",	2, &num_multiply},
-				{"multiply'",	2, &num_multiplyP},
-				{"divide",		2, &num_divide},
-				{"quotient",	2, &num_quotient},
-				{"remainder",	2, &num_remainder},
-				{"equiv",		2, &num_equiv},
-				{"equal",		2, &num_equal},
-				{"lt",			2, &num_lt},
-				{"lte",			2, &num_lte},
-				{"gte",			2, &num_gte},
-				{"compare",		2, &num_compare},
-				{"negate",		1, &num_negate},
-				{"negateP",		1, &num_negateP},
-				{"inc",			1, &num_inc},
-				{"incP",		1, &num_incP},
-				{"dec",			1, &num_dec},
-				{"decP",		1, &num_decP},
-				{"not",			1, &num_not},
-				{"and",			2, &num_and},
-				{"or",			2, &num_or},
-				{"xor",			2, &num_xor},
-				{"andNot",		2, &num_and_not},
-				{"clearBit",	2, &num_clear_bit},
-				{"setBit",		2, &num_set_bit},
-				{"flipBit",		2, &num_flip_bit},
-				{"testBit",		2, &num_test_bit},
-			};
-
-//* helper functions *****
-// Table of all numeric funtion with 1 argument
-static Object *(**num_funct1[])(Object *arg1) =
-			{
-				&byte_funct1;
-				&num_funct1;
-				&long_funct1;
-				&bignum_funct1;
-				&ratio_funct1;
-				&float_funct1;
-				&double_funct1;
-				&bigdec_funct1;
-			};
-
-// Table of all numeric funtion pointer with 2 argument
-static Object *(**num_funct2[])(Object *arg1, Object *arg2)[];
-			{
-				&byte_funct2;
-				&num_funct2;
-				&long_funct2;
-				&bignum_funct2;
-				&ratio_funct2;
-				&float_funct2;
-				&double_funct2;
-				&bigdec_funct2;
-			};
+	{
+		{"static isNum",		1, &num_is_num},
+		{"static coerce",		2, &num_coerce},
+		{"static add",			2, &num_add},
+		{"static addP",			2, &num_addP},
+		{"static multiply",		2, &num_multiply},
+		{"static multiplyP",	2, &num_multiplyP},
+		{"static divide",		2, &num_divide},
+		{"static quotient",		2, &num_quotient},
+		{"static remainder",	2, &num_remainder},
+		{"static equiv",		2, &num_equiv},
+		{"static equal",		2, &num_equal},
+		{"static lt",			2, &num_lt},
+		{"static lte",			2, &num_lte},
+		{"static gte",			2, &num_gte},
+		{"static compare",		2, &num_compare},
+		{"static and",			2, &num_and},
+		{"static or",			2, &num_or},
+		{"static xor",			2, &num_xor},
+		{"static andNot",		2, &num_and_not},
+		{"static clearBit",		2, &num_clear_bit},
+		{"static setBit",		2, &num_set_bit},
+		{"static flipBit",		2, &num_flip_bit},
+		{"static testBit",		2, &num_test_bit},
+		METHOD_DESC_END
+	};
 
 /**
-	Heloper functions
+	Helper functions
 */
-static int max_type(Object *arg1, Object *arg2)
+static int max_num_type(Object *arg1, Object *arg2)
 {
 	TYPE type1 = arg1.type;
 	TYPE type2 = arg2.type;
@@ -86,18 +65,11 @@ static int max_type(Object *arg1, Object *arg2)
 		return type2 - BYTE;
 }
 
-static Object *num_operator1(Object *x, int function)
-{
-	START_FUN1;
-	res = (*num_func1[function][x.type - BYTE])(x);
-	END_FUN1;
-}
-
 static Object *num_operator2(Object *x, Object *y, int function)
 {
 	START_FUN2;
 	res = (*num_func1[function][x.type - BYTE])(x, y);
-	END_FUN2;
+	END_FUN2;.
 }
 
 static Object *num_operator2_coerce(Object *x, Object *y, int function)
@@ -114,39 +86,39 @@ Object *num_to_type(Object *x, TYPE type)
 	TYPE type_obj = x->type;
 	switch(type_obj)
 	{
-		case WS_BYTE:
+		case NUM_BYTE:
 			res = byte_to_type(x, type);
 			break;
 
-		case WS_SHORT:
+		case NUM_SHORT:
 			res = short_to_type(x, type);
 			break;
 
-		case WS_INT:
+		case NUM_INT:
 			res = num_to_type(x, type);
 			break;
 
-		case WS_LONG:
+		case NUM_LONG:
 			res = long_to_type(x, type);
 			break;
 
-		case WS_BIGINT:
+		case NUM_BIGINT:
 			res = bignum_to_type(x, type);
 			break;
 
-		case WS_RATIO
+		case NUM_RATIO
 			res = ratio_to_type(x, type);
 			break;
 
-		case WS_FLOAT:
+		case NUM_FLOAT:
 			res = float_to_type(x, type);
 			break;
 
-		case WS_DOUBLE:
+		case NUM_DOUBLE:
 			res = double_to_type(x, type);
 			break;
 
-		case WS_BIGDEC:
+		case NUM_BIGDEC:
 			res = bigdec_to_type(x, type);
 			break;
 

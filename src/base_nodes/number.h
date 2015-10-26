@@ -1,5 +1,5 @@
 /****
-    Number : generic numbers
+    Number , generic numbers
 
     Lambda Calculus Workshop
     C version
@@ -8,8 +8,6 @@
 
 #ifndef NUMBER_H
 #define NUMBER_H
-
-#include "num_int.h"
 
 // Integers
 #define WS_BYTE_MIN		INT8_MIN
@@ -31,49 +29,33 @@
 #define WS_DOUBLE_MIN	DBL_MIN
 #define WS_DOUBLE_MAX	DBL_MAX
 
+extern Interface *CLASS_NUMBER;
+extern Class *CLASS_BYTE;
+extern Class *CLASS_SHORT;
+extern Class *CLASS_INT;
+extern Class *CLASS_LONG;
+extern Class *CLASS_BIGINT;
+extern Class *CLASS_RATIO;
+extern Class *CLASS_FLOAT;
+extern Class *CLASS_DOUBLE;
+extern Class *CLASS_BIGDEC;
+
 // index of function
 enum
 {
-	NUM_IS_ZERO,
-	NUM_IS_NEG,
-	NUM_IS_POS,
-	NUM_COERCE,
-	NUM_ADD,
-	NUM_ADDP,
-	NUM_MULTIPLY,
-	NUM_MULTIPLYP,
-	NUM_DIVIDE,
-	NUM_QUOTIENT,
-	NUM_REMAIDER,
-	NUM_EQUIV,
-	NUM_EQUAL,
-	NUM_LT,
-	NUM_LTE,
-	NUM_GTE,
-	NUM_NEGATE,
-	NUM_NEGATEP,
-	NUM_INC,
-	NUM_INCP,
-	NUM_DEC,
-	NUM_DECP,
-	NUM_NOT
-	NUM_AND,
-	NUM_OR,
-	NUM_XOR,
-	NUM_AND_NOT,
-	NUM_CLEAR_BIT,
-	NUM_SET_BIT,
-	NUM_FLIP_BIT,
-	NUM_TEST_BIT,
-	NUM_HASH_CODE,
-	NUM_HASHEQ
+	NUM_BYTE,
+	NUM_SHORT,
+	NUM_INT,
+	NUM_LONG,
+	NUM_BIGINT,
+	NUM_RATIO
+	NUM_FLOAT,
+	NUM_DOUBLE,
+	NUM_BIGDEC
 };
 
 //* test ***************
-Object    *is_num					(Object *node);
-Object	*num_is_zero			(Object *node);
-Object	*num_is_neg				(Object *node);
-Object	*num_is_pos				(Object *node);
+Object	*is_num					(Object *node);
 
 // coerce
 Object 	*num_coerce				(Object *node, TYPE type);
@@ -98,17 +80,7 @@ Object 	*num_lte				(Object *x, Object *y);
 Object 	*num_gte				(Object *x, Object *y);
 Object 	*num_compare			(Object *x, Object *y);
 
-Object 	*num_negate				(Object *x);
-Object 	*num_negateP			(Object *x);
-
-Object 	*num_inc				(Object *x);
-Object 	*num_incP				(Object *x);
-
-Object 	*num_dec				(Object *x);
-Object 	*num_decP				(Object *x);
-
 //* bit functions **********
-Object	*num_not				(Object *x);
 Object	*num_and				(Object *x, Object *y);
 Object	*num_or					(Object *x, Object *y);
 Object	*num_xor				(Object *x, Object *y);
@@ -146,7 +118,7 @@ int 	num_hasheq				(Object *x);
 	POP_ARGS(1, x); \
 	return res; \
 	\
-	catch: \
+	catch, \
 	POP_ARGS(1, x); \
 	return NULL
 
@@ -156,7 +128,7 @@ int 	num_hasheq				(Object *x);
 	POP_ARGS(2, x, y); \
 	return res; \
     \
-	catch: \
+	catch, \
 	POP_ARGS(2, x, y); \
 	return NULL
 

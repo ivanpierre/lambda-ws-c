@@ -1,27 +1,27 @@
 /****
-	Function class
+	Method class
 
 	Lambda Calculus Workshop
 	C version
 	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#ifndef FUNCTION_H
-#define FUNCTION_H
+#ifndef METHOD_H
+#define METHOD_H
 
 /*
 	Functions or methods
 */
 typedef struct
 {
-	Object		*name				// ZSTRING Name of function
+	STRUCT_NAMED;
  	WS_BYTE		start_arrity;		// BYTE nb of args of first function
 	WS_BYTE		end_arrity;			// BYTE nb of args of last function
 	Object		*methods;			// TYPED_ARRAY of PTR on functions
 									// NIL for non existant intermediate
 									// functions
 	Object		*varargs;			// BOOLEAN define last function as varargs
-} Function;
+} Method;
 
 /**
 	Definition structure for functions.
@@ -40,11 +40,22 @@ typedef struct
 /*
 	Class initialisation
 */
-bool Function();
+Class *Method();
 
 /*
 	count nb of Object arguments in va_list until NULL
 */
 WS_BYTE count_args(va_list args);
+
+/*
+	static functions
+*/
+Object *dot(String *func, Interface *place, ...);
+Object *method(String *func, Object *obj, ...);
+
+/*
+	methods
+*/
+Object *method_invoke(AFn *func, ...);
 
 #endif

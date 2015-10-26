@@ -27,8 +27,6 @@ typedef double			WS_DOUBLE;
 
 struct Object; // forward
 
-#include "type.h"
-#include "error.h"
 
 #define BOOL_FALSE 0
 #define BOOL_TRUE (!BOOL_FALSE)
@@ -45,14 +43,14 @@ struct Object; // forward
 
 #ifdef DEBUG_ALLOC
 #define STRUCT_OBJECT \
-	Nodes		*type; \
-	WS_LONG		occurrences; \
-	struct Object *previous_node; \
-	struct Object *next_node
+	struct Object	*class; \
+	WS_LONG			occurrences; \
+	struct Object	*previous_node; \
+	struct Object	*next_node
 #else
 #define STRUCT_OBJECT \
-	Nodes		*type; \
-	WS_LONG		occurrences
+	struct Object	*type; \
+	WS_LONG			occurrences
 #endif
 
 /*
@@ -64,9 +62,7 @@ typedef struct Object
 } Object;
 
 #include "free.h"
-
-// Get Object internal struct
-void *STRUCT(Object *node);
+#include "error.h"
 
 // global values
 extern Object *NIL;
@@ -216,4 +212,16 @@ extern void print_node_list	();
 
 #endif
 
+#include "named.h"
+#include "interface.h"
 #include "class.h"
+#include "number.h"
+#include "byte.h"
+#include "short.h"
+#include "integer.h"
+#include "long.h"
+#include "bigint.h"
+#include "ratio.h"
+#include "float.h"
+#include "double.h"
+#include "bigdec.h"

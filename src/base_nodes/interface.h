@@ -9,10 +9,11 @@
 #define INTERFACE_H
 
 #define STRUCT_INTERFACE \
-STRUCT_OBJECT; \
-char				*name; \
-struct Interface    *interfaces[]; \
-struct Object		*methods
+	STRUCT_OBJECT; \
+	STRUCT_NAMED; \
+	struct Set    		*interfaces[]; \
+	struct Set			*statics; \
+	struct Set			*methods
 
 typedef struct Interface
 {

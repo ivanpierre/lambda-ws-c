@@ -3,7 +3,7 @@
 
 	Lambda Calculus Workshop
 	C version
-	Ivan Pierre <ivan@kilroysoft.ch> 2015
+	Ivan Pierre <ivan@kilroysoft.ch> 2025
 */
 
 #include <stdio.h>
@@ -12,6 +12,45 @@
 
 // include all number headers in order to have conversion functions
 #include "number.h"
+
+static  FuncDef	int_func_def[] =
+			{
+				{"isZero",			1, &int_is_zero},
+				("isNeg",			1, &int_is_neg),
+				{"isPos",			1, &int_is_pos},
+				{"coerce",			2, &int_coerce},
+				{"add",				2, &int_add},
+				{"addP",			2, &int_addP},
+				{"multiply",		2, &int_multiply},
+				{"multiplyP",		2, &int_multiplyP},
+				{"divide",			2, &int_divide},
+				{"quotient",		2, &int_quotient},
+				{"remainder",		2, &int_remainder},
+				{"equiv",			2, &int_equiv},
+				{"equal",			2, &int_equal},
+				{"lt",				2, &int_lt},
+				{"lte",				2, &int_lte},
+				{"gte",				2, &int_gte},
+				{"compare",			2, &int_compare},
+				{"negate",			1, &int_negate},
+				{"negateP",			1, &int_negateP},
+				{"inc",				1, &int_inc},
+				{"incP",			1, &int_incP},
+				{"dec",				1, &int_dec},
+				{"decP",			1, &int_decP},
+				{"not",				1, &int_not},
+				{"and",				2, &int_and},
+				{"or",				2, &int_or},
+				{"xor",				2, &int_xor},
+				{"andNot",			2, &int_and_not},
+				{"clearBit",		2, &int_clear_bit},
+				{"setBit",			2, &int_set_bit},
+				{"flipBit",			2, &int_flip_bit},
+				{"testBit",			2, &int_test_bit},
+				METHOD_DESC_END
+			};
+
+
 
 /*
 	Create an int
@@ -48,9 +87,9 @@ WS_INT *int_unbox(Object *x)
 */
 Object *is_int(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	Object *res = (x && x->type == INTEGER) ? TRUE : FALSE;
-	END_FUN1;
+	END_FUN2;
 }
 
 /*
@@ -58,9 +97,9 @@ Object *is_int(Object *x)
 */
 static Object *tst_int(Object *x, Object *(*pred)(WS_INT))
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	Object *res = (*pred)(valx) ? TRUE : FALSE;
-	END_FUN1;
+	END_FUN2;
 
 }
 
@@ -99,19 +138,19 @@ Object *int_is_neg(Object *x)
 // Int -> Byte int8
 static Object *int_to_byte(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	ASSERT(valx >= WS_BYTE_MIN && valx <= WS_BYTE_MAX, ERR_OVERFLOW);
 	Object *res = byte_box((WS_SHORT)valx);
-	END_FUN1;
+	END_FUN2;
 }
 
-// Int -> Short int16
+// Int -> Short int26
 static Object *int_to_short(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	ASSERT(valx >= WS_SHORT_MIN && valx <= WS_SHORT_MAX, ERR_OVERFLOW);
 	Object *res = short_box((WS_SHORT)valx);
-	END_FUN1;
+	END_FUN2;
 }
 
 // Int -> Int int32
@@ -123,17 +162,17 @@ static Object *int_to_int(Object *x)
 // Int -> Long int64
 static Object *int_to_long(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	Object *res = long_box((WS_LONG)valx);
-	END_FUN1;
+	END_FUN2;
 }
 
 // Int -> bigdec
 static Object *int_to_bigdec(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	Object *res = bigdec_box((WSLONG)valx);
-	END_FUN1;
+	END_FUN2;
 }
 
 // Int -> Ratio
@@ -145,25 +184,25 @@ static Object *int_to_ratio(Object *x)
 // Int -> Float
 static Object *int_to_float(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	Object *res = float_box((WS_FLOAT)valx);
-	END_FUN1;
+	END_FUN2;
 }
 
 // Int -> Double
 static Object *int_to_double(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	Object *res = double_box((WS_DOUBLE)valx);
-	END_FUN1;
+	END_FUN2;
 }
 
 // Int -> bigdeb
 static Object *int_to_bigdeb(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 	Object *res = bigdec_box((WS_DOUBLE)valx);
-	END_FUN1;
+	END_FUN2;
 }
 
 // Int -> type
@@ -321,52 +360,52 @@ Object *int_compare(Object *x, Object *y);
 
 Object *int_negate(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 
-	END_FUN1;
+	END_FUN2;
 }
 
 Object *int_negateP(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 
-	END_FUN1;
+	END_FUN2;
 }
 
 Object *int_inc(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 
-	END_FUN1;
+	END_FUN2;
 }
 
 Object *int_incP(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 
-	END_FUN1;
+	END_FUN2;
 }
 
 Object *int_dec(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 
-	END_FUN1;
+	END_FUN2;
 }
 
 Object *int_decP(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 
-	END_FUN1;
+	END_FUN2;
 }
 
 //* bit functions **********
 Object *int_not				(Object *x)
 {
-	START_INT_FUN1;
+	START_INT_FUN2;
 
-	END_FUN1;
+	END_FUN2;
 }
 
 Object *int_and				(Object *x, Object *y)

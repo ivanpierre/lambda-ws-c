@@ -29,6 +29,23 @@ Object		*NIL	  = &nil_val;
 Object		*FALSE	= &false_val;
 Object		*TRUE	 = &true_val;
 
+static  FuncDef	object_func_def[] =
+	{
+		{"clone",				1, &object_clone},
+		{"equals",				2, &object_equals},
+		{"finalize",			1, &object_finalize},
+		{"getClass",			1, &object_get_class},
+		{"hashCode",			1, &object_hash_code},
+		{"notify",				1, &object_notify},
+		{"notifyAll",			1, &object_notify_all},
+		{"toString",			1, &object_toString},
+		{"wait",				1, &object_wait},
+		{"wait",				2, &object_wait2},
+		{"wait",				3, &object_wait3},
+		METHOD_DESC_END
+	};
+
+
 /*
 	Init base node content allocated
 */

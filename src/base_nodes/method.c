@@ -1,5 +1,5 @@
 /****
-    Functions, lambdas, macros and specials
+	Method class
 
     Lambda Calculus Workshop
     C version
@@ -10,15 +10,15 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "object.h"
-#include "func.h"
+#include "method.h"
 
 /*
  * Get varargs length
  */
-long count_args(va_list args)
+WS_INT count_args(va_list args)
 {
 	Object *walk = va_arg(args, Object *);
-	long i = 0;
+	WS_INT i = 0;
 	while(walk)
 	{
 		i++;
