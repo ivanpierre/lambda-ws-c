@@ -12,10 +12,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include "object.h"
-#include "strings.h"
-#include "writer.h"
-#include "free_internal.h"
+#include "oop.h"
 
 /*
 	Gives back the string content
@@ -115,7 +112,7 @@ Object *STRING_SPRINTF(char *fmt, ...)
 Object *string_Q_(Object *node)
 {
     ASSERT_NODE(node, INODES);
-	Object *res = (node && node->type->int_type == ISTRING) ? TRUE : FALSE;
+	Object *res = (node && node->int_type == ISTRING) ? TRUE : FALSE;
 	unlink_node(node);
 	return res;
 

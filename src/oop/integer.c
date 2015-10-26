@@ -7,11 +7,7 @@
 */
 
 #include <stdio.h>
-#include "object.h"
-#include "type.h"
-
-// include all number headers in order to have conversion functions
-#include "number.h"
+#include "oop.h"
 
 static  FuncDef	int_func_def[] =
 			{
@@ -88,7 +84,7 @@ WS_INT *int_unbox(Object *x)
 Object *is_int(Object *x)
 {
 	START_INT_FUN2;
-	Object *res = (x && x->type == INTEGER) ? TRUE : FALSE;
+	Object *res = (x && x == INTEGER) ? TRUE : FALSE;
 	END_FUN2;
 }
 

@@ -9,8 +9,6 @@
 #ifndef STRUCT_H
 #define STRUCT_H
 
-#include "interface.h"
-
 #define STRUCT_CLASS \
 STRUCT_INTERFACE; \
 struct Class *super

@@ -10,10 +10,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include "object.h"
-#include "strings.h"
-#include "free.h"
-#include "writer.h"
+#include "oop.h"
 
 #ifdef DEBUG_ALLOC
 	#define NEW_CONST {CONST, 0l, NULL, NULL}
@@ -52,7 +49,7 @@ static  FuncDef	object_func_def[] =
 static Object *init_node(Object *node, Object *type)
 {
 	ASSERT(node, ERR_NULL_PTR);
-	node->type = type;
+	node = type;
 	node->occurrences = 1; // will be decremented on valid creation
 #ifdef DEBUG_ALLOC
 	if (!last_node)
@@ -252,8 +249,8 @@ Object *true_Q_(Object *node)
 bool node_isa_type(Object *node, Object *isa)
 {
 	PUSH_ARGS(1, node);
-	bool res = node->type->bin_type & get_type(isa)->bin_type &&
-			   node->type->bin_type <= get_type(isa)->bin_type;
+	bool res = node->bin_type & get_type(isa)->bin_type &&
+			   node->bin_type <= get_type(isa)->bin_type;
 	POP_ARGS(1, node);
 	return res;
 

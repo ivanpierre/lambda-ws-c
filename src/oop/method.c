@@ -9,8 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "object.h"
-#include "method.h"
+#include "oop.h"
 
 /*
  * Get varargs length

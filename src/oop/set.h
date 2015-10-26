@@ -1,5 +1,5 @@
 /****
-	inode class
+	Set class
 
 	Lambda Calculus Workshop
 	C version

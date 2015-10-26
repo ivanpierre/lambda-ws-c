@@ -42,7 +42,7 @@
  */
 
 #include <stdio.h>
-#include "murmur3.h"
+#include "oop.h"
 
 const WS_INT seed = 0;
 const WS_INT C1 = 0xcc9e2d51;

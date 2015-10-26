@@ -9,8 +9,6 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#include "object.h"
-
 /* standard error texts */
 #define ERR_NULL_PTR    "Null pointer assignement."
 #define ERR_ALLOC       "Allocation error."

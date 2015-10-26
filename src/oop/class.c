@@ -7,8 +7,7 @@
 */
 
 #include <stdio.h>
-#include "object.h"
-#include "class.h"
+#include "oop.h"
 
 static WS_BOOL is_init = WS_FALSE;
 

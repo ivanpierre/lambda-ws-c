@@ -9,16 +9,16 @@
 #include <stdio.h>
 #include "oop.h"
 
-Interface 	*NUMBER = NULL;
-Class 		*BYTE = NULL;
-Class 		*SHORT = NULL;
-Class 		*INT = NULL;
-Class 		*LONG = NULL;
-Class 		*BIGINT = NULL;
-Class 		*RATIO = NULL;
-Class 		*FLOAT = NULL;
-Class 		*DOUBLE = NULL;
-Class 		*BIGDEC = NULL;
+Interface *INTERFACE_NUMBER = NULL;
+Class *CLASS_BYTE = NULL;
+Class *CLASS_SHORT = NULL;
+Class *CLASS_INT = NULL;
+Class *CLASS_LONG = NULL;
+Class *CLASS_BIGINT = NULL;
+Class *CLASS_RATIO = NULL;
+Class *CLASS_FLOAT = NULL;
+Class *CLASS_DOUBLE = NULL;
+Class *CLASS_BIGDEC = NULL;
 
 /*
 	Static functions

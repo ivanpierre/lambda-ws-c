@@ -1,7 +1,13 @@
+/****
+	Init OOP library
+
+	Lambda Calculus Workshop
+	C version
+	Ivan Pierre <ivan@kilroysoft.ch> 2015
+*/
 
 #include <stdio.h>
-#include "object.h"
-#include "interface.h"
+#include "oop.h"
 
 static WS_BOOL is_init = WS_FALSE;
 

@@ -1,5 +1,5 @@
 /****
-    init, initialize the library
+    init the OOP library
 
     Lambda Calculus Workshop
     C version
@@ -8,9 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "object.h"
-#include "interfaces.h"
-#include "classes.h"
+#include "oop.h"
 
 /*
 	Initialize all the stuff

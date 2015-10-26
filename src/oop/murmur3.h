@@ -9,8 +9,6 @@
 #ifndef MURMUR3_H
 #define MURMUR3_H
 
-#include "object.h"
-
 WS_INT hashInt(WS_INT input);
 WS_INT hashLong(WS_LONG input);
 WS_INT hashUnencodedChars(char *input, WS_INT size);

@@ -1,5 +1,5 @@
 /****
-	Free
+	Garbage collection
 
 	Lambda Calculus Workshop
 	C version

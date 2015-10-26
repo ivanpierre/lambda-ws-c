@@ -1,5 +1,5 @@
 /****
-    Free manage memory free
+    Garbage collection
 
     Lambda Calculus Workshop
     C version
@@ -9,9 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "object.h"
-#include "free.h"
-#include "writer.h"
+#include "oop.h"
 
 /*
     double linked list of nodes
@@ -26,7 +24,7 @@ Object *last_node  = NULL;
 */
 static bool unlinkable(Object *node)
 {
-	return !node || node->type == CONST;
+	return !node || node->class == CONST;
 }
 
 /*
@@ -37,14 +35,14 @@ static bool unlinkable(Object *node)
 Object *link_node(Object *node)
 {
 #ifdef DEBUG_FREE
-	TRACE("linking %s", node->type->str_type);
+	TRACE("linking %s", node->class->name.string);
 #endif
 	ASSERT(node, ERR_NODE);
 	if (!unlinkable(node))
 		node->occurrences++;
 
 #ifdef DEBUG_FREE
-	TRACE("linked %s", node->type->str_type);
+	TRACE("linked %s", node->class->name.string);
 #endif
 	return node;
 
@@ -63,14 +61,14 @@ Object *unlink_node(Object *node)
 	if(!node && !unlinkable(node))
 	{
 #ifdef DEBUG_FREE
-	TRACE("unlinking %s", node->type->str_type);
+	TRACE("unlinking %s", node->class->name.string);
 #endif
 		if (node->occurrences)
 			node->occurrences--;
 		if (node->occurrences <= 0)
 		{
 #ifdef DEBUG_FREE
-			TRACE("freeing %s", node->type->str_type);
+			TRACE("freeing %s", node->class->name.string);
 #endif
 #ifdef DEBUG_ALLOC
 			if (node->next_node == NULL && node->previous_node == NULL)
@@ -99,7 +97,7 @@ Object *unlink_node(Object *node)
 			}
 #endif
 			// unalloc node
-			void (*free_node)(Object *node) = func_free_type(node->type);
+			void (*free_node)(Object *node) = func_free_type(node->class);
 			if(free_node)
 				(*free_node)(node);
 			else
@@ -121,7 +119,7 @@ Object *unlink_node(Object *node)
 Object *unlink_new(Object *node)
 {
 #ifdef DEBUG_FREE
-	TRACE("unlinking new %s", node->type->str_type);
+	TRACE("unlinking new %s", node->class->name.string);
 #endif
 	if (!unlinkable(node))
 	{
@@ -166,7 +164,7 @@ void print_node_stack()
 	int i = 1;
 	while (walk)
 	{
-		TRACE("%d) %s %ld %s", i++, str_type(walk->type),
+		TRACE("%d) %s %ld %s", i++, str_type(walk->class),
 								walk->occurrences, print(walk));
 		walk = walk->next_node;
 	}

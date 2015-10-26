@@ -29,16 +29,16 @@
 #define WS_DOUBLE_MIN	DBL_MIN
 #define WS_DOUBLE_MAX	DBL_MAX
 
-extern Interface 	*NUMBER;
-extern Class 		*BYTE;
-extern Class 		*SHORT;
-extern Class 		*INT;
-extern Class 		*LONG;
-extern Class 		*BIGINT;
-extern Class 		*RATIO;
-extern Class 		*FLOAT;
-extern Class 		*DOUBLE;
-extern Class 		*BIGDEC;
+extern Interface *CLASS_NUMBER;
+extern Class *CLASS_BYTE;
+extern Class *CLASS_SHORT;
+extern Class *CLASS_INT;
+extern Class *CLASS_LONG;
+extern Class *CLASS_BIGINT;
+extern Class *CLASS_RATIO;
+extern Class *CLASS_FLOAT;
+extern Class *CLASS_DOUBLE;
+extern Class *CLASS_BIGDEC;
 
 // index of function
 enum

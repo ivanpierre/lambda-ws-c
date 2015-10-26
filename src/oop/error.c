@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include "object.h"
+#include "oop.h"
 
 // Stack trace (this is a closure)
 static Object *error_stack = NULL;
