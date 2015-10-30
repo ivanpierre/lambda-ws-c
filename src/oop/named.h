@@ -11,7 +11,7 @@
 
 #define STRUCT_NAMED \
 	STRUCT_OBJECT; \
-	Strings		*name
+	struct Strings		*name
 
 struct Named
 {

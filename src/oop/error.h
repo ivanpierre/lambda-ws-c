@@ -9,6 +9,8 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+extern struct Class		*ERROR;
+
 /* standard error texts */
 #define ERR_NULL_PTR    "Null pointer assignement."
 #define ERR_ALLOC       "Allocation error."
@@ -34,9 +36,9 @@
  */
 typedef struct
 {
-	struct Object		*previous;
+	struct Error	*previous;
 	char 			*file;
-	int 			line;
+	WS_INT 			line;
 	char 			*func;
 	char 			*mess;
 } Error;
@@ -44,14 +46,14 @@ typedef struct
 /*
 	Errors and assertions
 */
-extern void ERROR_STAR(char *file, int line, char *func, char *fmt, ...);
-extern void TRACE_STAR(char *file, int line, char *func, char *fmt, ...);
+extern void ERROR_STAR(char *file, WS_INT line, char *func, char *fmt, ...);
+extern void TRACE_STAR(char *file, WS_INT line, char *func, char *fmt, ...);
 
 /*
  * trace management
  */
-struct Object *error_box			(char *file, int line, char *func, char *mess);
-void 		error_stack_push	(struct Object *node);
+Error 		*error_box			(char *file, WS_INT line, char *func, char *mess);
+void 		error_stack_push	(Error *node);
 void 		error_stack_print	();
 void 		error_stack_free	();
 

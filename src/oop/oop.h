@@ -10,25 +10,28 @@
 #define INIT_H
 
 #include "object.h"
-#include "set.h"
 #include "gc.h"
-#include "named.h"
-#include "interface.h"
-#include "class.h"
-#include "method.h"
-#include "number.h"
-#include "byte.h"
-#include "short.h"
-#include "integer.h"
-#include "long.h"
-#include "bigint.h"
-#include "ratio.h"
-#include "float.h"
-#include "double.h"
-#include "bigdec.h"
+  #include "strings.h"
+  #include "set.h"
+  #include "named.h"
+    #include "interface.h"
+      #include "class.h"
+    #include "method.h"
+  #include "number.h"
+    // #include "byte.h"
+	// #include "short.h"
+	#include "int.h"
+	// #include "long.h"
+	// #include "bigint.h"
+	//
+	// #include "ratio.h"
+	//
+	// #include "float.h"
+	// #include "double.h"
+	// #include "bigdec.h"
 
 extern WS_BOOL init();
 
-extern Object *CL_CLASS = NULL;
+extern Set *obj_def;
 
 #endif

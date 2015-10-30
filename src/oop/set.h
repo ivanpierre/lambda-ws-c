@@ -15,7 +15,7 @@ struct Set;
 	WS_BYTE		size; \
 	WS_BYTE		shift; \
 	struct Set	*root; \
-	Node		*leaf[LOOKUP]
+	Object		*leaf[LOOKUP]
 
 typedef struct Set
 {

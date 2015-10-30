@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include "oop.h"
 
+Set *obj_def = NULL;
+
 /*
 	Initialize all the stuff
 */

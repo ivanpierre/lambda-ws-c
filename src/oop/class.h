@@ -13,12 +13,14 @@
 STRUCT_INTERFACE; \
 struct Class *super
 
-typedef struct
+typedef struct Class
 {
 	STRUCT_CLASS;
 } Class;
 
-extern Object *class(char *name, char *super,
-						char *interfaces[], MethodDesc *methods[]);
+extern Class		*CLASS;
+
+extern Class *class(char *name, char *super,
+					char *interfaces[], struct MethodDesc *methods[]);
 
 #endif

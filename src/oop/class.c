@@ -9,15 +9,9 @@
 #include <stdio.h>
 #include "oop.h"
 
-static WS_BOOL is_init = WS_FALSE;
+Class		*CLASS = NULL;
 
-static
-
-bool ClassInit()
+WS_BOOL ClassInit()
 {
-	if(is_init)
-		return true;
-
-	is_init = WS_TRUE;
-	return true;
+	return BOOL_TRUE;
 }

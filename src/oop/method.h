@@ -17,9 +17,8 @@ typedef struct
 	STRUCT_NAMED;
  	WS_BYTE		start_arrity;		// BYTE nb of args of first function
 	WS_BYTE		end_arrity;			// BYTE nb of args of last function
-	Object		*methods;			// TYPED_ARRAY of PTR on functions
-									// NIL for non existant intermediate
-									// functions
+	void		*methods;			// Array of ptr on functions
+									// NULL for non existant functions
 	Object		*varargs;			// BOOLEAN define last function as varargs
 } Method;
 
@@ -40,7 +39,7 @@ typedef struct
 /*
 	Class initialisation
 */
-Class *Method();
+Method *make_method(char *name);
 
 /*
 	count nb of Object arguments in va_list until NULL
@@ -56,6 +55,6 @@ Object *method(String *func, Object *obj, ...);
 /*
 	methods
 */
-Object *method_invoke(AFn *func, ...);
+Object *method_invoke(Method *func, ...);
 
 #endif

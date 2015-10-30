@@ -9,9 +9,8 @@
 #define INTERFACE_H
 
 #define STRUCT_INTERFACE \
-	STRUCT_OBJECT; \
 	STRUCT_NAMED; \
-	struct Set    		*interfaces[]; \
+	struct Set    		*interfaces; \
 	struct Set			*statics; \
 	struct Set			*methods
 
@@ -20,7 +19,8 @@ typedef struct Interface
 	STRUCT_INTERFACE;
 } Interface;
 
-extern bool isa(Object *type, Object *isa);
-extern Object *interface(char *name, char *interface[], MethodDesc *methods[]);
+extern WS_BOOL isa(Object *type, Object *isa);
+extern Object *interface(char *name, char *interface[],
+						struct MethodDesc *methods[]);
 
 #endif

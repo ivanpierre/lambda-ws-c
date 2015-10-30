@@ -13,7 +13,9 @@
 #include "oop.h"
 
 // Stack trace (this is a closure)
-static Object *error_stack = NULL;
+static Error *error_stack = NULL;
+
+Class		*ERROR = NULL;
 
 // Error* function
 void ERROR_STAR(char *file, int line, char *func, char *fmt, ...)
@@ -47,31 +49,29 @@ void TRACE_STAR(char *file, int line, char *func, char *fmt, ...)
     free(mess);
 }
 
-Object *error_box(char *file, int line, char *func, char *mess)
+Error *error_box(char *file, int line, char *func, char *mess)
 {
-	Object *node = new_node(ERROR);
-	ASSERT(node, ERR_CREATE_NEW, str_type(ERROR));
-	Error *error = STRUCT(node);
+	Error *error = (Error *)new_node(ERROR);
+	ASSERT(error, ERR_CREATE_NEW, str_type(ERROR));
 	error->file = file;
     error->line = line;
     error->func = func;
     error->mess = mess;
-	return unlink_new(node);
+	return unlink_new((Object *)error);
 
 	//*********************
 	catch:
-	unlink_node(node);
+	unlink_node((Object *)error);
 	return NULL;
 }
 
 /*
  * Push exception on the trace stack
  */
-void error_stack_push(Object *node)
+void error_stack_push(Error *error)
 {
-    Error *error = STRUCT(node);
     error->previous = error_stack;
-    LINK_ARG(error_stack, node);
+    LINK_ARG(error_stack, error);
 }
 
 /*
@@ -79,16 +79,15 @@ void error_stack_push(Object *node)
  */
 void error_stack_print()
 {
-    Object *walk = error_stack;
+    Error *err = error_stack;
 
     TRACE("Stack trace");
     TRACE("===========");
 
-    while(walk)
+    while(err)
     {
-		Error *err = STRUCT(walk);
         TRACE("%s(%d) %s() : %s\n", err->file, err->line, err->func, err->mess);
-        walk = err->previous;
+        err = err->previous;
     }
 
     TRACE("===========");
