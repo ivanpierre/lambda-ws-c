@@ -26,9 +26,8 @@ Object		*NIL		= &nil_val;
 Object		*FALSE		= &false_val;
 Object		*TRUE		= &true_val;
 
-static  FuncDef	object_func_def[] =
+static  MethodDef	object_func_def[] =
 	{
-		{"ctor",		1, &object_ctor}
 		{"clone",		1, &object_clone},
 		{"equals",		2, &object_equals},
 		{"finalize",	1, &object_finalize},
@@ -36,13 +35,10 @@ static  FuncDef	object_func_def[] =
 		{"hashCode",	1, &object_hash_code},
 		{"notify",		1, &object_notify},
 		{"notifyAll",	1, &object_notify_all},
-		{"toString",	1, &object_toString},
+		{"toString",	1, &object_to_string},
 		{"wait",		1, &object_wait},
 		{"wait",		2, &object_wait2},
 		{"wait",		3, &object_wait3},
-		{"true?",		1, &object_wait3},
-		{"false?",		1, &object_wait3},
-		{"nil?",		1, &object_wait3},
 		METHOD_DESC_END
 	};
 
@@ -50,10 +46,10 @@ static  FuncDef	object_func_def[] =
 /*
 	Init base node content allocated
 */
-static Object *init_node(Object *node, Object *type)
+static Object *object_init(Object *node, void *class)
 {
 	ASSERT(node, ERR_NULL_PTR);
-	node = type;
+	node->class = class;
 	node->occurrences = 1; // will be decremented on valid creation
 #ifdef DEBUG_ALLOC
 	if (!last_node)
@@ -81,35 +77,13 @@ static Object *init_node(Object *node, Object *type)
 	Constructor, return linked
 	It should be unlink_new() by constructor
 */
-Object *new_node(Object *type)
+Object *object_alloc(WS_LONG size)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
 	Object *node = NULL;
-	node = malloc(sizeof(Object) + size_type(type));
+	node = malloc(size);
 
-	// Init base node content
-	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
-	return node;
-
-	//**************
-	catch:
-	unlink_node(node);
-	return NULL;
-}
-
-/*
-	Allocate a dynamic node, i.e. a String
-	Constructor, return linked
-	It should be unlink_new() by constructor
-*/
-Object *new_dynamic_node(TYPES type, size_t size)
-{
-	// TRACE("fait nouveau node %s", str_type(type));
-	Object *node = NULL;
-	node = malloc(sizeof(Object) + size);
-
-	// Init base node content
-	ASSERT(init_node(node, type), ERR_INIT, str_type(type));
+	ASSERT(node, ERR_ALLOC);
 	return node;
 
 	//**************
@@ -194,7 +168,7 @@ void *THREAD_NODE(Object *init, ...)
 /*
 	Test falsey
 */
-bool FALSE_Q_(Object *node)
+bool FALSE_Q_(void *node)
 {
 	PUSH_ARGS(1, node);
 	ASSERT(node, ERR_ARG);
@@ -214,12 +188,12 @@ bool FALSE_Q_(Object *node)
 /*
 	Test truthey
 */
-bool TRUE_Q_(Object *node)
+bool TRUE_Q_(void *node)
 {
 	PUSH_ARGS(1, node);
 	ASSERT(node, ERR_ARG);
 
-	bool res =  FALSE_Q(node);
+	bool res =  !FALSE_Q(node);
 
 	POP_ARGS(1, node);
 	return res;
@@ -233,7 +207,7 @@ bool TRUE_Q_(Object *node)
 /*
 	Test falsey
 */
-Object *false_Q_(Object *node)
+Object *false_Q_(void *node)
 {
 	return FALSE_Q_(node) ? TRUE : FALSE;
 }
@@ -241,7 +215,7 @@ Object *false_Q_(Object *node)
 /*
 	Test truthey
 */
-Object *true_Q_(Object *node)
+Object *true_Q_(void *node)
 {
 	return TRUE_Q_(node) ? TRUE : FALSE;
 }
@@ -250,7 +224,7 @@ Object *true_Q_(Object *node)
  * Get type Object isa
  * TODO implement through interface
  */
-bool node_isa_type(Object *node, Object *isa)
+bool node_isa_type(void *node, void *isa)
 {
 	PUSH_ARGS(1, node);
 	bool res = node->bin_type & get_type(isa)->bin_type &&

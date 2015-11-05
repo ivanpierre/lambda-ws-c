@@ -39,7 +39,9 @@ typedef struct
 /*
 	Class initialisation
 */
-Method *make_method(char *name);
+void *interface_static();
+void *method_new(void *name);
+void *method_add(void *method, WS_BYTE nb_args, void *func);
 
 /*
 	count nb of Object arguments in va_list until NULL
@@ -49,12 +51,13 @@ WS_BYTE count_args(va_list args);
 /*
 	static functions
 */
-Object *dot(String *func, Interface *place, ...);
-Object *method(String *func, Object *obj, ...);
 
 /*
 	methods
 */
-Object *method_invoke(Method *func, ...);
+// calling
+void *dot(void *method, void *place, ...);
+void *method(void *method, ...);
+
 
 #endif

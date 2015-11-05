@@ -10,16 +10,47 @@
 #include <stdlib.h>
 #include "oop.h"
 
-Set *obj_def = NULL;
+void *key_def = NULL;
 
 /*
 	Initialize all the stuff
 */
 void init()
 {
-	NIL 	= new_node(CONST);
-	TRUE 	= new_node(CONST);
-	FALSE 	= new_node(CONST);
+	/**
+		Create all classes with the class `class` first.
+		This only create the class objects, the second part will
+		define functional and inheritance elements.
+	*/
+	class_static();
+	error_static();
+	object_static();
+	named_static();
+	interface_static();
+	method_static();
+	set_static();
+	strings_static();
+	number_static();
+	int_static();
+
+	NIL 	= object();
+	FALSE 	= object();
+	TRUE 	= object();
+	ASSIGN(key_def, empty_keymap());
+
+	/*
+		Complement classes
+	*/
+	object_functions();
+	strings_functions();
+	error_functions();
+	named_functions();
+	interface_functions();
+	class_functions();
+	method_functions();
+	set_functions();
+	number_functions();
+	int_functions();
 }
 
 /*

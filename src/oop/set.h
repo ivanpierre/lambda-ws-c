@@ -1,5 +1,7 @@
 /****
 	Set class
+	This is a minimal set implementation to enable to make the
+	oop system work.
 
 	Lambda Calculus Workshop
 	C version
@@ -10,14 +12,27 @@
 
 struct Set;
 
+void *CLASS_SET = NULL;
+
 #define STRUCT_SET \
 	STRUCT_OBJECT; \
 	WS_BYTE		size; \
 	WS_BYTE		shift; \
-	struct Set	*root; \
 	Object		*leaf[LOOKUP]
 
 typedef struct Set
 {
 	STRUCT_SET;
 } Set;
+
+void set_static()
+
+void *set(char *name, char *super, char *interfaces[], MethodDef methods[])
+
+void *set_init(void *class, WS_BYTE shift)
+
+void *set_get(Set *node, void *obj, WS_INT hash,
+				WS_INT (*cmp)(void *arg1, void *arg2))
+
+void *set_assoc(Set *node, void *obj, WS_LONG hash,
+				WS_INT (*cmp)(void *arg1, void *arg2))

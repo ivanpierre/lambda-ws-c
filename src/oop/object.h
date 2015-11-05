@@ -47,14 +47,14 @@ struct Method;
 
 #ifdef DEBUG_ALLOC
 #define STRUCT_OBJECT \
-	struct Class	*class; \
-	WS_LONG			occurrences; \
-	struct Object	*previous_node; \
-	struct Object	*next_node
+	void	*class; \
+	WS_LONG	occurrences; \
+	void	*previous_node; \
+	void	*next_node
 #else
 #define STRUCT_OBJECT \
-	struct Object	*type; \
-	WS_LONG			occurrences
+	void	*class; \
+	WS_LONG	occurrences
 #endif
 
 /*
@@ -72,9 +72,10 @@ extern Object *NIL;
 extern Object *TRUE;
 extern Object *FALSE;
 
-extern void *object_new			(struct Class *class);
-extern void *false_Q_			(Object *node);
-extern void *true_Q_			(Object *node);
+extern void *object_new			(void *class);
+extern void *object_alloc		(WS_LONG size);
+extern void *false_Q_			(void *node);
+extern void *true_Q_			(void *node);
 
 // DEBUG_ALLOC functions
 extern void init_node_list	();
@@ -86,7 +87,7 @@ extern void print_node_list	();
 // ***************************
 #define ASSIGN(to, from) \
 	{ \
-		Object *tmp = link_node(from); \
+		void *tmp = link_node(from); \
 		if(to != tmp) \
 		{ \
 			unlink_node(to); \

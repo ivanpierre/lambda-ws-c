@@ -30,8 +30,8 @@
 	// #include "double.h"
 	// #include "bigdec.h"
 
-extern WS_BOOL init();
+extern void init();
 
-extern Set *obj_def;
+extern void *key_def;
 
 #endif

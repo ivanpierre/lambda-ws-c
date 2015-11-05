@@ -20,7 +20,13 @@ typedef struct Interface
 } Interface;
 
 extern WS_BOOL isa(Object *type, Object *isa);
+
 extern Object *interface(char *name, char *interface[],
-						struct MethodDesc *methods[]);
+						MethodDesc *methods);
+
+extern void *interface_init(void *interface, char *name, char *interfaces[],
+						MethodDef *methods));
+
+extern void *interface_add_method(void *set, MethodDef *method);
 
 #endif
