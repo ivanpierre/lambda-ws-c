@@ -28,6 +28,7 @@ Object		*TRUE		= &true_val;
 
 static  MethodDef	object_func_def[] =
 	{
+		{"identity",	1, &object_identity},
 		{"clone",		1, &object_clone},
 		{"equals",		2, &object_equals},
 		{"finalize",	1, &object_finalize},
@@ -42,30 +43,49 @@ static  MethodDef	object_func_def[] =
 		METHOD_DESC_END
 	};
 
+extern void object_static()
+{
+	CLASS_OBJECT = class("Object");
+}
+
+extern void object_functions()
+{
+	METH_CLONE = key("clone");
+	METH_EQUALS = key("equals");
+	METH_FINALIZE = key("finalize");
+	METH_GET_CLASS = key("getClass");
+	METH_HASH_CODE = key("hashCode");
+	METH_NOTIFY = key("notify");
+	METH_NOTIFY_ALL = key("notifyAll");
+	METH_TO_STRING = key("toString");
+	METH_WAIT = key("wait");
+	CLASS_OBJECT = class_functions_init(CLASS_OBJECT, NULL,
+										{NULL}, object_func_def);
+}
 
 /*
 	Init base node content allocated
 */
-static Object *object_init(Object *node, void *class)
+void *object_init(void *object)
 {
-	ASSERT(node, ERR_NULL_PTR);
-	node->class = class;
-	node->occurrences = 1; // will be decremented on valid creation
+	ASSERT(object, ERR_NULL_PTR);
+	Object *obj = object;
+	obj->occurrences = 1; // will be decremented on valid creation
 #ifdef DEBUG_ALLOC
 	if (!last_node)
 	{
-		node->previous_node = node->next_node = NULL;
-		last_node = first_node = node;
+		node->previous_node = obj->next_node = NULL;
+		last_node = first_node = obj;
 	}
 	else
 	{
-		node->previous_node = NULL;
-		node->next_node = first_node;
-		first_node->previous_node = node;
-		first_node = node;
+		obj->previous_node = NULL;
+		obj->next_node = first_node;
+		first_node->previous_node = obj;
+		first_node = obj;
 	}
 #endif
-	return node;
+	return obj;
 
 	//*************
 	catch:
@@ -77,18 +97,17 @@ static Object *object_init(Object *node, void *class)
 	Constructor, return linked
 	It should be unlink_new() by constructor
 */
-Object *object_alloc(WS_LONG size)
+void *object_alloc(WS_LONG size)
 {
 	// TRACE("fait nouveau node %s", str_type(type));
-	Object *node = NULL;
-	node = malloc(size);
+	Object *object = malloc(size);
 
-	ASSERT(node, ERR_ALLOC);
-	return node;
+	ASSERT(object, ERR_ALLOC);
+	return object;
 
 	//**************
 	catch:
-	unlink_node(node);
+	free(object);
 	return NULL;
 }
 

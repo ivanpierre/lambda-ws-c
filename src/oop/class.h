@@ -1,5 +1,5 @@
 /****
-	class class
+	Class class
 
 	Lambda Calculus Workshop
 	C version
@@ -12,7 +12,7 @@
 #define STRUCT_CLASS \
 	STRUCT_INTERFACE; \
 	void			*super; \
-	void			*ctors
+	WS_LONG			*size
 
 typedef struct Class
 {
@@ -22,6 +22,7 @@ typedef struct Class
 extern void *CLASS_CLASS;
 
 extern WS_INT METH_GET_SUPERCLASS;
+extern WS_INT METH_GET_OBJ_SIZE;
 
 // Class constructors
 extern void class_static();
@@ -29,16 +30,16 @@ extern void class_static();
 extern void class_functions();
 
 // constructor for other classes
-extern void *class(char *name, char *super,	void *interfaces);
+extern void *class(char *name);
 
-extern void *class_init(void *class, char *name, void *super,
-						void *interfaces[]);
+extern void *class_init(void *class, char *name);
 
-extern void *class_functions_init(void *class, MethodDef *methods);
+extern void *class_functions_init(void *class, void *super,
+							void *interfaces[], MethodDef *methods);
 
 
 // Methods
-void *class_finalize(void *class);
+void *class_finalize(void *key_index);
 
 void *class_get_superclass(void *class);
 

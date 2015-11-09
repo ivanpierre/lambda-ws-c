@@ -14,6 +14,27 @@
 #include <string.h>
 #include "oop.h"
 
+extern void *CLASS_STRINGS;
+
+static  MethodDef	strings_func_def[] =
+	{
+		{"toString",		1, &object_identity}, // override
+		{"finalize",		1, &string_finalize}, // overrides
+		METHOD_DESC_END
+	};
+
+void strings_static()
+{
+	CLASS_STRINGS = class("String");
+}
+
+void strings_functions()
+{
+	CLASS_STRINGS = class_functions_init(CLASS_STRINGS, CLASS_OBJECT,
+										{NULL}, strings_func_def);
+
+}
+
 /*
 	Gives back the string content
 */
@@ -52,19 +73,6 @@ static Object *string_base(char *value)
 /*
 	Create a linked string, allocate space for the string
 */
-Object *string_noalloc(char *value)
-{
-	ASSERT(value, ERR_NODE);
-	return string_base(value); // new_string_base did the link
-
-	//***************
-	error_assert:
-	return NULL;
-}
-
-/*
-	Create a linked string, allocate space for the string
-*/
 Object *string(char *value)
 {
 	ASSERT(value, ERR_NODE);
@@ -78,17 +86,20 @@ Object *string(char *value)
 /*
 	create a new string node appending another one
 */
-Object *string_sprintf(char *fmt, ...)
+Object *string_format(char *fmt, ...)
 {
 	// TODO use STRING_SPRINTF
+	void *res = NULL;
 	va_list args;
 	va_start(args, fmt);
 	char *formated = NULL;
 	vasprintf(&formated, fmt, args);
 	if(!formated)
-		return string("cannot format string");
+		return string("null");
 
-	return string(formated);
+	res = string(formated);
+	free(formated);
+	return res;
 }
 
 /*

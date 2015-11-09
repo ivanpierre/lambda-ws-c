@@ -9,6 +9,33 @@
 #ifndef INIT_H
 #define INIT_H
 
+/*
+	Used type definitions
+*/
+// Integers
+typedef int8_t			WS_BYTE;
+typedef int16_t			WS_SHORT;
+typedef int32_t			WS_INT;
+typedef int64_t			WS_LONG;
+typedef int8_t			WS_BOOL;
+
+// Decimal
+typedef float			WS_FLOAT;
+typedef double			WS_DOUBLE;
+
+#define BOOL_FALSE 0
+
+/*
+	Define in case of allocation debugging
+*/
+#define DEBUG_ALLOC
+
+/*
+	To display debugging trace of allocation and unallocation
+*/
+// #define DEBUG_FREE
+
+
 #include "object.h"
 #include "gc.h"
   #include "strings.h"
@@ -31,7 +58,5 @@
 	// #include "bigdec.h"
 
 extern void init();
-
-extern void *key_def;
 
 #endif

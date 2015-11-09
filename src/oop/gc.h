@@ -25,4 +25,15 @@ extern void init_node_list();
 	extern Object *last_node;
 #endif
 
+// ***************************
+#define ASSIGN(to, from) \
+	{ \
+		void *tmp = link_node(from); \
+		if(to != tmp) \
+		{ \
+			unlink_node(to); \
+			to = tmp; \
+		} \
+	}
+
 #endif

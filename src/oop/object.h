@@ -6,44 +6,10 @@
 	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
-#ifndef NODES_H
-#define NODES_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include <stdint.h>
-
-/*
-	Used type definitions
-*/
-// Integers
-typedef int8_t			WS_BYTE;
-typedef int16_t			WS_SHORT;
-typedef int32_t			WS_INT;
-typedef int64_t			WS_LONG;
-typedef int8_t			WS_BOOL;
-
-// Decimal
-typedef float			WS_FLOAT;
-typedef double			WS_DOUBLE;
-
-typedef struct Object Object; // forward
-
-#define BOOL_FALSE 0
-#define BOOL_TRUE !BOOL_FALSE
-
-/*
-	Define in case of allocation debugging
-*/
-#define DEBUG_ALLOC
-
-/*
-	To display debugging trace of allocation and unallocation
-*/
-// #define DEBUG_FREE
-
-struct Class;
-struct Strings;
-struct MethodDesc;
-struct Method;
 
 #ifdef DEBUG_ALLOC
 #define STRUCT_OBJECT \
@@ -58,7 +24,7 @@ struct Method;
 #endif
 
 /*
-	Struct of a base node
+	Struct of a base object
 */
 typedef struct Object
 {
@@ -72,8 +38,6 @@ extern Object *NIL;
 extern Object *TRUE;
 extern Object *FALSE;
 
-extern void *object_new			(void *class);
-extern void *object_alloc		(WS_LONG size);
 extern void *false_Q_			(void *node);
 extern void *true_Q_			(void *node);
 
@@ -83,20 +47,41 @@ extern void print_node_list	();
 
 #define BOOL(val) (val ? TRUE : FALSE)
 
+extern void *CLASS_OBJECT;
 
-// ***************************
-#define ASSIGN(to, from) \
-	{ \
-		void *tmp = link_node(from); \
-		if(to != tmp) \
-		{ \
-			unlink_node(to); \
-			to = tmp; \
-		} \
-	}
+extern WS_INT METH_CLONE;
+extern WS_INT METH_EQUALS;
+extern WS_INT METH_FINALIZE;
+extern WS_INT METH_GET_CLASS;
+extern WS_INT METH_HASH_CODE;
+extern WS_INT METH_NOTIFY;
+extern WS_INT METH_NOTIFY_ALL;
+extern WS_INT METH_TO_STRING;
+extern WS_INT METH_WAIT;
 
-// ***************************
-#define LINK_ARG(to, from) \
-	Object *to = link_node(from)
+// Class constructors
+extern void object_static();
+
+extern void object_functions();
+
+extern void *object_init		(void *class);
+
+extern void *object_alloc		(WS_LONG size);
+
+// constructor for keyindexes
+extern void *object();
+
+// Methods
+void *object_clone(void *obj);
+void *object_equals(void *obj1, void *obj2);
+void *object_finalize(void *obj);
+void *object_get_class(void *obj);
+void *object_hash_code(void *obj);
+void *object_notify(void *obj);
+void *object_notify_all(void *obj);
+void *object_to_string(void *obj);
+void *object_wait(void *obj);
+void *object_wait2(void *obj1, void *obj2);
+void *object_wait3(void *obj1, void *obj2, void *obj3);
 
 #endif

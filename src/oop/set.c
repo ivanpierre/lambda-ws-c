@@ -18,8 +18,12 @@ static  MethodDef	set_func_def[] =
 
 void set_static()
 {
-	SET_GET_SUPERCLASS = key("getSuperclass");
-	CLASS_SET = class("Set", "Object", {NULL}, set_func_def);
+	CLASS_SET = class("Set");
+}
+
+void set_functions()
+{
+	CLASS_SET = class_init(CLASS_SET, CLASS_OBJECT,	{NULL}, set_func_def);
 }
 
 void *set(char *name, char *super, char *interfaces[], MethodDef methods[])
@@ -39,10 +43,10 @@ void *set_init(void *class, WS_BYTE shift)
 	return node;
 }
 
-void *set_get(Set *node, void *obj, WS_INT hash,
+void *set_get(Set *node, void *obj, WS_INT (*hash)(void *obj),
 				WS_INT (*cmp)(void *arg1, void *arg2))
 {
-	WS_INT pos = (hash >> node->shift) & (LOOKUP - 1);
+	WS_INT pos = ((*hash)(obj) >> node->shift) & (LOOKUP - 1);
 	Object found = node->leaf[pos];
 	if(!found)
 		return NIL;
@@ -55,10 +59,10 @@ void *set_get(Set *node, void *obj, WS_INT hash,
 }
 
 // TODO manage two different node entries with same hash
-void *set_assoc(Set *node, void *obj, WS_LONG hash,
+void *set_assoc(Set *node, void *obj, WS_INT (*hash)(void *obj),
 				WS_INT (*cmp)(void *arg1, void *arg2))
 {
-	WS_INT pos = (hash >> node->shift) & (LOOKUP - 1);
+	WS_INT pos = ((*hash)(obj) >> node->shift) & (LOOKUP - 1);
 	Object found = node->leaf[pos];
 	if(!found)
 	{
