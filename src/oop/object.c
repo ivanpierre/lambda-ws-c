@@ -26,7 +26,7 @@ Object		*NIL		= &nil_val;
 Object		*FALSE		= &false_val;
 Object		*TRUE		= &true_val;
 
-static  MethodDef	object_func_def[] =
+static  MethodDesc	object_func_def[] =
 	{
 		{"identity",	1, &object_identity},
 		{"clone",		1, &object_clone},
@@ -60,7 +60,7 @@ extern void object_functions()
 	METH_TO_STRING = key("toString");
 	METH_WAIT = key("wait");
 	CLASS_OBJECT = class_functions_init(CLASS_OBJECT, NULL,
-										{NULL}, object_func_def);
+										(void *[]){NULL}, object_func_def);
 }
 
 /*

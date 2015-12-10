@@ -23,7 +23,7 @@ Class 		*BIGDEC = NULL;
 /*
 	Static functions
 */
-static  MethodDef	num_func_def[] =
+static  MethodDesc	num_func_def[] =
 	{
 		{"static isNum",		1, &num_is_num},
 		{"static coerce",		2, &num_coerce},

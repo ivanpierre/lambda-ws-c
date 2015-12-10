@@ -13,7 +13,7 @@ Class *CLASS_CLASS = NULL;
 
 WS_INT METH_GET_SUPERCLASS = -1;
 
-static  MethodDef	class_func_def[] =
+static  MethodDesc	class_func_def[] =
 	{
 		{"getObjSize",		1, &class_get_obj_size},
 		{"getSuperclass",	1, &class_get_superclass},
@@ -33,6 +33,7 @@ static  MethodDef	class_func_def[] =
 void class_static()
 {
 	CLASS_CLASS = class("Class");
+
 	// It's the first Class defined we have to define the class as itself...
 	CLASS_CLASS->class = CLASS_CLASS;
 }
@@ -43,7 +44,7 @@ void class_static()
 void class_functions()
 {
 	CLASS_CLASS = class_functions_init(CLASS_CLASS, CLASS_INTERFACE,
-										{NULL}, class_func_def);
+										(void *[]){NULL}, class_func_def);
 	METH_GET_SUPERCLASS = key("getSuperclass");
 	METH_GET_OBJ_SIZE = key("getObjSize");
 }
@@ -75,7 +76,7 @@ void *class_init(void *class, char *name)
 	Init functions of new class object
 */
 void *class_functions_init(void *class, void *super,
-							void *interfaces[], MethodDef *methods)
+							void *interfaces[], MethodDesc *methods)
 {
 	if(!super)
 		super = NIL;
@@ -88,7 +89,7 @@ void *class_functions_init(void *class, void *super,
 	class = interface_function_inherit(class, ((Class *)class)->super);
 
 	// define implementation methods and add undefined function names in set
-	class = interface_functions_init(class, methods);
+	class = interface_function_init(class, methods);
 	return class;
 }
 
@@ -103,8 +104,15 @@ void *class_finalize(void *class)
 {
 	// first finalize sub class
 	class = interface_finalize(class);
-	unlink(((Class *)class)->ctor);
 	return class;
+}
+
+/*
+	Return size of class
+*/
+void *class_get_obj_class(void *class)
+{
+	return ((Class *)class)->size;
 }
 
 /*
@@ -121,5 +129,5 @@ void *class_get_superclass(void *class)
 */
 void *class_to_string(void *class)
 {
-	return string();
+	return ((Class *)class)->name;
 }

@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include "oop.h"
 
-static  MethodDef	int_func_def[] =
+static  MethodDesc	int_func_def[] =
 			{
 				{"isZero",			1, &int_is_zero},
 				("isNeg",			1, &int_is_neg),

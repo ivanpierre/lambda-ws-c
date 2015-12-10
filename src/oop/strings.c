@@ -14,9 +14,9 @@
 #include <string.h>
 #include "oop.h"
 
-extern void *CLASS_STRINGS;
+extern Class *CLASS_STRINGS;
 
-static  MethodDef	strings_func_def[] =
+static  MethodDesc	strings_func_def[] =
 	{
 		{"toString",		1, &object_identity}, // override
 		{"finalize",		1, &string_finalize}, // overrides
@@ -31,7 +31,7 @@ void strings_static()
 void strings_functions()
 {
 	CLASS_STRINGS = class_functions_init(CLASS_STRINGS, CLASS_OBJECT,
-										{NULL}, strings_func_def);
+										(void *[]){NULL}, strings_func_def);
 
 }
 

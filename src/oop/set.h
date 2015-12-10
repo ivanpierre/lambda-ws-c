@@ -8,11 +8,14 @@
 	Ivan Pierre <ivan@kilroysoft.ch> 2015
 */
 
+#include <stdio.h>
+#include "oop.h"
+
 #define LOOKUP 32
 
 struct Set;
 
-void *CLASS_SET = NULL;
+extern Class *CLASS_SET;
 
 #define STRUCT_SET \
 	STRUCT_OBJECT; \
@@ -25,14 +28,14 @@ typedef struct Set
 	STRUCT_SET;
 } Set;
 
-void set_static()
+void set_static();
 
-void *set(char *name, char *super, char *interfaces[], MethodDef methods[])
+void *set(char *name, char *super, char **interfaces, MethodDesc methods[]);
 
-void *set_init(void *class, WS_BYTE shift)
+void *set_init(void *class, WS_BYTE shift);
 
 void *set_get(Set *node, void *obj, WS_INT hash,
-				WS_INT (*cmp)(void *arg1, void *arg2))
+				WS_INT (*cmp)(void *arg1, void *arg2));
 
 void *set_assoc(Set *node, void *obj, WS_LONG hash,
-				WS_INT (*cmp)(void *arg1, void *arg2))
+				WS_INT (*cmp)(void *arg1, void *arg2));

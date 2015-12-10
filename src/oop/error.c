@@ -15,7 +15,7 @@
 // Stack trace (this is a closure)
 static Error *error_stack = NULL;
 
-Class		*ERROR = NULL;
+Class		*CLASS_ERROR = NULL;
 
 // Error* function
 void ERROR_STAR(char *file, int line, char *func, char *fmt, ...)
@@ -57,11 +57,11 @@ Error *error_box(char *file, int line, char *func, char *mess)
     error->line = line;
     error->func = func;
     error->mess = mess;
-	return unlink_new((Object *)error);
+	return unlink_new((void *)error);
 
 	//*********************
 	catch:
-	unlink_node((Object *)error);
+	unlink_node((void *)error);
 	return NULL;
 }
 

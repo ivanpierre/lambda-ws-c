@@ -9,9 +9,9 @@
 #include <stdio.h>
 #include "oop.h"
 
-void *CLASS_SET;
+Class *CLASS_SET;
 
-static  MethodDef	set_func_def[] =
+static  MethodDesc	set_func_def[] =
 	{
 		METHOD_DESC_END
 	};
@@ -23,10 +23,10 @@ void set_static()
 
 void set_functions()
 {
-	CLASS_SET = class_init(CLASS_SET, CLASS_OBJECT,	{NULL}, set_func_def);
+	CLASS_SET = class_init(CLASS_SET, CLASS_OBJECT,	(void *[]){NULL}, set_func_def);
 }
 
-void *set(char *name, char *super, char *interfaces[], MethodDef methods[])
+void *set(char *name, char *super, char **interfaces, MethodDesc methods[])
 {
 	void *class = object_alloc(sizeof(Class));
 	class = class_init(class, name, super, interfaces, methods);

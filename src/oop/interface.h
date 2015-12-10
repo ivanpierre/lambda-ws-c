@@ -19,14 +19,26 @@ typedef struct Interface
 	STRUCT_INTERFACE;
 } Interface;
 
-extern WS_BOOL isa(Object *type, Object *isa);
+extern Class *CLASS_INTERFACE;
 
-extern Object *interface(char *name, char *interface[],
+extern WS_BOOL isa(void *type, void *isa);
+
+extern Object *interface(char *name, void *interfaces[],
 						MethodDesc *methods);
 
-extern void *interface_init(void *interface, char *name, char *interfaces[],
-						MethodDef *methods));
+extern void *interface_init(void *interface, char *name);
 
-extern void *interface_add_method(void *set, MethodDef *method);
+extern void *interface_add_method(void *set, MethodDesc *method);
+
+extern void *interface_function_init(void *interface, MethodDesc *methods);
+
+extern void *interface_interface_init(void *interface, void *interfaces[]);
+
+extern void *interface_function_inherit(void *class, void *super);
+
+/*
+	Methods
+*/
+void *interface_finalize(void *interface);
 
 #endif

@@ -9,7 +9,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-extern struct Class		*ERROR;
+extern Class *CLASS_ERROR;
 
 /* standard error texts */
 #define ERR_NULL_PTR    "Null pointer assignement."
@@ -31,16 +31,23 @@ extern struct Class		*ERROR;
 #define ERR_NEW_BIND    "Unlinking new '%s' witch is linked."
 #define ERR_STACK_TRACE "Stack error trace."
 
+typedef struct Error Error;
+
+#define STRUCT_ERROR \
+	STRUCT_OBJECT; \
+	Error			*previous; \
+	char 			*file; \
+	WS_INT 			line; \
+	WS_INT			errno; \
+	char 			*func; \
+	char 			*mess
+
 /*
  * Define Error
  */
 typedef struct
 {
-	struct Error	*previous;
-	char 			*file;
-	WS_INT 			line;
-	char 			*func;
-	char 			*mess;
+	STRUCT_ERROR; \
 } Error;
 
 /*

@@ -11,9 +11,9 @@
 
 void *key_def = NULL;
 
-void *CLASS_KEY_INDEX = NULL;
+Class *CLASS_KEY_INDEX = NULL;
 
-static  MethodDef	key_index_func_def[] =
+static  MethodDesc	key_index_func_def[] =
 	{
 		{"toString",		1, &key_index_to_string}, // override
 		{"finalize",		1, &key_index_finalize}, // overrides
@@ -32,7 +32,7 @@ void key_index_functions()
 {
 	key_def = set();
 	CLASS_KEY_INDEX = class_init(CLASS_KEY_INDEX, CLASS_OBJECT,
-									{NULL}, key_index_func_def);
+								(void *[]){NULL}, key_index_func_def);
 }
 
 // constructor for keyindexes

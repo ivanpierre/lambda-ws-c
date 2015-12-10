@@ -21,7 +21,7 @@ typedef struct KeyIndex
 
 extern void *key_def;
 
-extern void *CLASS_KEY_INDEX;
+extern Class *CLASS_KEY_INDEX;
 
 extern WS_INT METH_GET_SUPERCLASS;
 

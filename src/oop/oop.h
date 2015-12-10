@@ -9,6 +9,8 @@
 #ifndef INIT_H
 #define INIT_H
 
+#include <stdint.h>
+
 /*
 	Used type definitions
 */
@@ -25,6 +27,8 @@ typedef double			WS_DOUBLE;
 
 #define BOOL_FALSE 0
 
+typedef struct Class Class;
+
 /*
 	Define in case of allocation debugging
 */
@@ -35,15 +39,20 @@ typedef double			WS_DOUBLE;
 */
 // #define DEBUG_FREE
 
+/*
+	Forward
+*/
+extern WS_INT key(char *keystr);
+
 
 #include "object.h"
 #include "gc.h"
   #include "strings.h"
-  #include "set.h"
   #include "named.h"
+    #include "method.h"
     #include "interface.h"
       #include "class.h"
-    #include "method.h"
+  #include "set.h"
   #include "number.h"
     // #include "byte.h"
 	// #include "short.h"

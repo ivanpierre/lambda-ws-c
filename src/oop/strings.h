@@ -20,7 +20,7 @@ typedef struct
 	STRUCT_STRINGS;
 } String;
 
-extern void *CLASS_STRINGS;
+extern Class *CLASS_STRINGS;
 
 extern void strings_static();
 extern void strings_functions();
@@ -28,7 +28,7 @@ extern void strings_functions();
 // Strings
 extern Object *string         		(char *value);
 extern Object *string_format 		(char *fmt, ...);
-extern Object *string_hash_code	(Object *node);
+extern Object *string_hash_code		(Object *node);
 extern Object *string_length  		(Object *node);
 
 /*

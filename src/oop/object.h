@@ -9,7 +9,6 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include <stdint.h>
 
 #ifdef DEBUG_ALLOC
 #define STRUCT_OBJECT \
@@ -47,7 +46,7 @@ extern void print_node_list	();
 
 #define BOOL(val) (val ? TRUE : FALSE)
 
-extern void *CLASS_OBJECT;
+extern Class *CLASS_OBJECT;
 
 extern WS_INT METH_CLONE;
 extern WS_INT METH_EQUALS;

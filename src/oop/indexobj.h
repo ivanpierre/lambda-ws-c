@@ -19,7 +19,7 @@ typedef struct IndexObj
 	STRUCT_INDEX_OBJ;
 } IndexObj;
 
-extern void *CLASS_INDEX_OBJ;
+extern Class *CLASS_INDEX_OBJ;
 
 // Class constructors
 extern void index_obj_static();
